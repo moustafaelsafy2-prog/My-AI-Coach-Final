@@ -16,34 +16,35 @@
 
   <style>
     :root{
-      --bg:#0b0f14;             /* خلفية مريحة */
-      --card:#0f1620;           /* بطاقات */
-      --ink:#e7eaf0;            /* نص رئيس */
-      --ink-soft:#aab1bc;       /* نص ثانوي */
-      --line:#1b2430;           /* حدود */
-      --brand:#7c3aed;          /* بنفسجي */
-      --brand-2:#06b6d4;        /* سيان */
-      --ok:#10b981;             /* نجاح */
-      --warn:#f59e0b;           /* تحذير */
-      --err:#ef4444;            /* خطأ */
+      /* ألوان مريحة مستوحاة من أدوات تصميم عالمية */
+      --bg:#0a0f15;
+      --panel:#0e1621;
+      --ink:#e7eaf0;
+      --ink-soft:#a8b0bc;
+      --line:#1b2736;
+      --brand:#7c3aed; /* violet */
+      --brand2:#06b6d4; /* cyan */
+      --ok:#10b981; --warn:#f59e0b; --err:#ef4444;
     }
     html,body{height:100%}
-    body{background:linear-gradient(180deg,var(--bg) 0%, #0c131c 100%);color:var(--ink);-webkit-font-smoothing:antialiased}
+    body{background:linear-gradient(180deg,var(--bg) 0%, #0c141d 100%);color:var(--ink);-webkit-font-smoothing:antialiased}
     .font-ar{font-family:"Tajawal",sans-serif}
     .font-en{font-family:"Poppins",sans-serif}
-    .glass{background:rgba(15,22,32,.78);border:1px solid rgba(255,255,255,.06);backdrop-filter:blur(8px)}
-    .panel{background:var(--card);border:1px solid var(--line)}
-    .btn{border:1px solid #2a3646;border-radius:1rem;padding:.8rem 1rem;font-weight:700}
-    .btn-primary{background:linear-gradient(90deg,var(--brand),var(--brand-2));border-color:transparent;color:#fff}
+    .glass{background:rgba(14,22,33,.8);border:1px solid rgba(255,255,255,.06);backdrop-filter:blur(10px)}
+    .panel{background:var(--panel);border:1px solid var(--line)}
+    .btn{border:1px solid #2a384a;border-radius:1rem;padding:.85rem 1rem;font-weight:700}
+    .btn-primary{background:linear-gradient(90deg,var(--brand),var(--brand2));border-color:transparent;color:#fff}
     .btn-ghost{background:#0b121a}
-    .chip{padding:.25rem .6rem;border-radius:.6rem;font-size:.75rem;background:#0b121a;border:1px dashed #334155;color:#93c5fd}
+    .chip{padding:.3rem .65rem;border-radius:.6rem;font-size:.75rem;background:#0b121a;border:1px dashed #334155;color:#93c5fd}
     .kpi{background:#0b121a;border:1px solid #223043;border-radius:.8rem;padding:.6rem}
+    .muted{color:var(--ink-soft)}
     .prose :where(table){width:100%;border-collapse:collapse}
     .prose :where(th,td){border:1px solid #263241;padding:.6rem;vertical-align:top}
     .prose :where(th){background:#0b121a;color:#cbd5e1}
     .rtl\:text-right[dir="rtl"]{text-align:right}
     .ltr\:text-left[dir="ltr"]{text-align:left}
-    .muted{color:var(--ink-soft)}
+    .pill{font-size:.7rem;padding:.2rem .5rem;border:1px solid #334155;border-radius:.5rem}
+    @media (max-width:420px){.hide-xs{display:none}}
     @media print{
       .no-print, header, #controls {display:none!important}
       body{background:#fff;color:#000}
@@ -56,7 +57,7 @@
 
   <!-- Header -->
   <header class="glass sticky top-0 z-40">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-cyan-500 text-white grid place-items-center font-extrabold">AI</div>
         <div class="leading-tight">
@@ -74,20 +75,24 @@
   </header>
 
   <!-- Hero -->
-  <section class="max-w-6xl mx-auto px-4 sm:px-6 mt-6">
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 mt-6">
     <div class="glass rounded-2xl p-6 relative overflow-hidden">
       <div class="absolute -top-10 -left-10 w-56 h-56 rounded-full bg-gradient-to-br from-violet-600/25 to-cyan-500/25 blur-2xl"></div>
       <div class="absolute -bottom-10 -right-10 w-56 h-56 rounded-full bg-gradient-to-br from-cyan-500/18 to-violet-600/18 blur-2xl"></div>
       <div class="relative grid lg:grid-cols-[1.1fr,.9fr] gap-6 items-center">
         <div>
           <h1 id="hero-title" class="text-3xl sm:text-4xl font-extrabold">المدرب الشخصي الخبير</h1>
-          <p id="hero-sub" class="muted mt-1">خطة دقيقة 100% للتغذية والتدريب والمكملات — مصممة لتناسب أهدافك وصحتك ونمط حياتك، دون اختصار.</p>
-          <p class="text-xs muted mt-2">المدرب <b>مصطفى الصافي</b> — خبير التغذية واللياقة البدنية │ مدرب دولي معتمد • <b>Powered by Mustafa Elsafy 2025</b></p>
-          <div class="flex items-center gap-2 mt-4">
-            <span class="chip">7 أيام تغذية كاملة</span>
-            <span class="chip">7 أيام تدريب كاملة</span>
-            <span class="chip">مكملات حسب الحالة</span>
-            <span class="chip">صيام متقطع (اختياري)</span>
+          <p id="hero-sub" class="muted mt-1">
+            خطة نهائية بلا اختصار: تغذية 7 أيام كاملة، تدريب 7 أيام بمستوى شدة مناسب، مكملات حسب الحالة، وصيام متقطع اختياري — بتوقيع
+            <b>مصطفى الصافي</b> خبير التغذية واللياقة │ مدرب دولي معتمد.
+          </p>
+          <p class="text-xs muted mt-2"><b>Powered by Mustafa Elsafy 2025</b></p>
+          <div class="flex items-center gap-2 mt-4 flex-wrap">
+            <span class="chip">جداول دقيقة</span>
+            <span class="chip">بدون اختصار</span>
+            <span class="chip">RTL/LTR</span>
+            <span class="chip">مراجعة جودة</span>
+            <span class="chip">طباعة/حفظ</span>
           </div>
         </div>
         <div class="panel rounded-2xl p-4">
@@ -117,10 +122,14 @@
     </div>
   </section>
 
-  <!-- Content -->
-  <main class="max-w-6xl mx-auto px-4 sm:px-6 mt-6 grid lg:grid-cols-[minmax(0,1fr),380px] gap-6">
+  <!-- Main -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 mt-6 grid xl:grid-cols-[minmax(0,1fr),420px] gap-6">
     <!-- Builder -->
     <section id="builder" class="panel rounded-2xl p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="text-sm pill muted hide-xs" id="a11y-hint">Tab-friendly • ARIA labeled • Error guards</div>
+        <div class="text-xs pill">© مصطفى الصافي • Powered by Mustafa Elsafy 2025</div>
+      </div>
       <div id="stage"></div>
       <div id="controls" class="mt-6 flex gap-2">
         <button id="btn-prev" class="btn btn-ghost flex-1">السابق</button>
@@ -135,12 +144,12 @@
         <span id="lang-badge" class="chip">AR</span>
       </div>
       <div id="live" class="mt-3 space-y-2 text-sm"></div>
-      <div class="mt-3 text-[11px] muted">* يتم استخدام الذكاء الاصطناعي لتوليد خطة شاملة قابلة للطباعة، 7 أيام كاملة بدون اختصار.</div>
+      <div class="mt-3 text-[11px] muted">* الذكاء الاصطناعي يلتزم بـ 7 أيام كاملة ومختلفة + جداول صارمة + تطابق الماكروز يوميًا (±1%).</div>
     </aside>
   </main>
 
   <!-- Result -->
-  <section id="result" class="max-w-6xl mx-auto px-4 sm:px-6 mt-6 mb-16 hidden">
+  <section id="result" class="max-w-7xl mx-auto px-4 sm:px-6 mt-6 mb-16 hidden">
     <article class="glass rounded-2xl p-6">
       <div class="flex items-center justify-between">
         <h2 id="plan-title" class="text-2xl font-extrabold">الخطة الشاملة</h2>
@@ -149,7 +158,9 @@
           <button id="btn-print-2" class="btn btn-primary">طباعة / حفظ</button>
         </div>
       </div>
-      <div class="text-[13px] muted">تشمل التشخيص، المسموح/الممنوع، الصيام، 7 أيام تغذية بجداول كاملة، 7 أيام تدريب مفصلة حسب الشدة، مكملات، إرشادات، رسائل تحفيزية، ووحدات إضافية.</div>
+      <div class="text-[13px] muted">
+        تشخيص مفصل، مسموح/ممنوع، صيام متقطع، تغذية 7 أيام بجداول كاملة، تدريب 7 أيام (Tempo/RIR/Rest)، مكملات أساسية وصحية، إرشادات نجاح، رسائل تحفيزية، ووحدات إضافية.
+      </div>
       <div id="ai-html" class="prose prose-invert rtl:text-right ltr:text-left mt-4"></div>
       <div class="border-t border-slate-700 mt-6 pt-2 text-[11px] muted">
         <b>مصطفى الصافي — خبير التغذية واللياقة البدنية │ مدرب دولي معتمد</b> • <b>Powered by Mustafa Elsafy 2025</b>
@@ -158,95 +169,98 @@
   </section>
 
   <script>
-    /* ======================== State & I18N ======================== */
-    const el = (id)=>document.getElementById(id);
-    const content = el('stage');
-    const live = el('live');
-    const bar = el('bar');
-    const stepSpan = el('step');
-    const kTDEE = el('kpi-tdee'), kP = el('kpi-P'), kC = el('kpi-C');
-
-    const i18n = {
+    /* ======================== I18N ======================== */
+    const L = {
       ar:{
-        title:'المدرب الشخصي الخبير',
-        sub:'خطة دقيقة 100% للتغذية والتدريب والمكملات — مصممة لتناسب أهدافك وصحتك ونمط حياتك، دون اختصار.',
-        kpi:'مؤشرات سريعة',
-        live:'ملخص فوري',
-        steps:['الأساسيات','الأهداف & النظام','الصحة & الحساسية','التاريخ & التركيز','إنشاء الخطة'],
-        next:'التالي', prev:'السابق', submit:'إنشاء الخطة الآن',
-        name:'الاسم', age:'العمر', height:'الطول (سم)', weight:'الوزن (كغ)', gender:'الجنس', male:'ذكر', female:'أنثى',
-        job:'طبيعة العمل', jobVals:['مكتبي','نشاط خفيف','نشاط متوسط'],
-        goals:['خسارة الدهون','بناء العضلات','زيادة القوة','تحسين التحمل','صحة عامة'],
-        meals:'عدد الوجبات', diet:'النظام الغذائي', diets:['متوازن','قليل الكربوهيدرات','كيتو','البحر المتوسط','نباتي'],
-        fasting:'الصيام المتقطع', enable:'تفعيل', protocol:'البروتوكول', from:'من', to:'إلى',
-        health:'حالات صحية', healthVals:['ضغط الدم','السكري','مقاومة الأنسولين','الغدة الدرقية','الكبد الدهني','مشاكل هرمونية','الجهاز الهضمي'],
-        allergies:'حساسيات', allergyVals:['الجلوتين','اللاكتوز','المكسرات','المأكولات البحرية','البقوليات','السكريات المصنعة','الزيوت النباتية'],
-        injuries:'إصابات (إن وجدت)', exp:'خبرة المقاومة', expVals:['مبتدئ','متوسط','متقدم'],
-        weak:'نقاط التركيز (اختياري)', desc:'وصف الهدف لكل منطقة (إن وُجدت)',
-        error:'أكمل المعلومات المطلوبة',
-        apiFail:'تعذر الاتصال بالموديل، حاول مرة أخرى.',
-        building:'جاري توليد الخطة بالذكاء الاصطناعي بدون أي اختصار...'
+        ui:{
+          title:'المدرب الشخصي الخبير',
+          sub:'خطة نهائية بلا اختصار: تغذية 7 أيام كاملة، تدريب 7 أيام بمستوى شدة مناسب، مكملات حسب الحالة، وصيام متقطع اختياري — بتوقيع مصطفى الصافي.',
+          kpi:'مؤشرات سريعة', live:'ملخص فوري',
+          steps:['الأساسيات','الأهداف & النظام','الصحة & الحساسية','التاريخ & التركيز','إنشاء الخطة'],
+          next:'التالي', prev:'السابق', submit:'إنشاء الخطة الآن',
+          name:'الاسم', age:'العمر', height:'الطول (سم)', weight:'الوزن (كغ)', gender:'الجنس', male:'ذكر', female:'أنثى',
+          job:'طبيعة العمل', jobVals:['مكتبي','نشاط خفيف','نشاط متوسط'],
+          goals:['خسارة الدهون','بناء العضلات','زيادة القوة','تحسين التحمل','صحة عامة'],
+          meals:'عدد الوجبات', diet:'النظام الغذائي', diets:['متوازن','قليل الكربوهيدرات','كيتو','البحر المتوسط','نباتي'],
+          fasting:'الصيام المتقطع', enable:'تفعيل', protocol:'البروتوكول', from:'من', to:'إلى',
+          health:'حالات صحية', healthVals:['ضغط الدم','السكري','مقاومة الأنسولين','الغدة الدرقية','الكبد الدهني','مشاكل هرمونية','الجهاز الهضمي'],
+          allergies:'حساسيات', allergyVals:['الجلوتين','اللاكتوز','المكسرات','المأكولات البحرية','البقوليات','السكريات المصنعة','الزيوت النباتية'],
+          injuries:'إصابات (إن وجدت)', exp:'خبرة المقاومة', expVals:['مبتدئ','متوسط','متقدم'],
+          weak:'نقاط التركيز (اختياري)', desc:'اكتب العضلة: الهدف (مثال: صدر: إبراز الأعلى؛ ظهر: كثافة)',
+          detail:'مستوى التفصيل', days:'أيام التدريب/أسبوع', addons:'وحدات إضافية',
+          add:{ grocery:'قائمة المشتريات', micro:'المغذيات الدقيقة', hydration:'السوائل', periodization:'تصعيد 4 أسابيع', budget:'بدائل اقتصادية', prep:'دليل التحضير', cooking:'نصائح الطبخ' },
+          building:'جاري توليد خطة نهائية بلا اختصار…', apiFail:'تعذر الاتصال بالموديل. حاول مرة أخرى.',
+          err:'أكمل الحقول المطلوبة', print:'طباعة / Print',
+        },
+        map:{
+          job:{'Desk':'مكتبي','Light':'نشاط خفيف','Moderate':'نشاط متوسط'},
+          diet:{'Balanced':'متوازن','Low-Carb':'قليل الكربوهيدرات','Keto':'كيتو','Mediterranean':'البحر المتوسط','Plant-based':'نباتي'},
+          goals:{'Fat loss':'خسارة الدهون','Muscle gain':'بناء العضلات','Strength':'زيادة القوة','Endurance':'تحسين التحمل','General health':'صحة عامة'},
+          exp:{'Beginner':'مبتدئ','Intermediate':'متوسط','Advanced':'متقدم'}
+        }
       },
       en:{
-        title:'Expert Personal Coach',
-        sub:'100% precise plan for nutrition, training & supplements—tailored to your goals, health and lifestyle. No shortcuts.',
-        kpi:'Quick KPIs',
-        live:'Live Summary',
-        steps:['Basics','Goals & Diet','Health & Allergies','History & Focus','Create Plan'],
-        next:'Next', prev:'Back', submit:'Generate Plan',
-        name:'Name', age:'Age', height:'Height (cm)', weight:'Weight (kg)', gender:'Gender', male:'Male', female:'Female',
-        job:'Job activity', jobVals:['Desk','Light','Moderate'],
-        goals:['Fat loss','Muscle gain','Strength','Endurance','General health'],
-        meals:'Meals per day', diet:'Preferred diet', diets:['Balanced','Low-Carb','Keto','Mediterranean','Plant-based'],
-        fasting:'Intermittent fasting', enable:'Enable', protocol:'Protocol', from:'from', to:'to',
-        health:'Health conditions', healthVals:['Hypertension','Diabetes','Insulin Resistance','Thyroid','Fatty Liver','Hormonal issues','GI issues'],
-        allergies:'Allergies', allergyVals:['Gluten','Lactose','Nuts','Seafood','Legumes','Added sugars','Vegetable oils'],
-        injuries:'Injuries (if any)', exp:'Resistance experience', expVals:['Beginner','Intermediate','Advanced'],
-        weak:'Focus points (optional)', desc:'Describe target per area (optional)',
-        error:'Please complete required fields',
-        apiFail:'Model unreachable. Try again.',
-        building:'Generating a complete, no-shortcut plan with AI...'
+        ui:{
+          title:'Expert Personal Coach',
+          sub:'A no-shortcut plan: full 7-day nutrition, 7-day training with proper intensity, condition-aware supplements, optional IF — signed by Mustafa Al-Safi.',
+          kpi:'Quick KPIs', live:'Live Summary',
+          steps:['Basics','Goals & Diet','Health & Allergies','History & Focus','Create Plan'],
+          next:'Next', prev:'Back', submit:'Generate Now',
+          name:'Name', age:'Age', height:'Height (cm)', weight:'Weight (kg)', gender:'Gender', male:'Male', female:'Female',
+          job:'Job activity', jobVals:['Desk','Light','Moderate'],
+          goals:['Fat loss','Muscle gain','Strength','Endurance','General health'],
+          meals:'Meals per day', diet:'Preferred diet', diets:['Balanced','Low-Carb','Keto','Mediterranean','Plant-based'],
+          fasting:'Intermittent fasting', enable:'Enable', protocol:'Protocol', from:'from', to:'to',
+          health:'Health conditions', healthVals:['Hypertension','Diabetes','Insulin Resistance','Thyroid','Fatty Liver','Hormonal issues','GI issues'],
+          allergies:'Allergies', allergyVals:['Gluten','Lactose','Nuts','Seafood','Legumes','Added sugars','Vegetable oils'],
+          injuries:'Injuries (if any)', exp:'Resistance experience', expVals:['Beginner','Intermediate','Advanced'],
+          weak:'Focus points (optional)', desc:'Type muscle: goal (e.g., Chest: upper emphasis; Back: density)',
+          detail:'Detail level', days:'Training days/week', addons:'Add-on modules',
+          add:{ grocery:'Grocery list', micro:'Micronutrient targets', hydration:'Hydration plan', periodization:'4-week periodization', budget:'Budget swaps', prep:'Meal prep guide', cooking:'Cooking tips' },
+          building:'Generating a fully-detailed plan, no shortcuts…', apiFail:'Model unreachable. Try again.',
+          err:'Please complete required fields', print:'Print / Save',
+        },
+        map:{
+          job:{'مكتبي':'Desk','نشاط خفيف':'Light','نشاط متوسط':'Moderate'},
+          diet:{'متوازن':'Balanced','قليل الكربوهيدرات':'Low-Carb','كيتو':'Keto','البحر المتوسط':'Mediterranean','نباتي':'Plant-based'},
+          goals:{'خسارة الدهون':'Fat loss','بناء العضلات':'Muscle gain','زيادة القوة':'Strength','تحسين التحمل':'Endurance','صحة عامة':'General health'},
+          exp:{'مبتدئ':'Beginner','متوسط':'Intermediate','متقدم':'Advanced'}
+        }
       }
     };
 
-    let lang = 'ar';
-    let step = 0;
-    const total = 5;
+    /* ======================== State ======================== */
+    const el = id=>document.getElementById(id);
+    const content = el('stage'), live = el('live'), bar=el('bar'), stepSpan=el('step');
+    const kTDEE = el('kpi-tdee'), kP = el('kpi-P'), kC = el('kpi-C');
 
-    const user = {
+    let lang='ar';
+    let step=0; const total=5;
+    const user={
       name:'', age:'', height:'', weight:'', gender:'Male', job:'Desk',
       goals:[], meals:4, diet:'Balanced',
       fasting:{enabled:false, protocol:'16:8', start:'12:00', end:'20:00'},
       health:[], allergies:[], injuries:'',
       exp:'Beginner', weak_points:{},
-
-      // مقابض تفصيل ووحدات إضافية
-      detail:'max',               // minimal | standard | max
-      train_days: 7,
-      include:{
-        grocery:true,
-        micro:true,
-        hydration:true,
-        periodization:true,
-        budget:false,
-        prepGuide:true,
-        cookingTips:true
-      }
+      detail:'max', train_days:7,
+      include:{grocery:true, micro:true, hydration:true, periodization:true, budget:false, prepGuide:true, cookingTips:true}
     };
 
     /* ======================== Helpers ======================== */
-    const T = (k)=>i18n[lang][k];
+    const T = k=>L[lang].ui[k];
     function setLang(l){
       lang=l;
-      document.documentElement.lang=lang;
-      document.documentElement.dir = lang==='ar'?'rtl':'ltr';
-      document.body.classList.toggle('font-ar',lang==='ar');
-      document.body.classList.toggle('font-en',lang!=='ar');
+      document.documentElement.lang=l;
+      document.documentElement.dir = l==='ar'?'rtl':'ltr';
+      document.body.classList.toggle('font-ar',l==='ar');
+      document.body.classList.toggle('font-en',l!=='ar');
       el('hero-title').textContent=T('title');
-      el('hero-sub').textContent=T('sub');
+      el('hero-sub').textContent=L[lang].ui.sub;
       el('kpi-title').textContent=T('kpi');
       el('live-title').textContent=T('live');
-      el('lang-badge').textContent=lang.toUpperCase();
+      el('lang-badge').textContent=l.toUpperCase();
+      el('btn-print').textContent=T('print');
+      el('btn-print-2').textContent=T('print');
       draw(); updateLive(); updateCTA();
     }
     function f(label,id,opt={}){
@@ -293,28 +307,13 @@
       return {TDEE:Math.round(TDEE),P,F,C};
     }
 
-    function updateKPIs(){
-      const c = calc();
-      kTDEE.textContent = c.TDEE;
-      kP.textContent = c.P + ' g';
-      kC.textContent = c.C + ' g';
-    }
-
-    function updateProgress(){
-      const p = ((step+1)/total)*100;
-      bar.style.width = p + '%';
-      stepSpan.textContent = String(step+1);
-    }
-
-    function updateCTA(){
-      el('btn-prev').textContent = T('prev');
-      el('btn-next').textContent = step===total-1 ? T('submit') : T('next');
-      el('btn-prev').disabled = step===0;
-    }
+    function updateKPIs(){ const c=calc(); el('kpi-tdee').textContent=c.TDEE; el('kpi-P').textContent=c.P+' g'; el('kpi-C').textContent=c.C+' g'; }
+    function updateProgress(){ bar.style.width = (((step+1)/total)*100)+'%'; stepSpan.textContent=String(step+1); }
+    function updateCTA(){ el('btn-prev').textContent=T('prev'); el('btn-next').textContent = step===total-1?T('submit'):T('next'); el('btn-prev').disabled = step===0; }
 
     function updateLive(){
-      updateKPIs();
-      const c = calc();
+      updateKPIs(); const c=calc();
+      const g = (user.goals||[]).join(lang==='ar'?'، ':', ')||'—';
       live.innerHTML = `
         <div class="text-xs muted">${T('name')}: <b class="text-slate-200">${user.name||'—'}</b></div>
         <div class="grid grid-cols-3 gap-2 text-xs">
@@ -322,8 +321,8 @@
           <div class="kpi"><div class="muted">${T('height')}</div><b>${user.height||'—'}</b></div>
           <div class="kpi"><div class="muted">${T('weight')}</div><b>${user.weight||'—'}</b></div>
         </div>
-        <div class="text-xs muted">${lang==='ar'?'الأهداف':'Goals'}: <b class="text-slate-200">${(user.goals||[]).join('، ')||'—'}</b></div>
-        <div class="text-xs muted">${T('diet')}: <b class="text-slate-200">${user.diet}</b> — ${T('meals')}: <b class="text-slate-200">${user.meals}</b></div>
+        <div class="text-xs muted">${lang==='ar'?'الأهداف':'Goals'}: <b class="text-slate-200">${g}</b></div>
+        <div class="text-xs muted">${T('diet')}: <b class="text-slate-200">${mapOut('diet',user.diet)}</b> — ${T('meals')}: <b class="text-slate-200">${user.meals}</b></div>
         <div class="text-xs muted">${T('fasting')}: <b class="text-slate-200">${user.fasting.enabled? user.fasting.protocol+' '+user.fasting.start+'-'+user.fasting.end : '—'}</b></div>
         <div class="grid grid-cols-3 gap-2 text-xs mt-2">
           <div class="kpi"><div>السعرات</div><b>${c.TDEE} kcal</b></div>
@@ -331,56 +330,67 @@
           <div class="kpi"><div>الكارب</div><b>${c.C} g</b></div>
         </div>
       `;
-      const mods = Object.entries(user.include).filter(([k,v])=>v).map(([k])=>k).join(' • ') || '—';
-      live.innerHTML += `<div class="text-[11px] muted mt-2">وحدات مفعّلة: ${mods}</div>`;
+      const mods = Object.entries(user.include).filter(([_,v])=>v).map(([k])=>T('add')[k]||k).join(' • ')||'—';
+      live.innerHTML += `<div class="text-[11px] muted mt-2">${T('addons')}: ${mods}</div>`;
     }
 
-    /* ======================== Stages ======================== */
+    function mapOut(type,val){
+      // عرض القيمة الحالية بلغة الواجهة
+      if(lang==='ar'){ // إنجليزي → عربي
+        const map=L.ar.map[type]||{}; return map[val]||val;
+      } else { // عربي → إنجليزي
+        const map=L.en.map[type]||{}; return map[val]||val;
+      }
+    }
+    function mapGoalsOut(arr){
+      if(lang==='ar'){ // en→ar
+        return arr.map(v=>L.ar.map.goals[v]||v);
+      } else { // ar→en
+        return arr.map(v=>L.en.map.goals[v]||v);
+      }
+    }
+
+    /* ======================== Stages (UX) ======================== */
     function draw(){
       updateProgress();
+      const U=L[lang].ui;
       if(step===0){
         content.innerHTML = `
-          <h3 class="text-xl font-extrabold mb-3">${i18n[lang].steps[0]}</h3>
+          <h3 class="text-xl font-extrabold mb-3">${U.steps[0]}</h3>
           <div class="grid sm:grid-cols-2 gap-4">
-            ${f(T('name'),'name',{value:user.name})}
-            ${f(T('gender'),'gender',{select:[
-              {value:'Male',label:T('male')},{value:'Female',label:T('female')}
-            ],value:user.gender})}
-            ${f(T('age'),'age',{type:'number',value:user.age})}
-            ${f(T('height'),'height',{type:'number',value:user.height})}
-            ${f(T('weight'),'weight',{type:'number',value:user.weight})}
-            ${f(T('job'),'job',{select:[
-              {value: lang==='ar'?'مكتبي':'Desk', label: lang==='ar'?'مكتبي':'Desk'},
-              {value: lang==='ar'?'نشاط خفيف':'Light', label: lang==='ar'?'نشاط خفيف':'Light'},
-              {value: lang==='ar'?'نشاط متوسط':'Moderate', label: lang==='ar'?'نشاط متوسط':'Moderate'},
-            ], value: user.job})}
+            ${f(U.name,'name',{value:user.name})}
+            ${f(U.gender,'gender',{select:[{value:'Male',label:U.male},{value:'Female',label:U.female}],value:user.gender})}
+            ${f(U.age,'age',{type:'number',value:user.age})}
+            ${f(U.height,'height',{type:'number',value:user.height})}
+            ${f(U.weight,'weight',{type:'number',value:user.weight})}
+            ${f(U.job,'job',{select:U.jobVals.map(v=>({value:v,label:v})),value:mapOut('job',user.job)})}
           </div>
 
-          <div class="grid sm:grid-cols-3 gap-4 mt-3">
+          <div class="grid lg:grid-cols-3 gap-4 mt-3">
             <label class="block">
-              <span class="text-sm">مستوى التفصيل</span>
+              <span class="text-sm">${U.detail}</span>
               <select id="detail" class="mt-1 w-full p-3 rounded-xl bg-[#0b121a] border border-slate-700">
-                <option value="minimal">مختصر</option>
-                <option value="standard">قياسي</option>
-                <option value="max" selected>موسع</option>
+                <option value="minimal">minimal</option>
+                <option value="standard">standard</option>
+                <option value="max" selected>max</option>
               </select>
             </label>
             <label class="block">
-              <span class="text-sm">أيام التدريب/أسبوع</span>
+              <span class="text-sm">${U.days}</span>
               <select id="train_days" class="mt-1 w-full p-3 rounded-xl bg-[#0b121a] border border-slate-700">
                 <option>3</option><option>4</option><option>5</option><option selected>7</option>
               </select>
             </label>
             <div class="rounded-xl p-3 bg-[#0b121a] border border-slate-700">
-              <div class="text-sm mb-2">وحدات إضافية</div>
+              <div class="text-sm mb-2">${U.addons}</div>
               <div class="grid grid-cols-2 gap-2 text-sm">
-                <label class="inline-flex items-center gap-2"><input id="inc_grocery" type="checkbox" class="accent-violet-600" checked/>قائمة المشتريات</label>
-                <label class="inline-flex items-center gap-2"><input id="inc_micro" type="checkbox" class="accent-violet-600" checked/>المغذيات الدقيقة</label>
-                <label class="inline-flex items-center gap-2"><input id="inc_hyd" type="checkbox" class="accent-violet-600" checked/>السوائل</label>
-                <label class="inline-flex items-center gap-2"><input id="inc_period" type="checkbox" class="accent-violet-600" checked/>تصعيد 4 أسابيع</label>
-                <label class="inline-flex items-center gap-2"><input id="inc_budget" type="checkbox" class="accent-violet-600"/>بدائل اقتصادية</label>
-                <label class="inline-flex items-center gap-2"><input id="inc_prep" type="checkbox" class="accent-violet-600" checked/>دليل التحضير</label>
-                <label class="inline-flex items-center gap-2"><input id="inc_cook" type="checkbox" class="accent-violet-600" checked/>نصائح طبخ</label>
+                <label class="inline-flex items-center gap-2"><input id="inc_grocery" type="checkbox" class="accent-violet-600" checked/>${U.add.grocery}</label>
+                <label class="inline-flex items-center gap-2"><input id="inc_micro" type="checkbox" class="accent-violet-600" checked/>${U.add.micro}</label>
+                <label class="inline-flex items-center gap-2"><input id="inc_hyd" type="checkbox" class="accent-violet-600" checked/>${U.add.hydration}</label>
+                <label class="inline-flex items-center gap-2"><input id="inc_period" type="checkbox" class="accent-violet-600" checked/>${U.add.periodization}</label>
+                <label class="inline-flex items-center gap-2"><input id="inc_budget" type="checkbox" class="accent-violet-600"/>${U.add.budget}</label>
+                <label class="inline-flex items-center gap-2"><input id="inc_prep" type="checkbox" class="accent-violet-600" checked/>${U.add.prep}</label>
+                <label class="inline-flex items-center gap-2"><input id="inc_cook" type="checkbox" class="accent-violet-600" checked/>${U.add.cooking}</label>
               </div>
             </div>
           </div>
@@ -388,65 +398,65 @@
       }
       else if(step===1){
         content.innerHTML = `
-          <h3 class="text-xl font-extrabold mb-3">${i18n[lang].steps[1]}</h3>
+          <h3 class="text-xl font-extrabold mb-3">${U.steps[1]}</h3>
           <div class="space-y-4">
             <div>
               <div class="text-sm mb-1">${lang==='ar'?'الأهداف':'Goals'}</div>
-              ${chips('goal', i18n[lang].goals, user.goals)}
+              ${chips('goal', U.goals, mapGoalsOut(user.goals))}
             </div>
             <div class="grid sm:grid-cols-3 gap-4">
-              ${f(T('meals'),'meals',{select:[{value:3,label:'3'},{value:4,label:'4'},{value:5,label:'5'},{value:6,label:'6'}],value:user.meals})}
-              ${f(T('diet'),'diet',{select:i18n[lang].diets.map(d=>({value: (lang==='ar'? (d==='متوازن'?'Balanced':d==='قليل الكربوهيدرات'?'Low-Carb':d==='البحر المتوسط'?'Mediterranean':d==='نباتي'?'Plant-based':'Keto') : d), label:d})),value:user.diet})}
+              ${f(U.meals,'meals',{select:[{value:3,label:'3'},{value:4,label:'4'},{value:5,label:'5'},{value:6,label:'6'}],value:user.meals})}
+              ${f(U.diet,'diet',{select:U.diets.map(d=>({value:d,label:d})),value:mapOut('diet',user.diet)})}
             </div>
             <div class="rounded-xl p-3 bg-[#0b121a] border border-slate-700">
               <label class="inline-flex items-center gap-2">
                 <input id="fasting_enabled" type="checkbox" class="accent-violet-600" ${user.fasting.enabled?'checked':''}/>
-                <span>${T('fasting')} — ${T('enable')}</span>
+                <span>${U.fasting} — ${U.enable}</span>
               </label>
               <div class="grid sm:grid-cols-3 gap-3 mt-2">
-                ${f(T('protocol'),'fasting_protocol',{select:['14:10','16:8','18:6','20:4'].map(x=>({value:x,label:x})),value:user.fasting.protocol})}
-                <label><span class="text-sm">${T('from')}</span><input id="fasting_start" type="time" class="mt-1 w-full p-3 rounded-xl bg-[#0b121a] border border-slate-700" value="${user.fasting.start}"/></label>
-                <label><span class="text-sm">${T('to')}</span><input id="fasting_end" type="time" class="mt-1 w-full p-3 rounded-xl bg-[#0b121a] border border-slate-700" value="${user.fasting.end}"/></label>
+                ${f(U.protocol,'fasting_protocol',{select:['14:10','16:8','18:6','20:4'].map(x=>({value:x,label:x})),value:user.fasting.protocol})}
+                <label><span class="text-sm">${U.from}</span><input id="fasting_start" type="time" class="mt-1 w-full p-3 rounded-xl bg-[#0b121a] border border-slate-700" value="${user.fasting.start}"/></label>
+                <label><span class="text-sm">${U.to}</span><input id="fasting_end" type="time" class="mt-1 w-full p-3 rounded-xl bg-[#0b121a] border border-slate-700" value="${user.fasting.end}"/></label>
               </div>
             </div>
           </div>`;
       }
       else if(step===2){
         content.innerHTML = `
-          <h3 class="text-xl font-extrabold mb-3">${i18n[lang].steps[2]}</h3>
+          <h3 class="text-xl font-extrabold mb-3">${U.steps[2]}</h3>
           <div class="space-y-4">
-            <div>
-              <div class="text-sm mb-1">${T('health')}</div>
-              ${chips('health', i18n[lang].healthVals, user.health)}
-            </div>
-            <div>
-              <div class="text-sm mb-1">${T('allergies')}</div>
-              ${chips('all', i18n[lang].allergyVals, user.allergies)}
-            </div>
-            ${f(T('injuries'),'injuries',{type:'textarea',rows:3,value:user.injuries})}
+            <div><div class="text-sm mb-1">${U.health}</div>${chips('health', U.healthVals, user.health)}</div>
+            <div><div class="text-sm mb-1">${U.allergies}</div>${chips('all', U.allergyVals, user.allergies)}</div>
+            ${f(U.injuries,'injuries',{type:'textarea',rows:3,value:user.injuries,placeholder: lang==='ar'?'اذكر المكان والوصف':'Describe area & details'})}
           </div>`;
       }
       else if(step===3){
         content.innerHTML = `
-          <h3 class="text-xl font-extrabold mb-3">${i18n[lang].steps[3]}</h3>
+          <h3 class="text-xl font-extrabold mb-3">${U.steps[3]}</h3>
           <div class="grid sm:grid-cols-3 gap-4">
-            ${f(T('exp'),'exp',{select:i18n[lang].expVals.map(x=>({value: x==='مبتدئ'?'Beginner':x==='متوسط'?'Intermediate':x==='متقدم'?'Advanced':x,label:x})),value:user.exp})}
+            ${f(U.exp,'exp',{select:U.expVals.map(x=>({value:x,label:x})),value:mapOut('exp',user.exp)})}
             <label class="block col-span-2">
-              <span class="text-sm">${T('weak')}</span>
-              <input id="weak_raw" class="mt-1 w-full p-3 rounded-xl bg-[#0b121a] border border-slate-700" placeholder="${T('desc')}" value="${Object.keys(user.weak_points||{}).length? Object.entries(user.weak_points).map(([k,v])=>`${k}:${v}`).join('; '):''}">
+              <span class="text-sm">${U.weak}</span>
+              <input id="weak_raw" class="mt-1 w-full p-3 rounded-xl bg-[#0b121a] border border-slate-700" placeholder="${U.desc}" value="${serializeWeak()}">
             </label>
           </div>`;
       }
       else{
         content.innerHTML = `
           <div class="text-center py-8">
-            <div class="text-sm muted mb-2">${T('building')}</div>
-            <div class="w-12 h-12 rounded-full border-4 border-violet-600 border-t-transparent animate-spin mx-auto"></div>
+            <div class="text-sm muted mb-2">${U.building}</div>
+            <div class="w-12 h-12 rounded-full border-4 border-violet-600 border-t-transparent animate-spin mx-auto" aria-label="loading"></div>
           </div>`;
       }
     }
 
+    function serializeWeak(){
+      const entries = Object.entries(user.weak_points||{});
+      return entries.length? entries.map(([k,v])=>`${k}:${v}`).join('; '):'';
+    }
+
     function saveStep(){
+      const U=L[lang].ui;
       try{
         if(step===0){
           user.name = el('name').value.trim();
@@ -454,8 +464,8 @@
           user.age = +el('age').value;
           user.height = +el('height').value;
           user.weight = +el('weight').value;
-          user.job = el('job').value;
-
+          const jobVal = el('job').value; // localized
+          user.job = (lang==='ar') ? (L.en.map.job[jobVal]||jobVal) : jobVal; // normalize to EN
           user.detail = el('detail').value;
           user.train_days = +el('train_days').value;
           user.include = {
@@ -467,12 +477,14 @@
             prepGuide: el('inc_prep').checked,
             cookingTips: el('inc_cook').checked
           };
-
           if(!user.name||!user.age||!user.height||!user.weight) throw 0;
         } else if(step===1){
-          user.goals = [...document.querySelectorAll('input[name="goal"]:checked')].map(e=>e.value);
+          const rawGoals = [...document.querySelectorAll('input[name="goal"]:checked')].map(e=>e.value);
+          // normalize goals to EN base for prompt consistency
+          user.goals = (lang==='ar') ? rawGoals.map(g=>L.en.map.goals[g]||g) : rawGoals;
+          const dietVal = el('diet').value;
+          user.diet = (lang==='ar') ? (L.en.map.diet[dietVal]||dietVal) : dietVal;
           user.meals = +el('meals').value;
-          user.diet = el('diet').value;
           user.fasting.enabled = el('fasting_enabled').checked;
           user.fasting.protocol = el('fasting_protocol').value;
           user.fasting.start = el('fasting_start').value;
@@ -483,7 +495,8 @@
           user.allergies = [...document.querySelectorAll('input[name="all"]:checked')].map(e=>e.value);
           user.injuries = el('injuries').value || '';
         } else if(step===3){
-          user.exp = el('exp').value;
+          const expVal = el('exp').value;
+          user.exp = (lang==='ar') ? (L.en.map.exp[expVal]||expVal) : expVal;
           const weak_raw = el('weak_raw').value.trim();
           user.weak_points = {};
           if(weak_raw){
@@ -492,123 +505,113 @@
             });
           }
         }
-        updateLive();
-        return true;
-      }catch{
-        toast(T('error'),'err'); return false;
-      }
+        updateLive(); return true;
+      }catch{ toast(U.err,'err'); return false; }
     }
 
-    /* ======================== AI PROMPT (مُوسع + بدون اختصار) ======================== */
+    /* ======================== Prompt (قوي جدًا + ثنائي اللغة) ======================== */
     function buildPrompt(){
       const c = calc();
-      const langTag = lang.toUpperCase();
-      const meals = user.meals;
-      const detail = user.detail;        // minimal | standard | max
-      const trainDays = user.train_days;
-      const inc = user.include;
+      const outLang = (lang==='ar'?'AR':'EN');
+      const meals = user.meals, trainDays=user.train_days, inc=user.include;
+      const DETAIL = user.detail; // minimal | standard | max
 
-      const DETAIL_RULES = {
-        minimal: {
-          mealLines: '• سطرين لكل وجبة (الاسم + المكونات والجرامات).',
-          trainingLines: '• 3 تمارين لكل يوم تدريب.',
-          explainDepth: 'مختصر وواضح.'
-        },
-        standard: {
-          mealLines: '• 4–5 أسطر لكل وجبة، تتضمن بدائل وأسباب الاختيار.',
-          trainingLines: '• 4–5 تمارين/يوم مع Tempo/Rest/RIR.',
-          explainDepth: 'متوسط مع أمثلة.'
-        },
-        max: {
-          mealLines: '• 6–8 أسطر لكل وجبة، تشمل بدائل متاحة، سبب الاختيار، وطريقة التحضير بسرعة.',
-          trainingLines: '• 5–7 تمارين/يوم + Tempo + RIR + ملاحظات فنية/وقائية مُفصلة.',
-          explainDepth: 'مفصل للغاية مع أمثلة وتبرير علمي مختصر.'
-        }
-      }[detail];
+      const RULE = {
+        minimal:{meal:'• 2 lines per meal.',train:'• 3 exercises/day.'},
+        standard:{meal:'• 4–5 lines per meal incl. swaps & rationale.',train:'• 4–5 exercises/day + Tempo/Rest/RIR.'},
+        max:{meal:'• 6–8 lines per meal incl. swaps, rationale, quick prep.',train:'• 5–7 exercises/day + Tempo + RIR + technical & safety notes.'}
+      }[DETAIL];
 
-      const OPTIONAL_BLOCKS = `
-${inc.grocery ? '- **قائمة المشتريات الأسبوعية** منظمة حسب الأقسام (بروتين، كارب، دهون، خضار/فاكهة، توابل، مستلزمات التحضير) مع كميات تقريبية ووِحدة قياس.' : ''}
-${inc.micro ? '- **أهداف المغذيات الدقيقة**: صوديوم ≤ 2000mg، بوتاسيوم ≥ 3000mg، كالسيوم 1000mg، ماغنسيوم 400mg، ألياف ${Math.max(25, Math.round(c.C*0.08))}g، أوميغا-3 ≥ 1g، Vit-D 800–2000 IU. عدّل حسب الحالة.' : ''}
-${inc.hydration ? '- **خطة السوائل**: ماء 30–40ml/‏kg، توزيع على اليوم، وما قبل/أثناء/بعد التمرين، مع بدائل خالية من السكر.' : ''}
-${inc.periodization ? '- **تصعيد تدريبي (4 أسابيع)**: الأسبوع 1 أساس، 2 تعزيز، 3 ذروة، 4 تخفيف؛ نسب أحمال مقترحة ونطاقات RIR لكل أسبوع.' : ''}
-${inc.budget ? '- **نسخ اقتصادية**: بدائل منخفضة التكلفة لكل مكوّن مع الحفاظ على الماكروز.' : ''}
-${inc.prepGuide ? '- **دليل التحضير الأسبوعي**: Batch cooking، أوزان قياسية، حفظ/تجميد، إعادة تسخين آمن، وتخطيط يوم التسوق.' : ''}
-${inc.cookingTips ? '- **نصائح طبخ صحية**: تقليل الدهون المضافة، تتبيلات منخفضة الصوديوم، طرق شواء/طبخ بالبخار/هوائي.' : ''}
-`.trim();
+      const ADDONS = [
+        inc.grocery ? '- Grocery list by section with approximate quantities (g/ml/unit).' : '',
+        inc.micro ? `- Micronutrients: Sodium ≤ 2000mg, Potassium ≥ 3000mg, Calcium 1000mg, Magnesium 400mg, Fiber ${Math.max(25,Math.round(c.C*0.08))}g, Omega-3 ≥ 1g, Vit-D 800–2000 IU.` : '',
+        inc.hydration ? '- Hydration: 30–40 ml/kg, distribution + pre/intra/post training, sugar-free options.' : '',
+        inc.periodization ? '- 4-week periodization: Base → Build → Peak → Deload with %load and RIR guidance.' : '',
+        inc.budget ? '- Budget variants for each ingredient preserving macros.' : '',
+        inc.prepGuide ? '- Meal-prep guide: batch cooking, storage, reheating safety.' : '',
+        inc.cookingTips ? '- Cooking tips: low-sodium marinades, air-fry/steam/grill, reduce added fats.' : ''
+      ].filter(Boolean).join('\n');
+
+      // NOTE: We demand full bilingual discipline in outputs:
+      //  - Arabic prose & food names when AR; English exercise names always + Arabic short note.
+      //  - English prose when EN; still keep exercise names in English (normal), with short note in English.
 
       return `
-Act as **Coach Mustafa Al-Safi**, a world-class nutrition & fitness expert. Output language: **${langTag}**.
-Use **Arabic** for prose and food names; use **English exercise names** followed by a brief Arabic note. **Never use placeholders or generic "N/A". No shortcuts.**
+You are **Coach Mustafa Al-Safi**, world-class nutrition & fitness expert.
+OUTPUT LANGUAGE: **${outLang}**.
+- If AR: Use Arabic prose & food names; **exercise names in English with brief Arabic note**.
+- If EN: Use English prose & food names; **exercise names in English with a brief English note**.
+- **No placeholders. No summaries. No shortcuts. 7 FULL and DIFFERENT days for nutrition & training.**
 
-### Client Data
+### Client Profile (normalized)
 - Name: ${user.name}
 - Age/Height/Weight/Gender: ${user.age} / ${user.height} cm / ${user.weight} kg / ${user.gender}
-- Job activity: ${user.job}
+- Job Activity: ${user.job}
 - Goals: ${(user.goals||[]).join(', ')}
-- Diet: ${user.diet} • Meals/day: ${meals}
-- Fasting: ${user.fasting.enabled? (user.fasting.protocol+' '+user.fasting.start+'-'+user.fasting.end):'Disabled'}
-- Health conditions: ${(user.health||[]).join(', ')||'None'}
+- Preferred Diet: ${user.diet} • Meals/Day: ${meals}
+- Intermittent Fasting: ${user.fasting.enabled? (user.fasting.protocol+' '+user.fasting.start+'-'+user.fasting.end):'Disabled'}
+- Health Conditions: ${(user.health||[]).join(', ')||'None'}
 - Allergies: ${(user.allergies||[]).join(', ')||'None'}
 - Injuries: ${user.injuries||'None'}
-- Training experience: ${user.exp}
-- Weak points: ${Object.entries(user.weak_points||{}).map(([k,v])=>`${k}:${v}`).join(', ')||'None'}
+- Resistance Experience: ${user.exp}
+- Focus Points: ${Object.entries(user.weak_points||{}).map(([k,v])=>`${k}:${v}`).join(', ')||'None'}
 
-### Strict Daily Targets (must match ±1% EVERY day)
+### Strict Daily Targets (hard constraint — hit within ±1% EVERY day)
 - Calories: **${c.TDEE} kcal**
 - Macros: **Protein ${c.P} g • Fat ${c.F} g • Carbs ${c.C} g**
+- Diabetic/IR guardrail respected when applicable.
 
-### REQUIRED STRUCTURE (All 10 sections are mandatory. 7 FULL different days. No merging, no summarizing.)
-1) ## مقدمة وتشخيص الحالة (${DETAIL_RULES.explainDepth})
-   - الحالة، الهدف النهائي، مؤشرات قياس أسبوعية (وزن/محيط/قوة/راحة نوم/طاقة)، المخاطر، كيف نعالج القيود الصحية والحساسيات.
-2) ## قائمة المسموح والممنوع
-   - حسب نظام "${user.diet}" والحساسيات. قوائم نقطية تفصيلية للأطعمة/المشروبات/التتبيلات.
-3) ## بروتوكول الصيام المتقطع ${user.fasting.enabled?'(مُفعّل)':'(اختياري)'}
-   - بروتوكول ${user.fasting.enabled? user.fasting.protocol : 'مقترح 16:8'}، نافذة الطعام ${user.fasting.start}–${user.fasting.end} (قابلة للتعديل).
-   - ما يُكسر به الصيام، مشروبات مسموحة، أخطاء شائعة، تحذيرات مرتبطة بـ (${(user.health||[]).join(', ')||'لا توجد'}).
-4) ## خطة التغذية (7 أيام كاملة ومختلفة)
-   - **لكل يوم** جدول Markdown بالأعمدة التالية (لا تغيّر أسماء الأعمدة):
-     | Meal # | الوجبة | المكونات (بالجرام/الوحدة) | Protein (g) | Fat (g) | Carbs (g) | Calories |
+### REQUIRED SECTIONS (do not skip, rename, or merge)
+1) ## Intro & Case Assessment (deep, practical)
+   - Goals, constraints, risks, weekly KPIs (weight/waist/strength/sleep/resting pulse/energy), exact measurement cadence.
+2) ## Allowed & Avoid List
+   - Tailored to **${user.diet}** and allergies/conditions. Include sauces/marinades and beverages.
+3) ## Intermittent Fasting ${user.fasting.enabled?'(ENABLED)':'(OPTIONAL)'}
+   - Protocol ${user.fasting.enabled? user.fasting.protocol : '16:8 suggested'}, window ${user.fasting.start}–${user.fasting.end} (editable).
+   - What breaks the fast, permitted drinks, common mistakes, condition-specific cautions.
+4) ## Nutrition Plan (7 FULL DIFFERENT DAYS)
+   - **For each day**, include a Markdown table with columns EXACTLY:
+     | Meal # | Meal | Ingredients (g/unit) | Protein (g) | Fat (g) | Carbs (g) | Calories |
      |---:|---|---|---:|---:|---:|---:|
-     ${DETAIL_RULES.mealLines}
-   - بعد الجدول: **الإجمالي اليومي** بصيغة: **Total → P:__ F:__ C:__ Kcal:__** ويجب أن يطابق الهدف (±1%).
-   - ضع كلمة **[Swap]** بعد اسم كل وجبة لتسهيل الاستبدال.
-5) ## خطة التدريب (${trainDays} أيام) — مستوى ${user.exp}
-   - **لكل يوم** جدول Markdown بالأعمدة:
-     | اليوم | Exercise (EN) | Notes (AR) | Sets | Reps | Tempo | Rest (s) | RIR |
-     |---|---|---|---:|---:|---|---:|---:|
-     ${DETAIL_RULES.trainingLines}
-   - شدّة اليوم يجب أن تعكس الخبرة: ${user.exp}. تجنّب ما يُفاقم الإصابات: ${user.injuries||'None'}.
-   - ركّز على: ${Object.entries(user.weak_points||{}).map(([k,v])=>`${k}:${v}`).join(', ')||'None'}.
-6) ## المكملات والتعافي (أساسي + مرتبط بالحالة الصحية)
-   - جدولان منسَّقان:
-     - **أساسي**: Whey/Casein, Creatine, Omega-3, Vitamin D, Magnesium, Electrolytes (جرعات، توقيت، أيام الراحة/التمرين).
-     - **مرتبط بالحالة**: مكملات مخصّصة لـ (${(user.health||[]).join(', ')||'لا توجد حالة'}) مع الجرعات والتحذيرات والتداخلات الدوائية إن لزم.
-7) ## إرشادات النجاح والمتابعة
-   - تعديل السعرات (±150 kcal) وفق التقدّم كل 7–14 يوم، خطوات/نوم/ماء/توتر، وكيفية تعديل الكارب للسكري/الأنسولين.
-8) ## رسائل تحفيزية يومية
-   - 7 رسائل قصيرة عملية (يوم 1 → يوم 7)، بدون عبارات عامة.
-9) ## وحدات إضافية (إن وُجدت)
-${OPTIONAL_BLOCKS || '- (لا وحدات إضافية مختارة)'}
-10) ## توقيع المدرب والحقوق
+     ${RULE.meal}
+   - After table: **Daily Total → P:__ F:__ C:__ Kcal:__** (must match daily target ±1%).
+   - Append **[Swap]** next to each meal name to signal swappability.
+5) ## Training Plan (${trainDays} days) — Intensity aligned with **${user.exp}**
+   - **For each day**, include a Markdown table with columns EXACTLY:
+     | Day | Exercise (EN) | Notes | Sets | Reps | Tempo | Rest (s) | RIR |
+     |---:|---|---|---:|---:|---|---:|---:|
+     ${RULE.train}
+   - Avoid exacerbating injuries: ${user.injuries||'None'}. Emphasize focus areas: ${Object.entries(user.weak_points||{}).map(([k,v])=>`${k}:${v}`).join(', ')||'None'}.
+6) ## Supplements & Recovery
+   - Two tables:
+     - **Core**: Whey/Casein, Creatine, Omega-3, Vitamin D, Magnesium, Electrolytes (dose, timing, training vs rest).
+     - **Condition-Specific**: tailored to (${(user.health||[]).join(', ')||'No condition'}) with dose, timing, cautions, interactions if any.
+7) ## Success & Progression
+   - How to adjust calories (±150 kcal) based on 7–14 day trend, steps/sleep/water/stress playbook, carb tuning for diabetes/IR.
+8) ## 7 Daily Motivation Messages
+   - Short, actionable, non-generic (Day 1 → Day 7).
+9) ## Add-On Modules
+${ADDONS || '- (No add-ons selected)'}
+10) ## Coach Signature & Rights
    - **مصطفى الصافي — خبير التغذية واللياقة البدنية │ مدرب دولي معتمد**
    - **Powered by Mustafa Elsafy 2025**
 
-### VALIDATION RULES (critical)
-- 7 أيام تغذية و7 أيام تدريب **كاملة ومختلفة** — يُمنع الدمج أو الاكتفاء بنموذج يوم واحد.
-- لا تغيّر عناوين الجداول وأسماء الأعمدة.
-- كل يوم تغذية: إجمالي P/F/C/Kcal يجب أن يطابق الهدف اليومي ضمن ±1%.
-- لا تستخدم أطعمة ضمن الحساسية. راعِ القيود الصحية بدقة.
-- لا تكتب "N/A" أو أمثلة شكلية — محتوى عملي قابل للتطبيق فورًا.
+### VALIDATION RULES (critical and non-negotiable)
+- 7 distinct days for nutrition **and** 7 distinct days for training.
+- Column names EXACTLY as specified. Do not change or localize column keys beyond language directive above.
+- Every nutrition day: Sum of P/F/C/Kcal ≈ daily target within ±1%.
+- Respect allergies and conditions strictly; avoid forbidden items automatically.
+- No "N/A", no templates, no placeholder text. Provide fully actionable content.
 `.trim();
     }
 
-    /* ======================== AI CALL + Render ======================== */
+    /* ======================== AI ======================== */
     async function generatePlan(){
       el('result').classList.remove('hidden');
       el('ai-html').innerHTML = `
         <div class="text-center py-10">
           <div class="w-12 h-12 rounded-full border-4 border-violet-600 border-t-transparent animate-spin mx-auto"></div>
-          <div class="mt-3">${T('building')}</div>
+          <div class="mt-3">${L[lang].ui.building}</div>
         </div>`;
 
       try{
@@ -627,67 +630,46 @@ ${OPTIONAL_BLOCKS || '- (لا وحدات إضافية مختارة)'}
         scrollToResult();
       }catch(e){
         el('ai-html').innerHTML = `
-          <div class="rounded-xl p-4 border border-[color:var(--err)]/40 bg-red-500/10" style="color:#fecaca">
-            <div class="font-bold mb-1">${T('apiFail')}</div>
-            <div class="text-xs opacity-80">${String(e).slice(0,500)}</div>
+          <div class="rounded-xl p-4 border border-rose-500/40 bg-rose-500/10" style="color:#fecaca">
+            <div class="font-bold mb-1">${L[lang].ui.apiFail}</div>
+            <div class="text-xs opacity-80">${String(e).slice(0,600)}</div>
           </div>`;
       }
     }
 
     function renderAI(markdown){
-      // إدراج مرساة للعناوين + فهرس
-      const withAnchors = markdown.replace(/^#{2,3}\s+(.*)$/gm, (m,h)=> {
-        const id = h.trim().toLowerCase().replace(/[^\w\u0600-\u06FF]+/g,'-');
+      // أربط عناوين لفهرس داخلي
+      const withAnchors = markdown.replace(/^#{2,3}\s+(.*)$/gm, (m,h)=>{
+        const id = (h||'').trim().toLowerCase().replace(/[^\w\u0600-\u06FF]+/g,'-');
         return `${m}\n[⬆︎](#top)\n<a id="${id}"></a>`;
       });
-
-      let html = marked.parse(withAnchors);
+      const html = marked.parse(withAnchors);
       const planEl = document.getElementById('ai-html');
       planEl.innerHTML = `<div id="top"></div>` + html;
 
-      // تدقيق وجود الأقسام الرئيسية
-      const must = ['مقدمة','المسموح','الصيام','خطة التغذية','خطة التدريب','المكملات','إرشادات','رسائل','توقيع'];
-      const text = planEl.innerText;
-      const missing = must.filter(k => !new RegExp(k,'i').test(text));
-      if(missing.length){
-        const warn = document.createElement('div');
-        warn.className = 'rounded-xl p-3 border border-amber-500/40 bg-amber-500/10 text-amber-200 mt-3';
-        warn.innerHTML = `<b>تحذير جودة:</b> أقسام ناقصة: ${missing.join('، ')}`;
-        planEl.prepend(warn);
-      }
-
-      // تلوين الجداول وتحسين القراءة
+      // تحسين الجداول
       planEl.querySelectorAll('table').forEach(t=>{
         t.classList.add('w-full','text-sm');
         t.querySelectorAll('th').forEach(th=>th.classList.add('bg-[#0b121a]'));
       });
 
+      // تحذير إذا اختصر النموذج
+      const required = ['Intro','مقدمة','Allowed','المسموح','الصيام','Fasting','Nutrition Plan','خطة التغذية','Training Plan','خطة التدريب','Supplements','المكملات','Success','إرشادات','Motivation','رسائل','Signature','توقيع'];
+      const text = planEl.innerText;
+      const miss = required.filter(k=>!new RegExp(k,'i').test(text));
+      if(miss.length){
+        const warn=document.createElement('div');
+        warn.className='rounded-xl p-3 border border-amber-500/40 bg-amber-500/10 text-amber-200 mt-3';
+        warn.innerHTML=`<b>Quality Warning:</b> Missing sections → ${miss.join(' / ')}`;
+        planEl.prepend(warn);
+      }
+
       el('btn-print').classList.remove('hidden');
       el('btn-print-2').classList.remove('hidden');
     }
 
-    function scrollToResult(){
-      el('result').scrollIntoView({behavior:'smooth',block:'start'});
-    }
-
-    /* ======================== Events ======================== */
-    el('btn-prev').onclick = ()=>{
-      if(step>0){ step--; draw(); updateCTA(); }
-    };
-    el('btn-next').onclick = async ()=>{
-      if(step<total-1){
-        if(!saveStep()) return;
-        step++; draw(); updateCTA();
-        if(step===total-1){ if(!saveStep()) return; await generatePlan(); }
-      }
-    };
-    el('btn-again').onclick = ()=>{ location.reload(); };
-    el('btn-print').onclick = ()=>window.print();
-    el('btn-print-2').onclick = ()=>window.print();
-
-    el('btn-lang-ar').onclick=()=>setLang('ar');
-    el('btn-lang-en').onclick=()=>setLang('en');
-
+    /* ======================== Flow Controls ======================== */
+    function scrollToResult(){ el('result').scrollIntoView({behavior:'smooth',block:'start'}); }
     function toast(msg,kind='ok'){
       const box=document.createElement('div');
       box.className=`fixed top-5 ${lang==='ar'?'right-5':'left-5'} z-50 px-3 py-2 rounded-xl text-sm text-white ${kind==='err'?'bg-red-600':'bg-emerald-600'}`;
@@ -695,9 +677,22 @@ ${OPTIONAL_BLOCKS || '- (لا وحدات إضافية مختارة)'}
       setTimeout(()=>box.remove(),2200);
     }
 
+    el('btn-prev').onclick=()=>{ if(step>0){ step--; draw(); updateCTA(); } };
+    el('btn-next').onclick=async ()=>{
+      if(step<total-1){
+        if(!saveStep()) return;
+        step++; draw(); updateCTA();
+        if(step===total-1){ if(!saveStep()) return; await generatePlan(); }
+      }
+    };
+    el('btn-again').onclick=()=>location.reload();
+    el('btn-print').onclick=()=>window.print();
+    el('btn-print-2').onclick=()=>window.print();
+    el('btn-lang-ar').onclick=()=>setLang('ar');
+    el('btn-lang-en').onclick=()=>setLang('en');
+
     /* ======================== Init ======================== */
-    setLang('ar');
-    draw(); updateLive(); updateCTA();
+    setLang('ar'); draw(); updateLive(); updateCTA();
   </script>
 </body>
 </html>
