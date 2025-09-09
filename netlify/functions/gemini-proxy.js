@@ -1,4 +1,5 @@
-// Netlify Function: Secure proxy to Google AI API (uses built-in fetch on Node 18+)
+// Netlify Function: Secure proxy to Google AI API (Node 18+ has global fetch)
+const MODEL = process.env.GEMINI_MODEL || 'gemini-1.5-flash'; // stable default
 
 exports.handler = async (event) => {
   const headers = {
@@ -7,11 +8,9 @@ exports.handler = async (event) => {
     'Access-Control-Allow-Methods': 'POST, OPTIONS'
   };
 
-  // Preflight
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers, body: '' };
   }
-
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, headers, body: 'Method Not Allowed' };
   }
@@ -19,49 +18,46 @@ exports.handler = async (event) => {
   try {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
+      return { statusCode: 500, headers, body: JSON.stringify({ error: 'Missing GEMINI_API_KEY in Netlify env.' }) };
+    }
+
+    let body;
+    try { body = JSON.parse(event.body || '{}'); }
+    catch { return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON body' }) }; }
+
+    const prompt = body.prompt?.toString() || '';
+    if (!prompt) {
+      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing "prompt" in body' }) };
+    }
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`;
+    const payload = { contents: [{ parts: [{ text: prompt }] }] };
+
+    const resp = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    const text = await resp.text();
+
+    // Try to parse JSON for better diagnostics
+    let parsed = null;
+    try { parsed = text ? JSON.parse(text) : null; } catch {}
+
+    if (!resp.ok) {
+      // Normalize upstream error message
+      const upstream =
+        parsed?.error?.message ||
+        parsed?.error?.status ||
+        parsed?.candidates?.[0]?.content?.parts?.[0]?.text ||
+        text || 'Upstream error';
       return {
-        statusCode: 500,
+        statusCode: resp.status,
         headers,
-        body: JSON.stringify({ error: 'GEMINI_API_KEY is not set in Netlify.' })
+        body: JSON.stringify({ error: upstream })
       };
     }
 
-    // Parse body
-    let body;
-    try {
-      body = JSON.parse(event.body || '{}');
-    } catch {
-      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON body' }) };
-    }
-    const userPrompt = body.prompt;
-    if (!userPrompt) {
-      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing "prompt"' }) };
-    }
-
-    // Call Google API
-    const payload = { contents: [{ parts: [{ text: userPrompt }] }] };
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-    const resp = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    const text = await resp.text();
-    if (!resp.ok) {
-      return { statusCode: resp.status, headers, body: text || JSON.stringify({ error: 'Upstream error' }) };
-    }
-
-    const data = JSON.parse(text);
+    const data = parsed || {};
     const generatedText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ text: generatedText })
-    };
+    return { statusCode: 200, headers, body: JSON.stringify({ text: generatedText }) };
   } catch (e) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: String(e.message || e) }) };
+    return { statusCode: 500, headers, body: JSON.stringify({ error: String(e && e.message ? e.message : e) }) };
   }
 };
