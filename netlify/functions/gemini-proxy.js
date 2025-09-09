@@ -1,67 +1,84 @@
-// Netlify serverless function
-// This code runs on Netlify's servers, not in the user's browser.
+// This is a Netlify serverless function.
+// It acts as a secure proxy to the Google AI API.
+const fetch = require('node-fetch');
 
-exports.handler = async function (event, context) {
-    // Only allow POST requests
-    if (event.httpMethod !== 'POST') {
-        return { statusCode: 405, body: 'Method Not Allowed' };
+exports.handler = async (event, context) => {
+  // First line of defense: Log that the function has been invoked.
+  console.log("Function invoked!");
+
+  const headers = {
+    'Access-Control-Allow-Origin': '*', // Allows your website to call this function
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+  };
+
+  // Handle browser's pre-flight OPTIONS request
+  if (event.httpMethod === 'OPTIONS') {
+    console.log("Handling OPTIONS request.");
+    return { statusCode: 204, headers, body: '' };
+  }
+  
+  console.log(`Received a ${event.httpMethod} request.`);
+
+  // We only accept POST requests
+  if (event.httpMethod !== 'POST') {
+    console.error("Error: Request method was not POST.");
+    return { statusCode: 405, headers, body: 'Method Not Allowed' };
+  }
+
+  try {
+    console.log("Attempting to get API key from environment variables...");
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      console.error("CRITICAL ERROR: GEMINI_API_KEY is not set in Netlify!");
+      throw new Error("GEMINI_API_KEY is not set in Netlify environment variables.");
+    }
+    console.log("API Key successfully retrieved.");
+
+    console.log("Parsing request body to find the prompt...");
+    const body = JSON.parse(event.body);
+    const userPrompt = body.prompt;
+    if (!userPrompt) {
+      console.error("CRITICAL ERROR: No prompt found in the request body.");
+      throw new Error("No prompt provided in the request body.");
+    }
+    console.log("Prompt successfully retrieved.");
+
+    const payload = { contents: [{ parts: [{ text: userPrompt }] }] };
+    const api_url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+    console.log("Sending request to Google AI API...");
+    const response = await fetch(api_url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    console.log(`Google AI API responded with status: ${response.status}`);
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error('Google AI API Error Body:', errorBody);
+      throw new Error(`Google AI API failed. Status: ${response.status}`);
     }
 
-    try {
-        // Get the prompt from the request body sent by the front-end
-        const { prompt } = JSON.parse(event.body);
+    const data = await response.json();
+    const generatedText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    console.log("Successfully received and parsed response from Google AI.");
 
-        if (!prompt) {
-            return { statusCode: 400, body: 'Bad Request: Missing prompt.' };
-        }
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({ text: generatedText })
+    };
 
-        // Securely get the API key from the environment variables set in Netlify UI
-        const apiKey = process.env.GEMINI_API_KEY;
-        if (!apiKey) {
-            return { statusCode: 500, body: 'Server error: API key not configured.' };
-        }
-        
-        const googleApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-        
-        const payload = {
-            contents: [{ parts: [{ text: prompt }] }],
-            // Optional: Add safety settings if needed
-            // safetySettings: [ ... ],
-        };
-
-        // Call the Google AI API
-        const response = await fetch(googleApiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-            const errorBody = await response.text();
-            console.error('Google AI API Error:', errorBody);
-            return { statusCode: response.status, body: `Error from Google AI: ${errorBody}` };
-        }
-
-        const data = await response.json();
-        
-        // Extract the text from the response
-        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        
-        // Send the AI's response back to the front-end
-        return {
-            statusCode: 200,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: text }),
-        };
-
-    } catch (error) {
-        console.error('Proxy Error:', error);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: 'An internal server error occurred.' }),
-        };
-    }
+  } catch (error) {
+    // This will catch any error from the try block and log it clearly.
+    console.error('FATAL ERROR in proxy function execution:', error.message);
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ error: error.message })
+    };
+  }
 };
 
