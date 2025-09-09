@@ -1,575 +1,268 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>المدرب الشخصي الخبير</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <style>
-    :root { --card: 255 255 255; }
-    html, body { height: 100%; scroll-behavior: smooth; }
-    body { background: linear-gradient(180deg, #f6f7fb 0%, #eef1f7 100%); }
-    .font-tajawal { font-family: 'Tajawal', sans-serif; }
-    .font-poppins { font-family: 'Poppins', sans-serif; }
-    .stage-enter { animation: fadeIn .5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-    .card { background: rgba(var(--card)/1); }
-    .num-input { direction: ltr; text-align: left; }
-    .file-drop { border: 2px dashed #d1d5db; transition: all .2s; }
-    .file-drop.ready { border-color: #16a34a; background: #f0fdf4; }
-    .custom-checkbox-label { border: 2px solid #e5e7eb; transition: all .2s; }
-    .custom-checkbox-label:has(:checked) { border-color: #4f46e5; background: #eef2ff; box-shadow: 0 0 0 2px #c7d2fe; }
-    .ai-content h3 { font-size: 1.5rem; font-weight: 800; color: #4338ca; padding-bottom: .5rem; border-bottom: 2px solid #e5e7eb; margin-top: 1.75rem; margin-bottom: 1rem; }
-    .ai-content h4 { font-size: 1.15rem; font-weight: 700; color: #1f2937; margin-top: 1rem; margin-bottom: .5rem; }
-    .ai-content table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: .5rem; overflow: hidden; }
-    .ai-content th, .ai-content td { border: 1px solid #e5e7eb; padding: .75rem; vertical-align: top; }
-    .ai-content th { background-color: #f9fafb; font-weight: bold; }
-    [dir="rtl"] .ai-content th, [dir="rtl"] .ai-content td { text-align: right; }
-    [dir="ltr"] .ai-content th, [dir="ltr"] .ai-content td { text-align: left; }
-    .ltr-text { direction: ltr; text-align: left; }
-    @media print {
-      body { background: #fff; }
-      #app { box-shadow: none; margin: 0; max-width: 100%; border: none; }
-      #topbar, #sticky, #progress-wrap, .no-print, #api-key-section { display: none !important; }
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark">
+  <title>المدرب الشخصي الخبير — نسخة احترافية</title>
+  <!-- SEO / Social -->
+  <meta name="description" content="خطة تدريب وتغذية ذكية مخصصة لمدة 7 أيام مع توليد تلقائي، تصدير، وطباعة — بالعربية والإنجليزية.">
+  <meta property="og:title" content="المدرب الشخصي الخبير">
+  <meta property="og:description" content="خطة تدريب وتغذية ذكية مخصصة لمدة 7 أيام">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ar">
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Markdown renderer -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <style>
+    :root { --card: 255 255 255; }
+    html, body { height: 100%; scroll-behavior: smooth; }
+    body { background: linear-gradient(180deg, #f6f7fb 0%, #eef1f7 100%); }
+    .font-tajawal { font-family: 'Tajawal', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .font-poppins { font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .card { background: rgba(var(--card)/1); }
+    .stage-enter { animation: fadeIn .35s ease-out both; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .file-drop { border: 2px dashed #d1d5db; transition: all .2s; }
+    .file-drop.ready { border-color: #16a34a; background: #f0fdf4; }
+    .ai-content h2, .ai-content h3 { scroll-margin-top: 96px; }
+    .ai-content h3 { font-size: 1.35rem; font-weight: 800; color: #4338ca; padding-bottom: .5rem; border-bottom: 2px solid #e5e7eb; margin-top: 1.5rem; margin-bottom: .75rem; }
+    .ai-content table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; box-shadow: 0 2px 8px rgba(0,0,0,.05); border-radius: .5rem; overflow: hidden; }
+    .ai-content th, .ai-content td { border: 1px solid #e5e7eb; padding: .75rem; vertical-align: top; }
+    .ai-content th { background: #f9fafb; font-weight: 700; }
+    [dir="rtl"] .ai-content th, [dir="rtl"] .ai-content td { text-align: right; }
+    [dir="ltr"] .ai-content th, [dir="ltr"] .ai-content td { text-align: left; }
+    .ltr-text { direction: ltr; text-align: left; }
+    .num-input { direction: ltr; text-align: left; }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background:#1118270d; border:1px solid #1118271a; border-radius:.375rem; padding:.15rem .35rem; font-size:.75rem }
+    /* Print */
+    @media print {
+      body { background: #fff; }
+      #app { box-shadow: none; margin: 0; max-width: 100%; border: none; }
+      #topbar, #sticky, #progress-wrap, .no-print, #aside { display: none !important; }
+    }
+  </style>
 </head>
 <body class="font-tajawal min-h-screen">
-  
-  <div id="app" class="max-w-3xl mx-auto my-4 sm:my-10 card rounded-2xl shadow-2xl overflow-hidden border border-gray-200/50">
-    <header id="topbar" class="px-4 sm:px-6 py-4 bg-white border-b flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="size-10 rounded-xl bg-indigo-600 text-white grid place-items-center font-extrabold text-lg">AI</div>
-        <div class="leading-tight">
-          <h1 class="text-base sm:text-lg font-extrabold text-gray-900">المدرب الشخصي الخبير</h1>
-          <p class="text-xs sm:text-sm text-gray-500">خطة مخصصة بالذكاء الاصطناعي │ طباعة وتصدير</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2" aria-label="Language and Settings">
-        <button id="btn-ar" class="px-2.5 py-1.5 rounded-lg text-sm font-bold" type="button">عربي</button>
-        <button id="btn-en" class="px-2.5 py-1.5 rounded-lg text-sm font-bold" type="button">EN</button>
-      </div>
-    </header>
 
-    <div id="progress-wrap" class="px-4 sm:px-6 pt-4 hidden">
-      <div class="h-2.5 bg-gray-200 rounded-full overflow-hidden" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-        <div id="progress" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300" style="width:0%"></div>
-      </div>
-      <div class="mt-2 text-xs text-gray-500">الخطوة <span id="step">1</span> من 12</div>
-    </div>
+  <!-- Container -->
+  <div id="app" class="max-w-6xl mx-auto my-4 sm:my-10 card rounded-2xl shadow-2xl overflow-hidden border border-gray-200/60">
+    <!-- Topbar -->
+    <header id="topbar" class="px-4 sm:px-6 py-4 bg-white border-b flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="size-10 rounded-xl bg-indigo-600 text-white grid place-items-center font-extrabold text-lg">AI</div>
+        <div class="leading-tight">
+          <h1 class="text-base sm:text-lg font-extrabold text-gray-900">المدرب الشخصي الخبير</h1>
+          <p class="text-xs sm:text-sm text-gray-500">خطة مخصصة بالذكاء الاصطناعي │ طباعة وتصدير │ حماية بيانات</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2" aria-label="Language & Settings">
+        <button id="btn-ar" class="px-2.5 py-1.5 rounded-lg text-sm font-bold" type="button">عربي</button>
+        <button id="btn-en" class="px-2.5 py-1.5 rounded-lg text-sm font-bold" type="button">EN</button>
+        <button id="btn-theme" class="px-2.5 py-1.5 rounded-lg text-sm font-bold" type="button" title="Toggle Theme">🌓</button>
+      </div>
+    </header>
 
-    <main id="content" class="p-5 sm:p-8"></main>
+    <!-- Progress -->
+    <div id="progress-wrap" class="px-4 sm:px-6 pt-4 hidden">
+      <div class="h-2.5 bg-gray-200 rounded-full overflow-hidden" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+        <div id="progress" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300" style="width:0%"></div>
+      </div>
+      <div class="mt-2 text-xs text-gray-500">الخطوة <span id="step">1</span> من 12</div>
+    </div>
 
-    <div id="sticky" class="hidden sticky bottom-0 bg-white/80 backdrop-blur-md border-t px-4 sm:px-6 py-3 flex gap-3 justify-between" style="padding-bottom:calc(.75rem + env(safe-area-inset-bottom))">
-      <button id="prev" class="w-1/3 sm:w-40 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2.5 rounded-lg disabled:opacity-50" type="button">السابق</button>
-      <button id="next" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-2.5 rounded-lg" type="button">التالي</button>
-    </div>
-  </div>
+    <div class="grid grid-cols-1 lg:grid-cols-12">
+      <!-- Main -->
+      <main id="content" class="lg:col-span-8 p-5 sm:p-8"></main>
 
-<script>
-/*************** App State & Configuration ***************/
-const totalStages = 12;
-let state = { currentStage: 0, lang: 'ar', userData: { goals: [], weak_points: {}, health_conditions: [], allergies: [] } };
-let started = false;
+      <!-- Aside: Live Summary -->
+      <aside id="aside" class="lg:col-span-4 p-5 sm:p-8 bg-white/60 border-t lg:border-t-0 lg:border-l">
+        <h2 class="text-sm font-extrabold text-gray-700 mb-3">ملخص الإدخالات</h2>
+        <div id="summary" class="text-sm text-gray-700 space-y-2">
+          <p class="text-gray-400">ابدأ لإظهار الملخص اللحظي…</p>
+        </div>
+        <div class="mt-4 flex gap-2">
+          <button id="btn-save" class="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-bold" type="button">حفظ محليًا</button>
+          <button id="btn-load" class="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-bold" type="button">استرجاع</button>
+          <button id="btn-reset" class="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-sm font-bold" type="button">مسح</button>
+        </div>
+        <p class="mt-3 text-xs text-gray-500">يُحفظ محليًا في جهازك فقط. لا تُرسل ملفات أو صور إلى الخادم.</p>
+      </aside>
+    </div>
 
-/*************** Rate Limiter for API Calls ***************/
-const rate = { windowMs: 60_000, max: 8, queue: [] };
-const canCall = () => { const now = Date.now(); rate.queue = rate.queue.filter(t => now - t < rate.windowMs); return rate.queue.length < rate.max; };
-const markCall = () => rate.queue.push(Date.now());
+    <!-- Sticky Nav -->
+    <div id="sticky" class="hidden sticky bottom-0 bg-white/85 backdrop-blur-md border-t px-4 sm:px-6 py-3 flex gap-3 justify-between" style="padding-bottom:calc(.75rem + env(safe-area-inset-bottom))">
+      <button id="prev" class="w-1/3 sm:w-40 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2.5 rounded-lg disabled:opacity-50" type="button">السابق</button>
+      <div class="flex items-center gap-3">
+        <span class="hidden sm:inline text-xs text-gray-500">↩︎ <span class="kbd">Enter</span> التالي</span>
+      </div>
+      <button id="next" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-2.5 rounded-lg" type="button">التالي</button>
+    </div>
+  </div>
 
-/*************** DOM Elements ***************/
-const content = document.getElementById('content');
-const progressWrap = document.getElementById('progress-wrap');
-const progressBar = document.getElementById('progress');
-const stepEl = document.getElementById('step');
-const sticky = document.getElementById('sticky');
-const btnPrev = document.getElementById('prev');
-const btnNext = document.getElementById('next');
+  <script>
+  /************************** State **************************/
+  const totalStages = 12;
+  let state = { currentStage: 0, lang: 'ar', userData: { goals: [], weak_points: {}, health_conditions: [], allergies: [] } };
+  let started = false;
 
-/*************** Internationalization (i18n) ***************/
-const i18n = {
-  ar: {
-    start:"ابدأ", welcome_title:"أهلاً بك في رحلة التحول!", welcome_desc:"أنا مدربك الشخصي الذكي، ومهمتي هي تصميم خطة مخصصة لك بنسبة 100% لتحقيق أهدافك. لنبدأ معًا هذه الرحلة خطوة بخطوة.",
-    stage_1_title:"الخطوة الأولى: من أنت؟", stage_1_desc:"لنبدأ بالتعرف عليك. اسمك هو بداية تخصيص هذه التجربة لك وحدك.",
-    stage_2_title:"البيانات الأساسية", stage_2_desc:"هذه المعلومات هي حجر الأساس لحساب احتياجاتك من السعرات وتصميم برنامج مناسب.",
-    stage_3_title:"تحديد الأهداف", stage_3_desc:"تحديد أهدافك بوضوح يساعدنا على توجيه الخطة.", goal_sub:"يمكنك اختيار أكثر من هدف.",
-    stage_4_title:"الأهداف المتقدمة", stage_4_desc:"إذا كان لديك هدف رقمي معين أو مناسبة قادمة، فسنأخذ ذلك في الاعتبار.",
-    stage_5_title:"النظام الغذائي المفضل", stage_5_desc:"أفضل نظام هو الذي يمكنك الالتزام به. بناءً على أهدافك، سنرشح لك الأنسب.",
-    stage_6_title:"الحساسية الغذائية", stage_6_desc:"صحتك هي الأهم. تحديد أي حساسية يضمن لك خطة آمنة وفعالة.",
-    stage_7_title:"التاريخ الرياضي", stage_7_desc:"فهم خبرتك السابقة يساعدنا على بناء خطة واقعية تبدأ من مستواك الحالي.",
-    stage_8_title:"مناطق التركيز", stage_8_desc:"تحديد هذه المناطق يسمح لنا بتصميم برنامج تدريبي يركز على نقاط ضعفك.",
-    stage_9_title:"الحالة الصحية", stage_9_desc:"يجب أن تكون الخطة آمنة. مشاركة أي حالات صحية أو إصابات يضمن تصميم برنامج لا يسبب لك أي ضرر.",
-    stage_10_title:"نمط الحياة", stage_10_desc:"الخطة الناجحة تتكيف مع حياتك وليس العكس. طبيعة عملك، نومك، ومستوى التوتر كلها عوامل نأخذها في الحسبان.",
-    stage_11_title:"تحليل إضافي (اختياري)", stage_11_desc:"لأقصى دقة، يمكنك رفع صورك أو تحليل InBody. سيستخدم الذكاء الاصطناعي هذه البيانات لتقديم توصيات أكثر تخصيصًا.",
-    name_q:"ما هو اسمك الكريم؟", age:"العمر", height:"الطول (سم)", weight:"الوزن (كغ)", gender:"الجنس", male:"ذكر", female:"أنثى",
-    goal1:"خسارة الدهون", goal2:"بناء العضلات", goal3:"زيادة القوة", goal4:"تحسين التحمل", goal5:"صحة عامة",
-    target_weight:"الوزن المستهدف (كغ)", target_date:"تاريخ المناسبة (إن وجد)",
-    diet_pref:"أي نظام غذائي تفضل؟", diet_opt1:"نظام متوازن", diet_opt2:"قليل الكربوهيدرات", diet_opt3:"صيام متقطع", diet_opt4:"كيتو", diet_opt5:"نظام البحر المتوسط", diet_opt6:"نباتي", recommended:"مرشح لك",
-    allergies_q:"هل تعاني من حساسية/التهابات؟", allergies_sub:"اختر أي حساسية معروفة.", allergy1:"الجلوتين", allergy2:"اللاكتوز", allergy3:"المكسرات", allergy4:"المأكولات البحرية", allergy5:"السكريات المصنعة", allergy6:"الزيوت النباتية المصنعة", other_allergies:"حساسية أخرى (اذكرها)",
-    training_history_q:"تاريخك الرياضي", history_last_train:"متى كانت آخر مرة التزمت؟", last_train_opt1:"خلال آخر 3 أشهر", last_train_opt2:"منذ 3-12 شهر", last_train_opt3:"أكثر من سنة",
-    history_exp:"خبرتك في المقاومة؟", exp_opt1:"مبتدئ (0-6 أشهر)", exp_opt2:"متوسط (6-24 شهر)", exp_opt3:"متقدم (أكثر من سنتين)", history_supps:"هل استخدمت مكملات؟ اذكرها.", upload_supps:"رفع صور المكملات",
-    weak_points_q:"مناطق التركيز", weak_points_sub:"اكتب وصف الهدف لكل منطقة.",
-    health_q:"صحتك أولاً", health_cond1:"ضغط الدم", health_cond2:"السكري", health_cond3:"مقاومة الأنسولين", health_cond4:"مشاكل الغدة الدرقية", health_cond5:"الكبد الدهني", health_cond6:"مشاكل هرمونية", health_cond7:"أمراض الجهاز الهضمي", injuries_q:"إصابات؟", injuries_sub:"اذكر المكان والوصف",
-    lifestyle_q:"نمط الحياة", job:"طبيعة العمل", job_opt1:"عمل مكتبي", job_opt2:"نشاط خفيف", job_opt3:"نشاط متوسط", sleep:"ساعات النوم ليلاً", stress:"مستوى التوتر", stress_opt1:"منخفض", stress_opt2:"متوسط", stress_opt3:"مرتفع",
-    files_q:"لأقصى دقة، يمكنك رفع صور/InBody.", files_sub:"(اختياري)", photos_up:"📷 رفع صور الجسم", inbody_up:"📄 رفع تحليل InBody", photos_done:(n)=>`✅ تم اختيار ${n} صور!`, inbody_done:"✅ تم اختيار ملف InBody!",
-    loading_title:(n)=>`لحظات من فضلك يا ${n}...`, loading_sub:"يقوم خبيرنا الذكي بتحليل بياناتك لبناء خطة استثنائية.", print_btn:"طباعة / تحميل الخطة", restart_btn:"البدء من جديد", next:"التالي", prev:"السابق", submit:"احصل على خطتك الآن!", swap:"تبديل", swapping:"جاري التبديل...", error_fill_fields:"الرجاء التأكد من ملء جميع الحقول المطلوبة.",
-    chest:"الصدر", back:"الظهر", shoulders:"الأكتاف", biceps:"البايسبس", triceps:"الترايسبس", quads:"الأرجل الأمامية", hamstrings:"الأرجل الخلفية", glutes:"المؤخرة", calves:"السمانة", abs:"البطن",
-    export:"تصدير", export_json:"JSON", export_csv:"CSV", days_check:"فحص الأيام", nutrition:"التغذية (7 أيام)", training:"التدريب (7 أيام)", daily_targets:"الأهداف اليومية",
-    api_key_error: "حدث خطأ أثناء الاتصال بالذكاء الاصطناعي. قد تكون المشكلة من خدمة Google أو أن مفتاح API الذي أدخلته غير صحيح. يرجى المحاولة مرة أخرى.",
-  },
-  en: {
-    // English translations are omitted for brevity
-  }
-};
-const muscles = ['chest', 'back', 'shoulders', 'biceps', 'triceps', 'quads', 'hamstrings', 'glutes', 'calves', 'abs'];
+  // Rate Limiter (client)
+  const rate = { windowMs: 60_000, max: 10, queue: [] };
+  const canCall = () => { const now = Date.now(); rate.queue = rate.queue.filter(t => now - t < rate.windowMs); return rate.queue.length < rate.max; };
+  const markCall = () => rate.queue.push(Date.now());
 
-/*************** Helper Functions ***************/
-function T(key, ...args) { const t = i18n[state.lang]?.[key]; return typeof t === 'function' ? t(...args) : (t || key); }
+  // Elements
+  const content = document.getElementById('content');
+  const summary = document.getElementById('summary');
+  const progressWrap = document.getElementById('progress-wrap');
+  const progressBar = document.getElementById('progress');
+  const stepEl = document.getElementById('step');
+  const sticky = document.getElementById('sticky');
+  const btnPrev = document.getElementById('prev');
+  const btnNext = document.getElementById('next');
 
-function applyLocale() {
-  const html = document.documentElement;
-  html.lang = state.lang;
-  html.dir = state.lang === 'ar' ? 'rtl' : 'ltr';
-  document.body.classList.toggle('font-tajawal', state.lang === 'ar');
-  document.body.classList.toggle('font-poppins', state.lang !== 'ar');
-  document.getElementById('btn-ar').className = `px-2.5 py-1.5 rounded-lg text-sm font-bold ${state.lang === 'ar' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700'}`;
-  document.getElementById('btn-en').className = `px-2.5 py-1.5 rounded-lg text-sm font-bold ${state.lang === 'en' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700'}`;
-  if (started) {
-    btnPrev.textContent = T('prev');
-    btnNext.textContent = state.currentStage === totalStages ? T('submit') : T('next');
-  }
-}
+  // i18n (Arabic only shown for brevity)
+  const i18n = {
+    ar: {
+      start:"ابدأ", welcome_title:"أهلاً بك في رحلة التحول!", welcome_desc:"أنا مدربك الشخصي الذكي. سنبني خطة دقيقة تحقق أقصى نتائج.",
+      stage_1_title:"الخطوة الأولى: من أنت؟", stage_1_desc:"عرّفنا باسمك.",
+      stage_2_title:"البيانات الأساسية", stage_2_desc:"العمر والطول والوزن والجنس.",
+      stage_3_title:"تحديد الأهداف", stage_3_desc:"اختر أهدافك الأساسية.", goal_sub:"يمكنك اختيار أكثر من هدف.",
+      stage_4_title:"الأهداف المتقدمة", stage_4_desc:"هدف وزني/تاريخ مناسبة.",
+      stage_5_title:"النظام الغذائي المفضل", stage_5_desc:"نرشح الأفضل حسب الهدف.",
+      stage_6_title:"الحساسية الغذائية", stage_6_desc:"لخطة آمنة وفعالة.",
+      stage_7_title:"التاريخ الرياضي", stage_7_desc:"المستوى والخبرة والمكملات.",
+      stage_8_title:"مناطق التركيز", stage_8_desc:"حدد نقاط الضعف وأوصافها.",
+      stage_9_title:"الحالة الصحية", stage_9_desc:"أمراض وإصابات للتفادي.",
+      stage_10_title:"نمط الحياة", stage_10_desc:"العمل، النوم، التوتر.",
+      stage_11_title:"تحليل إضافي (اختياري)", stage_11_desc:"صور/InBody لزيادة الدقة.",
+      name_q:"ما اسمك؟", age:"العمر", height:"الطول (سم)", weight:"الوزن (كغ)", gender:"الجنس", male:"ذكر", female:"أنثى",
+      goal1:"خسارة الدهون", goal2:"بناء العضلات", goal3:"زيادة القوة", goal4:"تحسين التحمل", goal5:"صحة عامة",
+      target_weight:"الوزن المستهدف", target_date:"تاريخ المناسبة",
+      diet_pref:"النظام الغذائي", diet_opt1:"متوازن", diet_opt2:"قليل الكربوهيدرات", diet_opt3:"صيام متقطع", diet_opt4:"كيتو", diet_opt5:"بحر المتوسط", diet_opt6:"نباتي", recommended:"مرشح",
+      allergies_q:"حساسية/التهابات؟", allergy1:"الجلوتين", allergy2:"اللاكتوز", allergy3:"المكسرات", allergy4:"المأكولات البحرية", allergy5:"السكريات المصنعة", allergy6:"الزيوت النباتية المصنعة", other_allergies:"حساسية أخرى",
+      training_history_q:"تاريخك الرياضي", history_last_train:"آخر التزام؟", last_train_opt1:"آخر 3 أشهر", last_train_opt2:"3-12 شهر", last_train_opt3:"أكثر من سنة",
+      history_exp:"خبرة المقاومة", exp_opt1:"مبتدئ", exp_opt2:"متوسط", exp_opt3:"متقدم", history_supps:"مكملات سابقة", upload_supps:"رفع صور المكملات",
+      weak_points_q:"مناطق التركيز", weak_points_sub:"اذكر هدف كل عضلة.",
+      health_q:"صحتك أولاً", health_cond1:"ضغط الدم", health_cond2:"السكري", health_cond3:"مقاومة الأنسولين", health_cond4:"الغدة الدرقية", health_cond5:"الكبد الدهني", health_cond6:"مشاكل هرمونية", health_cond7:"الجهاز الهضمي", injuries_q:"إصابات؟", injuries_sub:"الوصف والمكان",
+      lifestyle_q:"نمط الحياة", job:"العمل", job_opt1:"مكتبي", job_opt2:"نشاط خفيف", job_opt3:"نشاط متوسط", sleep:"ساعات النوم", stress:"مستوى التوتر", stress_opt1:"منخفض", stress_opt2:"متوسط", stress_opt3:"مرتفع",
+      files_q:"رفع ملفات اختيارية", photos_up:"📷 رفع صور الجسم", inbody_up:"📄 رفع InBody", photos_done:(n)=>`✅ ${n} صورة`, inbody_done:"✅ تم اختيار ملف",
+      loading_title:(n)=>`جاهز يا ${n}!`, loading_sub:"نعالج بياناتك ونبني خطة متكاملة.", print_btn:"طباعة / تحميل", restart_btn:"البدء من جديد", next:"التالي", prev:"السابق", submit:"احصل على خطتك الآن!", swap:"تبديل", swapping:"جاري…", error_fill_fields:"أكمل الحقول المطلوبة.",
+      chest:"الصدر", back:"الظهر", shoulders:"الأكتاف", biceps:"البايسبس", triceps:"الترايسبس", quads:"الفخذ الأمامي", hamstrings:"الفخذ الخلفي", glutes:"الألوية", calves:"السمانة", abs:"البطن",
+      export:"تصدير", export_json:"JSON", export_csv:"CSV", days_check:"فحص الأيام", nutrition:"التغذية (7 أيام)", training:"التدريب (7 أيام)", daily_targets:"الأهداف اليومية",
+      api_key_error: "تعذر الاتصال بالموديل. تحقق من الدالة أو المفتاح.",
+    },
+    en: { /* kept minimal to reduce size; logic supports en toggle */ }
+  };
+  const muscles = ['chest','back','shoulders','biceps','triceps','quads','hamstrings','glutes','calves','abs'];
 
-function updateProgress() {
-  const p = Math.max(0, ((state.currentStage - 1) / totalStages) * 100);
-  progressBar.style.width = `${p}%`;
-  stepEl.textContent = String(Math.min(state.currentStage, totalStages));
-  progressWrap.classList.toggle('hidden', !started || state.currentStage === 0 || state.currentStage > totalStages);
-}
+  /*********************** Utils ************************/ 
+  function T(key, ...args) { const t = i18n[state.lang]?.[key]; return typeof t === 'function' ? t(...args) : (t || key); }
+  function $(sel){ return document.querySelector(sel); }
+  function stageLayout(title, desc, inner){ return `<section class="stage-enter" aria-live="polite"><h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900">${title}</h2><p class="mt-1 text-gray-600">${desc||''}</p><form id="form" class="space-y-5 mt-6" onsubmit="event.preventDefault();">${inner}</form></section>`; }
+  function field(label,id,opts={}){ const { type='text', value='', required=false, select=null, placeholder='', num=false } = opts; if(select){ return `<label class="block"><span class="font-medium text-gray-800">${label}</span><select id="${id}" class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">${select.map(o=>`<option ${String(value)===String(o.value)?'selected':''} value="${o.value}">${o.label}</option>`).join('')}</select></label>`;} if(type==='textarea'){ return `<label class="block"><span class="font-medium text-gray-800">${label}</span><textarea id="${id}" rows="3" placeholder="${placeholder}" class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">${value||''}</textarea></label>`;} return `<label class="block"><span class="font-medium text-gray-800">${label}</span><input id="${id}" type="${type}" ${required?'required':''} value="${value}" placeholder="${placeholder}" ${num?'inputmode="numeric" pattern="[0-9]*"':''} class="${num?'num-input ':''}mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></label>`; }
 
-function field(label, id, opts = {}) {
-  const { type = 'text', value = '', required = false, select = null, placeholder = '', num = false } = opts;
-  if (select) {
-    return `<label class="block"><span class="font-medium text-gray-800">${label}</span><select id="${id}" class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">${select.map(o => `<option ${String(value) === String(o.value) ? 'selected' : ''} value="${o.value}">${o.label}</option>`).join('')}</select></label>`;
-  }
-  if (type === 'textarea') {
-    return `<label class="block"><span class="font-medium text-gray-800">${label}</span><textarea id="${id}" rows="3" placeholder="${placeholder}" class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">${value || ''}</textarea></label>`;
-  }
-  return `<label class="block"><span class="font-medium text-gray-800">${label}</span><input id="${id}" type="${type}" ${required ? 'required' : ''} value="${value}" placeholder="${placeholder}" ${num ? 'inputmode="numeric" pattern="[0-9]*"' : ''} class="${num ? 'num-input ' : ''}mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></label>`;
-}
+  function applyLocale(){ const html = document.documentElement; html.lang = state.lang; html.dir = state.lang==='ar' ? 'rtl' : 'ltr'; document.body.classList.toggle('font-tajawal', state.lang==='ar'); document.body.classList.toggle('font-poppins', state.lang!=='ar'); $('#btn-ar').className = `px-2.5 py-1.5 rounded-lg text-sm font-bold ${state.lang==='ar'?'bg-indigo-600 text-white':'bg-gray-100 text-gray-700'}`; $('#btn-en').className = `px-2.5 py-1.5 rounded-lg text-sm font-bold ${state.lang==='en'?'bg-indigo-600 text-white':'bg-gray-100 text-gray-700'}`; if(started){ btnPrev.textContent=T('prev'); btnNext.textContent = state.currentStage===totalStages?T('submit'):T('next'); } renderSummary(); }
+  function updateProgress(){ const p = Math.max(0, ((state.currentStage-1)/totalStages)*100); progressBar.style.width = `${p}%`; stepEl.textContent = String(Math.min(state.currentStage,totalStages)); progressWrap.classList.toggle('hidden', !started || state.currentStage===0 || state.currentStage>totalStages); }
 
-function stageLayout(title, desc, inner) {
-  return `<section class="stage-enter" aria-live="polite"><h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900">${title}</h2><p class="mt-1 text-gray-600">${desc || ''}</p><form id="form" class="space-y-5 mt-6" onsubmit="event.preventDefault();">${inner}</form></section>`;
-}
+  /********************* Stages *************************/
+  function renderStage(stage){ applyLocale(); updateProgress(); content.innerHTML = '<div class="py-14 grid place-items-center"><div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-500" aria-hidden="true"></div></div>';
+    setTimeout(()=>{ const s = state.userData; let title='', desc='', html=''; switch(stage){
+      case 0: content.innerHTML = `<section class="stage-enter text-center p-6 sm:p-10"><h2 class="text-3xl font-extrabold text-gray-900 mb-2">${T('welcome_title')}</h2><p class="text-gray-600 max-w-xl mx-auto">${T('welcome_desc')}</p><div class="mt-8"><div class="inline-flex gap-2 items-center"><select id="lang-select" class="p-3 rounded-lg border-gray-300 border"><option value="ar">العربية</option><option value="en">English</option></select><button id="start" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-8 py-3 rounded-xl" type="button">${T('start')}</button></div><p class="mt-3 text-xs text-gray-500">Enter ↩︎ للتالي · <span class="kbd">Ctrl</span> + <span class="kbd">S</span> حفظ محلي</p></div></section>`; $('#start').onclick=()=>{ state.lang=$('#lang-select').value; started=true; sticky.classList.remove('hidden'); btnPrev.disabled=true; state.currentStage=1; renderStage(1); }; break;
+      case 1: title=T('stage_1_title'); desc=T('stage_1_desc'); html=field(T('name_q'),'name',{required:true,value:s.name||''}); content.innerHTML=stageLayout(title,desc,html); $('#name').focus(); break;
+      case 2: title=T('stage_2_title'); desc=T('stage_2_desc'); html=`<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">${field(T('age'),'age',{type:'number',value:s.age||'',required:true,num:true})}${field(T('height'),'height',{type:'number',value:s.height||'',required:true,num:true})}${field(T('weight'),'weight',{type:'number',value:s.weight||'',required:true,num:true})}${field(T('gender'),'gender',{select:[{value:'Male',label:T('male')},{value:'Female',label:T('female')}],value:s.gender||'Male'})}</div>`; content.innerHTML=stageLayout(title,desc,html); break;
+      case 3: title=T('stage_3_title'); desc=T('stage_3_desc'); const goals=['goal1','goal2','goal3','goal4','goal5']; html=`<p class="text-sm text-gray-500">${T('goal_sub')}</p><div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">${goals.map(k=>{ const v=T(k); const on=(s.goals||[]).includes(v)?'checked':''; return `<label class="block p-4 rounded-lg border custom-checkbox-label cursor-pointer"><input ${on} type="checkbox" name="goal" value="${v}" class="mr-4 ml-2 accent-indigo-600"><span>${v}</span></label>`}).join('')}</div>`; content.innerHTML=stageLayout(title,desc,html); break;
+      case 4: title=T('stage_4_title'); desc=T('stage_4_desc'); html=`<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">${field(T('target_weight'),'target_weight',{type:'number',value:s.target_weight||'',num:true})}${field(T('target_date'),'target_date',{type:'date',value:s.target_date||''})}</div>`; content.innerHTML=stageLayout(title,desc,html); break;
+      case 5: title=T('stage_5_title'); desc=T('stage_5_desc'); let rec=T('diet_opt1'); if((s.goals||[]).includes(T('goal1'))) rec=T('diet_opt2'); const dietKeys=['diet_opt1','diet_opt2','diet_opt3','diet_opt4','diet_opt5','diet_opt6']; html=`${field(T('diet_pref'),'diet_preference',{select:dietKeys.map(k=>({value:T(k),label:`${T(k)}${rec===T(k)?` (${T('recommended')})`:''}`})),value:s.diet_preference||T('diet_opt1')})}`; content.innerHTML=stageLayout(title,desc,html); break;
+      case 6: title=T('stage_6_title'); desc=T('stage_6_desc'); const allergyVals=[T('allergy1'),T('allergy2'),T('allergy3'),T('allergy4'),T('allergy5'),T('allergy6')]; html=`<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${allergyVals.map(v=>{ const on=(s.allergies||[]).includes(v)?'checked':''; return `<label class="block p-3 rounded-lg border custom-checkbox-label cursor-pointer"><input ${on} type="checkbox" name="allergy" value="${v}" class="mr-4 ml-2 accent-indigo-600"><span>${v}</span></label>`}).join('')}</div>${field(T('other_allergies'),'other_allergies',{value:s.other_allergies||''})}`; content.innerHTML=stageLayout(title,desc,html); break;
+      case 7: title=T('stage_7_title'); desc=T('stage_7_desc'); html=`${field(T('history_last_train'),'last_train',{select:[{value:T('last_train_opt1'),label:T('last_train_opt1')},{value:T('last_train_opt2'),label:T('last_train_opt2')},{value:T('last_train_opt3'),label:T('last_train_opt3')}],value:s.last_train||T('last_train_opt1')})}${field(T('history_exp'),'training_exp',{select:[{value:T('exp_opt1'),label:T('exp_opt1')},{value:T('exp_opt2'),label:T('exp_opt2')},{value:T('exp_opt3'),label:T('exp_opt3')}],value:s.training_exp||T('exp_opt1')})}${field(T('history_supps'),'prev_supps',{value:s.prev_supps||'',placeholder:'Omega‑3, Vitamin D ...'})}<label class="file-drop p-3 mt-2 block text-center rounded-lg cursor-pointer text-sm"><span id="supp-feedback">${T('upload_supps')}</span><input type="file" id="supp_photos" class="hidden" multiple accept="image/*"></label>`; content.innerHTML=stageLayout(title,desc,html); attachFileListeners(); break;
+      case 8: title=T('stage_8_title'); desc=T('stage_8_desc'); html=`<div class="space-y-4">${muscles.map(m=>`<div class="relative flex items-start"><div class="flex items-center h-5"><input id="${m}" name="${m}" type="checkbox" ${(s.weak_points||{})[m]?'checked':''} class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"></div><div class="ml-3 mr-3 text-sm flex-1"><label for="${m}" class="font-medium text-gray-700">${T(m)}</label><input type="text" id="${m}_desc" class="w-full p-1 border-b-2 focus:border-indigo-500 outline-none" value="${(s.weak_points||{})[m]||''}" placeholder="${T('weak_points_sub')}"></div></div>`).join('')}</div>`; content.innerHTML=stageLayout(title,desc,html); break;
+      case 9: title=T('stage_9_title'); desc=T('stage_9_desc'); const cond=['health_cond1','health_cond2','health_cond3','health_cond4','health_cond5','health_cond6','health_cond7']; html=`<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${cond.map(k=>{ const v=T(k); const on=(s.health_conditions||[]).includes(v)?'checked':''; return `<label class="block p-3 rounded-lg border custom-checkbox-label cursor-pointer"><input ${on} type="checkbox" name="health_condition" value="${v}" class="mr-4 ml-2 accent-indigo-600"><span>${v}</span></label>`}).join('')}</div>${field(T('injuries_q'),'injuries',{type:'textarea',value:s.injuries||'',placeholder:T('injuries_sub')})}`; content.innerHTML=stageLayout(title,desc,html); break;
+      case 10: title=T('stage_10_title'); desc=T('stage_10_desc'); html=`<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">${field(T('job'),'job_activity',{select:[{value:T('job_opt1'),label:T('job_opt1')},{value:T('job_opt2'),label:T('job_opt2')},{value:T('job_opt3'),label:T('job_opt3')}],value:s.job_activity||T('job_opt1')})}${field(T('sleep'),'sleep_hours',{type:'number',value:s.sleep_hours||'',required:true,num:true})}${field(T('stress'),'stress_level',{select:[{value:T('stress_opt1'),label:T('stress_opt1')},{value:T('stress_opt2'),label:T('stress_opt2')},{value:T('stress_opt3'),label:T('stress_opt3')}],value:s.stress_level||T('stress_opt2')})}</div>`; content.innerHTML=stageLayout(title,desc,html); break;
+      case 11: title=T('stage_11_title'); desc=T('stage_11_desc'); html=`<div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><label class="file-drop p-6 block text-center rounded-xl cursor-pointer"><span id="photo-feedback">${T('photos_up')}</span><input type="file" id="photos" class="hidden" multiple accept="image/*"></label><label class="file-drop p-6 block text-center rounded-xl cursor-pointer"><span id="inbody-feedback">${T('inbody_up')}</span><input type="file" id="inbody" class="hidden" accept="image/*,.pdf"></label></div>`; content.innerHTML=stageLayout(title,desc,html); attachFileListeners(); break;
+      case 12: content.innerHTML = `<section class="stage-enter p-5 sm:p-8"><div class="no-print text-center"><h2 class="text-2xl font-extrabold text-gray-900 mb-1">${T('loading_title', s.name || '')}</h2><p class="text-gray-600">${T('loading_sub')}</p><div class="mt-6 animate-spin rounded-full h-12 w-12 border-b-4 border-indigo-600 mx-auto" aria-hidden="true"></div></div><div id="plan" class="mt-6 ai-content" dir="${state.lang==='ar'?'rtl':'ltr'}"></div><div id="qc" class="mt-3 text-xs text-gray-500"></div><div class="no-print mt-6 flex flex-wrap gap-3 justify-center"><button id="btn-print" class="hidden bg-green-600 hover:bg-green-700 text-white font-extrabold px-6 py-2.5 rounded-lg" type="button">${T('print_btn')}</button><div class="hidden" id="export-wrap"><span class="px-3 py-2 bg-gray-100 rounded-lg text-sm font-medium">${T('export')}:</span><button id="exp-json" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-3 py-2 rounded-lg" type="button">${T('export_json')}</button><button id="exp-csv" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-3 py-2 rounded-lg" type="button">${T('export_csv')}</button></div><button id="btn-restart" class="hidden bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold px-6 py-2.5 rounded-lg" type="button">${T('restart_btn')}</button></div></section>`; generatePlan(); break; }
+      if(started){ btnNext.textContent = state.currentStage===totalStages?T('submit'):T('next'); btnNext.className = `flex-1 ${state.currentStage===totalStages?'bg-green-600 hover:bg-green-700':'bg-indigo-600 hover:bg-indigo-700'} text-white font-extrabold py-2.5 rounded-lg`; btnPrev.textContent=T('prev'); btnPrev.disabled = state.currentStage<=1; }
+    },150);
+  }
 
-/*************** Stage Rendering Logic ***************/
-function renderStage(stage) {
-  applyLocale();
-  updateProgress();
-  const spinner = '<div class="py-14 grid place-items-center"><div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-500" aria-hidden="true"></div></div>';
-  content.innerHTML = spinner;
+  /**************** Navigation + Save ****************/
+  function saveAndNext(stage){ try{ const s=state.userData; switch(stage){
+      case 1: s.name=$('#name').value.trim(); if(!s.name) throw 0; break;
+      case 2: s.age=$('#age').value; s.height=$('#height').value; s.weight=$('#weight').value; s.gender=$('#gender').value; if(!s.age||!s.height||!s.weight) throw 0; break;
+      case 3: s.goals=[...document.querySelectorAll('input[name="goal"]:checked')].map(e=>e.value); if(!s.goals.length) throw 0; break;
+      case 4: s.target_weight=$('#target_weight').value; s.target_date=$('#target_date').value; break;
+      case 5: s.diet_preference=$('#diet_preference').value; break;
+      case 6: s.allergies=[...document.querySelectorAll('input[name="allergy"]:checked')].map(e=>e.value); { const other=$('#other_allergies').value.trim(); if(other) s.allergies.push(other); } break;
+      case 7: s.last_train=$('#last_train').value; s.training_exp=$('#training_exp').value; s.prev_supps=$('#prev_supps').value; s.has_supp_photos=$('#supp_photos')?.files.length>0; break;
+      case 8: s.weak_points={}; muscles.forEach(m=>{ const cb=$(`#${m}`); if(cb?.checked) s.weak_points[m]=$(`#${m}_desc`).value||'General'; }); break;
+      case 9: s.health_conditions=[...document.querySelectorAll('input[name="health_condition"]:checked')].map(e=>e.value); s.injuries=$('#injuries').value; break;
+      case 10: s.job_activity=$('#job_activity')?.value||$('#job_activity')?.textContent; s.sleep_hours=$('#sleep_hours').value; s.stress_level=$('#stress_level').value; if(!s.sleep_hours) throw 0; break;
+      case 11: s.has_photos=$('#photos')?.files.length>0; s.has_inbody=$('#inbody')?.files.length>0; break; }
+      state.currentStage++; renderStage(state.currentStage); renderSummary();
+    }catch(e){ notify(T('error_fill_fields'),'error'); }
+  }
+  function goBack(){ if(state.currentStage>1){ state.currentStage--; renderStage(state.currentStage); renderSummary(); } }
+  btnPrev.onclick = goBack; btnNext.onclick = ()=> saveAndNext(state.currentStage);
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && !e.shiftKey && started){ e.preventDefault(); saveAndNext(state.currentStage); } if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='s'){ e.preventDefault(); saveLocal(); } });
 
-  setTimeout(() => {
-    const s = state.userData;
-    let title = '', desc = '', html = '';
-    switch (stage) {
-      case 0:
-        content.innerHTML = `<section class="stage-enter text-center p-6 sm:p-10"><h2 class="text-3xl font-extrabold text-gray-900 mb-2">${T('welcome_title')}</h2><p class="text-gray-600 max-w-xl mx-auto">${T('welcome_desc')}</p><div class="mt-8"><div class="inline-flex gap-2 items-center"><select id="lang-select" class="p-3 rounded-lg border-gray-300 border"><option value="ar">العربية</option><option value="en">English</option></select><button id="start" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-8 py-3 rounded-xl" type="button">${T('start')}</button></div></div></section>`;
-        document.getElementById('start').onclick = () => {
-          state.lang = document.getElementById('lang-select').value;
-          started = true;
-          sticky.classList.remove('hidden');
-          btnPrev.disabled = true;
-          state.currentStage = 1;
-          renderStage(1);
-        };
-        break;
-      case 1:
-        title = T('stage_1_title'); desc = T('stage_1_desc'); html = field(T('name_q'), 'name', { required: true, value: s.name || '' });
-        content.innerHTML = stageLayout(title, desc, html);
-        document.getElementById('name').focus();
-        break;
-      case 2:
-        title = T('stage_2_title'); desc = T('stage_2_desc');
-        html = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">${field(T('age'), 'age', { type: 'number', value: s.age || '', required: true, num: true })}${field(T('height'), 'height', { type: 'number', value: s.height || '', required: true, num: true })}${field(T('weight'), 'weight', { type: 'number', value: s.weight || '', required: true, num: true })}${field(T('gender'), 'gender', { select: [{ value: 'Male', label: T('male') }, { value: 'Female', label: T('female') }], value: s.gender || 'Male' })}</div>`;
-        content.innerHTML = stageLayout(title, desc, html);
-        break;
-      case 3:
-        title = T('stage_3_title'); desc = T('stage_3_desc');
-        const goals = ['goal1', 'goal2', 'goal3', 'goal4', 'goal5'];
-        html = `<p class="text-sm text-gray-500">${T('goal_sub')}</p><div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">${goals.map(k => { const v = T(k); const on = (s.goals || []).includes(v) ? 'checked' : ''; return `<label class="custom-checkbox-label block p-4 rounded-lg cursor-pointer"><input ${on} type="checkbox" name="goal" value="${v}" class="mr-4 ml-2 accent-indigo-600"><span>${v}</span></label>` }).join('')}</div>`;
-        content.innerHTML = stageLayout(title, desc, html);
-        break;
-      case 4:
-        title = T('stage_4_title'); desc = T('stage_4_desc');
-        html = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">${field(T('target_weight'), 'target_weight', { type: 'number', value: s.target_weight || '', num: true })}${field(T('target_date'), 'target_date', { type: 'date', value: s.target_date || '' })}</div>`;
-        content.innerHTML = stageLayout(title, desc, html);
-        break;
-      case 5:
-        title = T('stage_5_title'); desc = T('stage_5_desc');
-        let rec = T('diet_opt1');
-        if ((s.goals || []).includes(T('goal1'))) rec = T('diet_opt2');
-        const dietKeys = ['diet_opt1', 'diet_opt2', 'diet_opt3', 'diet_opt4', 'diet_opt5', 'diet_opt6'];
-        html = `${field(T('diet_pref'), 'diet_preference', { select: dietKeys.map(k => ({ value: T(k), label: `${T(k)}${rec === T(k) ? ` (${T('recommended')})` : ''}` })), value: s.diet_preference || T('diet_opt1') })}`;
-        content.innerHTML = stageLayout(title, desc, html);
-        break;
-      case 6:
-        title = T('stage_6_title'); desc = T('stage_6_desc');
-        const allergyVals = [T('allergy1'), T('allergy2'), T('allergy3'), T('allergy4'), T('allergy5'), T('allergy6')];
-        html = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${allergyVals.map(v => { const on = (s.allergies || []).includes(v) ? 'checked' : ''; return `<label class="custom-checkbox-label block p-3 rounded-lg cursor-pointer"><input ${on} type="checkbox" name="allergy" value="${v}" class="mr-4 ml-2 accent-indigo-600"><span>${v}</span></label>` }).join('')}</div>${field(T('other_allergies'), 'other_allergies', { value: s.other_allergies || '' })}`;
-        content.innerHTML = stageLayout(title, desc, html);
-        break;
-      case 7:
-        title = T('stage_7_title'); desc = T('stage_7_desc');
-        html = `${field(T('history_last_train'), 'last_train', { select: [{ value: T('last_train_opt1'), label: T('last_train_opt1') }, { value: T('last_train_opt2'), label: T('last_train_opt2') }, { value: T('last_train_opt3'), label: T('last_train_opt3') }], value: s.last_train || T('last_train_opt1') })}${field(T('history_exp'), 'training_exp', { select: [{ value: T('exp_opt1'), label: T('exp_opt1') }, { value: T('exp_opt2'), label: T('exp_opt2') }, { value: T('exp_opt3'), label: T('exp_opt3') }], value: s.training_exp || T('exp_opt1') })}${field(T('history_supps'), 'prev_supps', { value: s.prev_supps || '', placeholder: 'Omega‑3, Vitamin D ...' })}<label class="file-drop p-3 mt-2 block text-center rounded-lg cursor-pointer text-sm"><span id="supp-feedback">${T('upload_supps')}</span><input type="file" id="supp_photos" class="hidden" multiple accept="image/*"></label>`;
-        content.innerHTML = stageLayout(title, desc, html);
-        attachFileListeners();
-        break;
-      case 8:
-        title = T('stage_8_title'); desc = T('stage_8_desc');
-        html = `<div class="space-y-4">${muscles.map(m => `<div class="relative flex items-start"><div class="flex items-center h-5"><input id="${m}" name="${m}" type="checkbox" ${(s.weak_points || {})[m] ? 'checked' : ''} class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"></div><div class="ml-3 mr-3 text-sm flex-1"><label for="${m}" class="font-medium text-gray-700">${T(m)}</label><input type="text" id="${m}_desc" class="w-full p-1 border-b-2 focus:border-indigo-500 outline-none" value="${(s.weak_points || {})[m] || ''}" placeholder="${T('weak_points_sub')}"></div></div>`).join('')}</div>`;
-        content.innerHTML = stageLayout(title, desc, html);
-        break;
-      case 9:
-        title = T('stage_9_title'); desc = T('stage_9_desc');
-        const cond = ['health_cond1', 'health_cond2', 'health_cond3', 'health_cond4', 'health_cond5', 'health_cond6', 'health_cond7'];
-        html = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${cond.map(k => { const v = T(k); const on = (s.health_conditions || []).includes(v) ? 'checked' : ''; return `<label class="custom-checkbox-label block p-3 rounded-lg cursor-pointer"><input ${on} type="checkbox" name="health_condition" value="${v}" class="mr-4 ml-2 accent-indigo-600"><span>${v}</span></label>` }).join('')}</div>${field(T('injuries_q'), 'injuries', { type: 'textarea', value: s.injuries || '', placeholder: T('injuries_sub') })}`;
-        content.innerHTML = stageLayout(title, desc, html);
-        break;
-      case 10:
-        title = T('stage_10_title'); desc = T('stage_10_desc');
-        html = `<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">${field(T('job'), 'job_activity', { select: [{ value: T('job_opt1'), label: T('job_opt1') }, { value: T('job_opt2'), label: T('job_opt2') }, { value: T('job_opt3'), label: T('job_opt3') }], value: s.job_activity || T('job_opt1') })}${field(T('sleep'), 'sleep_hours', { type: 'number', value: s.sleep_hours || '', required: true, num: true })}${field(T('stress'), 'stress_level', { select: [{ value: T('stress_opt1'), label: T('stress_opt1') }, { value: T('stress_opt2'), label: T('stress_opt2') }, { value: T('stress_opt3'), label: T('stress_opt3') }], value: s.stress_level || T('stress_opt2') })}</div>`;
-        content.innerHTML = stageLayout(title, desc, html);
-        break;
-      case 11:
-        title = T('stage_11_title'); desc = T('stage_11_desc');
-        html = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><label class="file-drop p-6 block text-center rounded-xl cursor-pointer"><span id="photo-feedback">${T('photos_up')}</span><input type="file" id="photos" class="hidden" multiple accept="image/*"></label><label class="file-drop p-6 block text-center rounded-xl cursor-pointer"><span id="inbody-feedback">${T('inbody_up')}</span><input type="file" id="inbody" class="hidden" accept="image/*,.pdf"></label></div>`;
-        content.innerHTML = stageLayout(title, desc, html);
-        attachFileListeners();
-        break;
-      case 12:
-        content.innerHTML = `<section class="stage-enter text-center p-8"><div class="no-print"><h2 class="text-2xl font-extrabold text-gray-900 mb-2">${T('loading_title', s.name || '')}</h2><p class="text-gray-600">${T('loading_sub')}</p><div class="mt-6 animate-spin rounded-full h-12 w-12 border-b-4 border-indigo-600 mx-auto" aria-hidden="true"></div></div><div id="plan" class="mt-8 ai-content" dir="${state.lang === 'ar' ? 'rtl' : 'ltr'}"></div><div id="qc" class="mt-3 text-xs text-gray-500"></div><div class="no-print mt-6 flex flex-wrap gap-3 justify-center"><button id="btn-print" class="hidden bg-green-600 hover:bg-green-700 text-white font-extrabold px-6 py-2.5 rounded-lg" type="button">${T('print_btn')}</button><div class="hidden" id="export-wrap"><span class="px-3 py-2 bg-gray-100 rounded-lg text-sm font-medium">${T('export')}:</span><button id="exp-json" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-3 py-2 rounded-lg" type="button">${T('export_json')}</button><button id="exp-csv" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-3 py-2 rounded-lg" type="button">${T('export_csv')}</button></div><button id="btn-restart" class="hidden bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold px-6 py-2.5 rounded-lg" type="button">${T('restart_btn')}</button></div></section>`;
-        generatePlan();
-        break;
-    }
-    if (started) {
-      btnNext.textContent = state.currentStage === totalStages ? T('submit') : T('next');
-      btnNext.className = `flex-1 ${state.currentStage === totalStages ? 'bg-green-600 hover:bg-green-700' : 'bg-indigo-600 hover:bg-indigo-700'} text-white font-extrabold py-2.5 rounded-lg`;
-      btnPrev.textContent = T('prev');
-      btnPrev.disabled = state.currentStage <= 1;
-    }
-  }, 200);
-}
+  // Local persistence
+  function saveLocal(){ localStorage.setItem('aiCoachState', JSON.stringify(state)); notify('تم الحفظ محليًا'); }
+  function loadLocal(){ const raw=localStorage.getItem('aiCoachState'); if(!raw) return notify('لا يوجد بيانات محفوظة','warning'); try{ const st=JSON.parse(raw); if(st) { state=st; started=state.currentStage>0; sticky.classList.toggle('hidden',!started); renderStage(state.currentStage); renderSummary(); notify('تم الاسترجاع'); } }catch{ notify('تعذر الاسترجاع','error'); } }
+  function resetLocal(){ localStorage.removeItem('aiCoachState'); notify('تم المسح'); }
+  document.getElementById('btn-save').onclick = saveLocal;
+  document.getElementById('btn-load').onclick = loadLocal;
+  document.getElementById('btn-reset').onclick = resetLocal;
 
-/*************** Form Saving & Navigation ***************/
-function saveAndNext(stage) {
-  try {
-    const s = state.userData;
-    switch (stage) {
-      case 0: break;
-      case 1: s.name = document.getElementById('name').value.trim(); if (!s.name) throw 0; break;
-      case 2: s.age = document.getElementById('age').value; s.height = document.getElementById('height').value; s.weight = document.getElementById('weight').value; s.gender = document.getElementById('gender').value; if (!s.age || !s.height || !s.weight) throw 0; break;
-      case 3: s.goals = [...document.querySelectorAll('input[name="goal"]:checked')].map(e => e.value); if (!s.goals.length) throw 0; break;
-      case 4: s.target_weight = document.getElementById('target_weight').value; s.target_date = document.getElementById('target_date').value; break;
-      case 5: s.diet_preference = document.getElementById('diet_preference').value; break;
-      case 6: s.allergies = [...document.querySelectorAll('input[name="allergy"]:checked')].map(e => e.value); { const other = document.getElementById('other_allergies').value.trim(); if (other) s.allergies.push(other); } break;
-      case 7: s.last_train = document.getElementById('last_train').value; s.training_exp = document.getElementById('training_exp').value; s.prev_supps = document.getElementById('prev_supps').value; s.has_supp_photos = document.getElementById('supp_photos')?.files.length > 0; break;
-      case 8: s.weak_points = {}; muscles.forEach(m => { const cb = document.getElementById(m); if (cb?.checked) s.weak_points[m] = document.getElementById(`${m}_desc`).value || 'General Strengthening' }); break;
-      case 9: s.health_conditions = [...document.querySelectorAll('input[name="health_condition"]:checked')].map(e => e.value); s.injuries = document.getElementById('injuries').value; break;
-      case 10: s.job_activity = document.getElementById('job_activity').value; s.sleep_hours = document.getElementById('sleep_hours').value; s.stress_level = document.getElementById('stress_level').value; if (!s.sleep_hours) throw 0; break;
-      case 11: s.has_photos = document.getElementById('photos')?.files.length > 0; s.has_inbody = document.getElementById('inbody')?.files.length > 0; break;
-    }
-    state.currentStage++;
-    renderStage(state.currentStage);
-  } catch (e) {
-    showNotification(T('error_fill_fields'), 'error');
-  }
-}
+  /**************** Files ****************/
+  function attachFileListeners(){ const p=$('#photos'); if(p) p.addEventListener('change', e=>{ $('#photo-feedback').textContent = i18n[state.lang].photos_done(e.target.files.length); p.parentElement.classList.add('ready'); }); const i=$('#inbody'); if(i) i.addEventListener('change', ()=>{ $('#inbody-feedback').textContent=T('inbody_done'); i.parentElement.classList.add('ready'); }); const s=$('#supp_photos'); if(s) s.addEventListener('change', e=>{ $('#supp-feedback').textContent = i18n[state.lang].photos_done(e.target.files.length); s.parentElement.classList.add('ready'); }); }
 
-function goBack() {
-  if (state.currentStage > 1) {
-    state.currentStage--;
-    renderStage(state.currentStage);
-  }
-}
-btnPrev.onclick = goBack;
-btnNext.onclick = () => { saveAndNext(state.currentStage); };
+  /**************** Calculations ****************/
+  function computeTargets(p){ const W=Number(p.weight)||0, H=Number(p.height)||0, A=Number(p.age)||0; const male=p.gender==='Male'; const BMR = male ? 10*W + 6.25*H - 5*A + 5 : 10*W + 6.25*H - 5*A - 161; const factor=(p.job_activity===T('job_opt1')?1.2:(p.job_activity===T('job_opt3')?1.5:1.35)); let TDEE=BMR*factor; const goals=p.goals||[]; if(goals.includes(T('goal1'))) TDEE*=0.86; else if(goals.includes(T('goal2'))) TDEE*=1.1; const targetW=Number(p.target_weight)||W||1; const protein_g=Math.round(2.0*targetW); const fat_g=Math.round(Math.max(0,0.8*W)); let carb_g=Math.round((TDEE - (protein_g*4 + fat_g*9))/4); const hasIR=(p.health_conditions||[]).some(h=>[T('health_cond2'),T('health_cond3')].includes(h)); if(hasIR) carb_g=Math.min(carb_g,120); carb_g=Math.max(0,carb_g); return { calories: Math.round(TDEE), macros:{ protein_g, fat_g, carb_g } } }
 
-/*************** File Input Listeners ***************/
-function attachFileListeners() {
-  const p = document.getElementById('photos'); if (p) p.addEventListener('change', e => { const f = document.getElementById('photo-feedback'); f.textContent = i18n[state.lang].photos_done(e.target.files.length); f.parentElement.classList.add('ready'); });
-  const i = document.getElementById('inbody'); if (i) i.addEventListener('change', () => { const f = document.getElementById('inbody-feedback'); f.textContent = T('inbody_done'); f.parentElement.classList.add('ready'); });
-  const s = document.getElementById('supp_photos'); if (s) s.addEventListener('change', e => { const f = document.getElementById('supp-feedback'); f.textContent = i18n[state.lang].photos_done(e.target.files.length); f.parentElement.classList.add('ready'); });
-}
+  /**************** AI ****************/
+  let lastPlanJSON=null;
+  async function generatePlan(){ const p=state.userData; const targets=computeTargets(p); const proxyUrl='/.netlify/functions/gemini-proxy'; const prompt=buildAIPrompt(p,state.lang,targets); const aiResponse=await callAI(prompt,proxyUrl); if(aiResponse.ok && aiResponse.text){ renderAI(aiResponse.text); } else { console.error('AI call failed', aiResponse.error); renderErrorMessage(aiResponse.error); }
+    // controls
+    $('#btn-print').classList.remove('hidden'); $('#btn-restart').classList.remove('hidden'); $('#export-wrap').classList.remove('hidden'); $('#btn-print').onclick=()=>window.print(); $('#exp-json').onclick=()=>exportJSON(lastPlanJSON); $('#exp-csv').onclick=()=>exportCSV(lastPlanJSON); $('#btn-restart').onclick=restartApp; }
 
-/*************** Calculations Engine ***************/
-function computeTargets(p) {
-  const W = Number(p.weight) || 0, H = Number(p.height) || 0, A = Number(p.age) || 0;
-  const male = p.gender === 'Male';
-  const BMR = male ? 10 * W + 6.25 * H - 5 * A + 5 : 10 * W + 6.25 * H - 5 * A - 161;
-  const factor = (p.job_activity === T('job_opt1') ? 1.2 : p.job_activity === T('job_opt3') ? 1.5 : 1.35);
-  let TDEE = BMR * factor;
-  const goals = p.goals || [];
-  if (goals.includes(T('goal1'))) TDEE *= 0.85; else if (goals.includes(T('goal2'))) TDEE *= 1.1;
-  const targetW = Number(p.target_weight) || W || 1;
-  const protein_g = Math.round(2.0 * targetW);
-  const fat_g = Math.round(Math.max(0, 0.8 * W));
-  let carb_g = Math.round((TDEE - (protein_g * 4 + fat_g * 9)) / 4);
-  const hasIR = (p.health_conditions || []).some(h => [T('health_cond2'), T('health_cond3')].includes(h));
-  if (hasIR) carb_g = Math.min(carb_g, 120); // Carb guardrail
-  carb_g = Math.max(0, carb_g);
-  return { calories: Math.round(TDEE), macros: { protein_g, fat_g, carb_g } };
-}
+  function buildAIPrompt(profile, lang, targets){ const weak = Object.entries(profile.weak_points||{}).map(([muscle,desc])=>`${T(muscle)}: ${desc}`).join(', ') || 'None'; return `Act as \"Coach Mustafa Al-Safi\", a world-class nutrition & fitness expert. Create a professional, SAFE, personalized 7-day plan for \"${profile.name}\".\nCRITICAL: Reply in ${lang} only. Food names in ${lang}. Exercise names in English only. Use clear Markdown tables. Avoid contraindicated movements per injuries: \"${profile.injuries||'None'}\".\n\nUser Data:\n- Goals: ${(profile.goals||[]).join(', ')}\n- Target: W ${profile.target_weight||'N/A'} by ${profile.target_date||'N/A'}\n- History: last train ${profile.last_train}, experience ${profile.training_exp}\n- Focus: ${weak}\n- Stats: age ${profile.age}, height ${profile.height} cm, weight ${profile.weight} kg, gender ${profile.gender}\n- Health: ${(profile.health_conditions||[]).join(', ')||'None'}; Allergies: ${(profile.allergies||[]).join(', ')||'None'}\n- Diet: ${profile.diet_preference}\n- Daily targets: P ${targets.macros.protein_g} g, F ${targets.macros.fat_g} g, C ${targets.macros.carb_g} g (~${targets.calories} kcal)\n\nOUTPUT STRUCTURE:\n### 1) مقدمة شخصية وتحليل شامل\n(فقرة إفتتاحية باسم المستخدم + تحليل المنطق والمخاطر.)\n### 2) خطة التغذية الدقيقة (7 أيام)\n- جدول يومي بوجبات مفصلة ومكونات وكميات. كل وجبة قابلة للتبديل عبر [SWAP:MEAL:اسم الوجبة].\n### 3) قائمة المسموح والممنوع حسب النظام\n- نقاط واضحة مختصرة.\n### 4) خطة التدريب (7 أيام) — progressive overload\n- جدول لكل يوم: Exercise | Sets | Reps | Rest (sec). كل تمرين قابل للتبديل [SWAP:EXERCISE:Exercise].\n### 5) متابعة التقدم والتطوير\n- كيف نزيد الحمل + متى نعدل الخطة.\n### 6) مكملات ونمط حياة\n- مكملات آمنة (جرعات) + نوم وماء وتوتر.\n\nقّم النص بعناوين واضحة، وانهِ بتوقيع: **المدرب مصطفى الصافي**.`; }
 
-/*************** AI Generation & Rendering ***************/
-let lastPlanJSON = null;
+  async function callAI(prompt, url){ if(!canCall()) return { ok:false, error:'Rate limited' }; try{ markCall(); const res=await fetch(url,{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ prompt }) }); if(!res.ok){ const errorText=await res.text(); return { ok:false, error:errorText||'Server error' }; } const data=await res.json(); return { ok:true, text:data.text }; } catch(e){ return { ok:false, error:String(e) }; } }
 
-async function generatePlan() {
-    const p = state.userData;
-    const targets = computeTargets(p);
+  function renderAI(markdown){ let html=marked.parse(markdown); html = html.replace(/\[SWAP:(EXERCISE|MEAL):(.*?)\]/g,(m,type,item)=>{ const t=type.toLowerCase(); const clean=item.replace(/\"/g,'&quot;'); const btn=`<button type="button" onclick="swapItem(event)" data-type="${t}" data-item="${clean}" class="no-print bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs px-2 py-1 rounded-md">${T('swap')}</button>`; return t==='meal' ? `<span class="inline-flex items-center gap-2">${item} ${btn}</span>` : `<span class="inline-flex items-center gap-2 ltr-text"><span class="font-semibold">${item}</span>${btn}</span>`; }); const planEl=$('#plan'); planEl.innerHTML=html; document.querySelectorAll('.no-print .animate-spin').forEach(e=>e.style.display='none'); document.querySelectorAll('.no-print h2, .no-print p').forEach(e=>e.style.display='none'); lastPlanJSON={ source:'ai_markdown', raw: markdown }; qualityCheck(); renderSummary(); }
+  function renderErrorMessage(error){ const planEl=$('#plan'); planEl.innerHTML = `<div class="p-4 bg-red-100 border-l-4 border-red-500 rounded-r-lg mb-4"><h3 class="font-bold text-red-800">${T('api_key_error')}</h3><p class="text-red-700 text-xs ltr-text">${String(error).slice(0,800)}</p></div>`; document.querySelectorAll('.no-print .animate-spin, .no-print h2, .no-print p').forEach(e=>e.style.display='none'); $('#btn-restart').classList.remove('hidden'); $('#btn-restart').onclick=restartApp; }
+  function qualityCheck(){ const qc=$('#qc'); if(!qc) return; try{ const txt=$('#plan').innerText||''; const days=[1,2,3,4,5,6,7]; const found=days.filter(d=> new RegExp(`(Day\\s*${d}|اليوم\\s*${d})`,'i').test(txt)); const badge=`${T('days_check')}: ${found.length}/7`; qc.innerHTML = `<span class="inline-flex items-center gap-2 px-2 py-1 rounded-lg ${found.length===7?'bg-green-100 text-green-800':'bg-yellow-100 text-yellow-800'}">${badge}</span>`; } catch { qc.textContent=''; } }
 
-    const proxyUrl = '/.netlify/functions/gemini-proxy';
-    
-    const prompt = buildAIPrompt(p, state.lang, targets);
-    const aiResponse = await callAI(prompt, proxyUrl);
+  /**************** Swap ****************/
+  async function swapItem(e){ const button=e.target.closest('button'); if(!button) return; const type=button.dataset.type; const item=(button.dataset.item||'').toString(); const original=button.textContent; button.disabled=true; button.textContent=T('swapping'); const { userData }=state; let prompt=''; if(type==='meal'){ prompt=`بدّل وجبة \"${item}\" بوجبة واحدة مناسبة لنظام ${userData.diet_preference}. تجنب الحساسية: ${(userData.allergies||[]).join(', ')||'لا يوجد'}. اكتب المكونات والكميات فقط بالعربية.`; } else { prompt=`بدّل التمرين \"${item}\" ببديل يستهدف نفس العضلة وبما يلائم مستوى ${userData.training_exp} ويتجنب إصابات: ${userData.injuries||'لا يوجد'}. اكتب: Exercise + sets x reps فقط.`; } const proxyUrl='/.netlify/functions/gemini-proxy'; const ai=await callAI(prompt,proxyUrl); let suggestion=''; if(ai.ok && ai.text){ suggestion=ai.text.trim().replace(/"/g,''); } else { notify(T('api_key_error'),'error'); } if(suggestion){ const target=button.parentElement; if(type==='meal'){ target.childNodes[0].nodeValue = `${suggestion} `; button.dataset.item=suggestion; } else { const newName = suggestion.split(':')[0]?.trim()||suggestion; target.querySelector('.font-semibold').textContent=newName; const cell=button.closest('td'); if(cell){ cell.innerHTML = cell.innerHTML.replace(item,newName); } button.dataset.item=newName; } } button.disabled=false; button.textContent=original; }
 
-    if (aiResponse.ok && aiResponse.text) {
-        renderAI(aiResponse.text);
-    } else {
-        console.error("AI call failed.", aiResponse.error);
-        renderErrorMessage(aiResponse.error);
-    }
-    
-    document.getElementById('btn-print').classList.remove('hidden');
-    document.getElementById('btn-restart').classList.remove('hidden');
-    document.getElementById('export-wrap').classList.remove('hidden');
-    document.getElementById('btn-print').onclick = () => window.print();
-    document.getElementById('exp-json').onclick = () => exportJSON(lastPlanJSON);
-    document.getElementById('exp-csv').onclick = () => exportCSV(lastPlanJSON);
-    document.getElementById('btn-restart').onclick = restartApp;
-}
+  /**************** Export ****************/
+  function exportJSON(data){ if(!data) return; const blob=new Blob([JSON.stringify({ userData: state.userData, plan: data }, null, 2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ai-coach-plan.json'; a.click(); }
+  function exportCSV(data){ if(!data) return; let rows=[]; if(data.source==='ai_markdown'){ rows.push(['source','ai_markdown']); rows.push(['prompt_data', JSON.stringify(state.userData)]); rows.push(['raw_response', data.raw]); } const csv=rows.map(r=> r.map(x=>`"${String(x).replaceAll('"','""')}"`).join(',')).join('\n'); const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ai-coach-plan.csv'; a.click(); }
 
+  /**************** Summary Panel ****************/
+  function renderSummary(){ const s=state.userData; const items=[ ['الاسم', s.name||'—'], ['العمر/الطول/الوزن', [s.age,s.height,s.weight].filter(Boolean).join(' / ')||'—'], ['الجنس', s.gender||'—'], ['الأهداف', (s.goals||[]).join(', ')||'—'], ['الهدف المتقدم', `${s.target_weight||'—'} | ${s.target_date||'—'}`], ['النظام', s.diet_preference||'—'], ['حساسيات', (s.allergies||[]).join(', ')||'—'], ['خبرة/آخر تدريب', `${s.training_exp||'—'} | ${s.last_train||'—'}`], ['الحالة الصحية', (s.health_conditions||[]).join(', ')||'—'], ['إصابات', s.injuries||'—'] ]; summary.innerHTML = `<ul class="space-y-1">${items.map(([k,v])=>`<li class="flex justify-between gap-2"><span class="text-gray-500">${k}</span><span class="font-semibold text-gray-800 ltr-text">${v}</span></li>`).join('')}</ul>`; }
 
-function renderAI(markdown) {
-  let html = marked.parse(markdown);
-  html = html.replace(/\[SWAP:(EXERCISE|MEAL):(.*?)\]/g, (m, type, item) => {
-    const t = type.toLowerCase();
-    const cleanItem = item.replace(/\"/g, '&quot;');
-    const btn = `<button type="button" onclick="swapItem(event)" data-type="${t}" data-item="${cleanItem}" class="no-print bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs px-2 py-1 rounded-md transition-colors">${T('swap')}</button>`;
-    return t === 'meal'
-      ? `<span class="inline-flex items-center gap-2">${item} ${btn}</span>`
-      : `<span class="inline-flex items-center gap-2 ltr-text"><span class="font-semibold">${item}</span>${btn}</span>`;
-  });
-  const planEl = document.getElementById('plan');
-  planEl.innerHTML = html;
-  document.querySelector('.no-print .animate-spin').style.display = 'none';
-  document.querySelector('.no-print h2').style.display = 'none';
-  document.querySelector('.no-print p').style.display = 'none';
+  /**************** App Control ****************/
+  function restartApp(){ state = { currentStage: 0, lang: state.lang, userData: { goals: [], weak_points: {}, health_conditions: [], allergies: [] } }; started=false; progressWrap.classList.add('hidden'); sticky.classList.add('hidden'); renderStage(0); renderSummary(); }
+  function notify(message,type='success'){ const el=document.createElement('div'); el.className=`fixed top-5 ${document.documentElement.dir==='rtl'?'left-5':'right-5'} p-3 rounded-lg shadow-lg text-white font-bold z-50 ${type==='error'?'bg-red-500':type==='warning'?'bg-amber-500':'bg-green-600'}`; el.textContent=message; document.body.appendChild(el); setTimeout(()=>el.remove(),3200); }
 
-  lastPlanJSON = { source: 'ai_markdown', raw: markdown };
-  qualityCheck();
-}
+  // Theme toggle
+  document.getElementById('btn-theme').onclick = ()=>{ document.documentElement.classList.toggle('dark'); };
 
-function renderErrorMessage(error) {
-    const planEl = document.getElementById('plan');
-    planEl.innerHTML = `<div class="p-4 bg-red-100 border-l-4 border-red-500 rounded-r-lg mb-4">
-        <h3 class="font-bold text-red-800">${T('api_key_error')}</h3>
-        <p class="text-red-700 text-sm">${error}</p>
-    </div>`;
-    document.querySelector('.no-print .animate-spin').style.display = 'none';
-    document.querySelector('.no-print h2').style.display = 'none';
-    document.querySelector('.no-print p').style.display = 'none';
-    document.getElementById('btn-restart').classList.remove('hidden');
-    document.getElementById('btn-restart').onclick = restartApp;
-}
+  // Language buttons
+  document.getElementById('btn-ar').onclick = ()=>{ state.lang='ar'; renderStage(state.currentStage); };
+  document.getElementById('btn-en').onclick = ()=>{ state.lang='en'; renderStage(state.currentStage); };
 
-function qualityCheck() {
-    const qc = document.getElementById('qc');
-    if (!qc) return;
-    try {
-        const txt = document.getElementById('plan').innerText || '';
-        const days = [1, 2, 3, 4, 5, 6, 7];
-        const found = days.filter(d => new RegExp(`(Day\\s*${d}|اليوم\\s*${d})`, 'i').test(txt));
-        const badge = `${T('days_check')}: ${found.length}/7`;
-        qc.innerHTML = `<span class="inline-flex items-center gap-2 px-2 py-1 rounded-lg ${found.length === 7 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">${badge}</span>`;
-    } catch { qc.textContent = ''; }
-}
-
-/*************** AI Prompt & API Call ***************/
-function buildAIPrompt(profile, lang, targets) {
-  const weak = Object.entries(profile.weak_points || {}).map(([muscle, desc]) => `${T(muscle)}: ${desc}`).join(', ') || 'None';
-  return `Act as "Coach Mustafa Al-Safi," a world-class nutrition and fitness expert. Create a professional, highly detailed, and SAFE plan for "${profile.name}".
-**CRITICAL: The final response must be in ${lang} language only, with all food items in ${lang} and exercise names in English ONLY.**
-
-**User's Comprehensive Data:**
-- Goals: **${(profile.goals || []).join(', ')}**
-- Target: Weight ${profile.target_weight || 'N/A'}, by ${profile.target_date || 'N/A'}.
-- History: Last trained: ${profile.last_train}. Experience: **${profile.training_exp}**.
-- Areas of Focus (Weak Points): ${weak}.
-- Core Stats: Age: ${profile.age}, H: ${profile.height}cm, W: ${profile.weight}kg, Gender: ${profile.gender}.
-- Health: Chronic Conditions: ${(profile.health_conditions || []).join(', ') || 'None'}. Injuries: **${profile.injuries || 'None'}**. Food Allergies: ${(profile.allergies || []).join(', ') || 'None'}.
-- Diet: Preferred System: ${profile.diet_preference}.
-- Daily macros target: P ${targets.macros.protein_g}g / F ${targets.macros.fat_g}g / C ${targets.macros.carb_g}g (~${targets.calories} kcal).
-
-**REQUIRED OUTPUT FORMAT (Use professional, clean Markdown with clear tables and headings. Address user by name):**
-### 1. مقدمة شخصية وتحليل شامل
-(أهلاً بك يا ${profile.name}. بناءً على تحليلي لبياناتك... قم بتحليل شامل لأهدافه، حالته الصحية، وتاريخه. اشرح منطق الخطة.)
-*هذه الخطة مخصصة لك بناءً على مدخلاتك ولا يجوز استخدامها من قبل شخص آخر.*
-### 2. خطة التغذية الدقيقة (لمدة 7 أيام)
-(قدم جدولاً واضحاً للوجبات لسبعة أيام. **كل وجبة يجب أن تكون قابلة للتبديل باستخدام [SWAP:MEAL:اسم الوجبة]**. اذكر المكونات والكميات.)
-### 3. قائمة المسموح والممنوع
-(بناءً على نظام "${profile.diet_preference}"، أنشئ قوائم واضحة باستخدام نقاط.)
-### 4. خطة التدريب المتكاملة
-**الأهمية القصوى: يجب أن يكون برنامج التدريب مناسبًا تمامًا لمستوى خبرة المستخدم ('${profile.training_exp}'). تجنب تمامًا أي تمارين قد تؤدي إلى تفاقم إصاباته المذكورة: '${profile.injuries || 'None'}'. يجب أن تركز الخطة على نقاط ضعفه: '${weak}'.**
-(قدم الخطة في **جدول Markdown واضح** لكل يوم. يجب أن يحتوي الجدول على أعمدة لليوم، التمرين، المجموعات، التكرارات، والراحة بالثواني. مثال:)
-| اليوم   | التمرين (Exercise)      | المجموعات (Sets) | التكرارات (Reps) | الراحة (Rest) |
-|---------|--------------------------|-------------------|-------------------|---------------|
-| اليوم 1 | Bench Press              | 4                 | 8-12              | 90s           |
-
-**كل تمرين يجب أن يكون قابلاً للتبديل: [SWAP:EXERCISE:Exercise Name]**.
-### 5. متابعة التقدم والتطور التدريجي
-(اشرح بوضوح **كيف ومتى** يزيد الأوزان أو التكرارات. حدد المدة المثالية لتطبيق الخطة قبل الحاجة لتعديل.)
-### 6. توصيات المكملات ونمط الحياة
-(اقترح مكملات بناءً على أهدافه وحالته الصحية. قدم نصائح عملية حول الماء والنوم والتوتر.)
-**--- خاتمة وتوقيع ---**
-(اختتم بفقرة تحفيزية، ثم أضف التوقيع:)
-**مع خالص تمنياتي لك بالنجاح،**
-**المدرب مصطفى الصافي**`;
-}
-
-async function callAI(prompt, url) {
-    if (!canCall()) return { ok: false, error: 'Rate limited' };
-    try {
-        markCall();
-        const res = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: prompt })
-        });
-        if (!res.ok) {
-            const errorText = await res.text();
-            return { ok: false, error: errorText || 'Server error' };
-        }
-        const data = await res.json();
-        return { ok: true, text: data.text };
-    } catch (e) {
-        return { ok: false, error: String(e) };
-    }
-}
-
-/*************** Item Swap Logic ***************/
-async function swapItem(e) {
-  const button = e.target.closest('button');
-  if (!button) return;
-  
-  const type = button.dataset.type;
-  const item = decodeURIComponent(button.dataset.item || '');
-  const originalLabel = button.textContent;
-  button.disabled = true;
-  button.innerHTML = `<span class="inline-block animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" role="status" aria-hidden="true"></span>`;
-
-  const { userData } = state;
-  let prompt = '';
-  if (type === 'meal') {
-      prompt = `User wants a swap for the meal "${item}".
-      CRITICAL: The new meal must be suitable for a "${userData.diet_preference}" diet and must NOT contain these allergens: "${(userData.allergies || []).join(', ')}".
-      Provide ONE alternative only. Reply with ingredients + quantities in ${state.lang}.`;
-  } else { // exercise
-      prompt = `User with "${userData.training_exp}" experience needs an alternative for the exercise "${item}".
-      CRITICAL: The new exercise must target the same muscle group but AVOID aggravating these injuries: "${userData.injuries || 'None'}".
-      Reply with ONE alternative: English name + sets/reps.`;
-  }
-  
-  const proxyUrl = '/.netlify/functions/gemini-proxy';
-  const ai = await callAI(prompt, proxyUrl);
-  let suggestion = '';
-
-  if (ai.ok && ai.text) {
-    suggestion = ai.text.trim().replace(/"/g, '');
-  } else {
-    showNotification(T('api_key_error'), 'error');
-  }
-
-  if (suggestion) {
-    const target = button.parentElement;
-    if (type === 'meal') {
-        target.childNodes[0].nodeValue = `${suggestion} `;
-        button.dataset.item = encodeURIComponent(suggestion);
-    } else { // exercise
-        const newName = suggestion.split(':')[0]?.trim() || suggestion;
-        target.querySelector('.font-semibold').textContent = newName;
-        const cell = button.closest('td');
-        if (cell) {
-            cell.innerHTML = cell.innerHTML.replace(item, newName);
-        }
-        button.dataset.item = encodeURIComponent(newName);
-    }
-  }
-
-  button.disabled = false;
-  button.innerHTML = originalLabel;
-}
-
-/*************** Data Export ***************/
-function exportJSON(data) {
-  if (!data) return;
-  const blob = new Blob([JSON.stringify({ userData: state.userData, plan: data }, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'ai-coach-plan.json';
-  a.click();
-}
-
-function exportCSV(data) {
-  if (!data) return;
-  let rows = [];
-  if (data.source === 'ai_markdown') {
-    rows.push(['source', 'ai_markdown']);
-    rows.push(['prompt_data', JSON.stringify(state.userData)]);
-    rows.push(['raw_response', data.raw]);
-  } else {
-    rows.push(['day', 'type', 'details']);
-    (data.nutrition || []).forEach(d => d.meals.forEach(m => rows.push([d.day, 'meal', `${m.name}: ${m.items.join(', ')}`])));
-    (data.training || []).forEach(d => d.blocks.forEach(b => rows.push([d.day, 'exercise', `${b.exercise} ${b.sets}x${b.reps}`])));
-  }
-  const csv = rows.map(r => r.map(x => `"${String(x).replaceAll('"', '""')}"`).join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'ai-coach-plan.csv';
-  a.click();
-}
-
-/*************** App Control & Initialization ***************/
-function restartApp() {
-  state = { currentStage: 0, lang: 'ar', userData: { goals: [], weak_points: {}, health_conditions: [], allergies: [] } };
-  started = false;
-  progressWrap.classList.add('hidden');
-  sticky.classList.add('hidden');
-  renderStage(0);
-}
-
-function showNotification(message, type = 'success') {
-    const el = document.createElement('div');
-    el.className = `fixed top-5 right-5 p-4 rounded-lg shadow-lg text-white font-bold z-50 ${type === 'error' ? 'bg-red-500' : type === 'warning' ? 'bg-amber-500' : 'bg-green-500'}`;
-    el.textContent = message;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 4000);
-}
-
-// Event Listeners
-document.getElementById('btn-ar').onclick = () => { state.lang = 'ar'; renderStage(state.currentStage); };
-document.getElementById('btn-en').onclick = () => { state.lang = 'en'; renderStage(state.currentStage); };
-
-// Initial Load
-window.addEventListener('load', () => {
-    renderStage(0);
-});
-</script>
+  // Init
+  window.addEventListener('load', ()=>{ renderStage(0); renderSummary(); });
+  </script>
 </body>
 </html>
-
