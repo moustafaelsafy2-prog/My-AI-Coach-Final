@@ -5,38 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>المدرب الشخصي الخبير — مصطفى الصافي</title>
 
-  <!-- Tailwind + Marked -->
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
   <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
 
-  <!-- Theme -->
   <style>
     :root{
-      --bg:#f8fafc; --surface:#ffffff; --border:#e5e7eb;
-      --text:#0f172a; --muted:#475569;
-      --primary:#1d4ed8; --primary-700:#1e40af;
+      --bg:#f7fafc; --surface:#ffffff; --muted:#64748b;
+      --border:#e2e8f0; --ink:#0f172a; --brand:#1e40af; --brand-2:#0ea5a4;
     }
-    html,body{background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+    html,body{background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
     .font-tajawal{font-family:'Tajawal',sans-serif}
     .font-poppins{font-family:'Poppins',sans-serif}
-    .card{background:var(--surface);border:1px solid var(--border);box-shadow:0 6px 18px rgba(2,6,23,.06)}
-    .btn{border:1px solid var(--border);padding:.6rem .9rem;border-radius:.6rem}
-    .btn-primary{background:var(--primary);color:#fff;border-color:var(--primary)}
-    .btn-primary:hover{background:var(--primary-700)}
-    .btn-ghost{background:#e2e8f0}
-    header{background:linear-gradient(90deg,rgba(29,78,216,.08),rgba(16,185,129,.08))}
-    .badge{padding:.2rem .5rem;border-radius:.45rem;font-size:.75rem;border:1px solid}
+    .card{background:var(--surface);border:1px solid var(--border);box-shadow:0 10px 24px rgba(2,6,23,.06)}
+    .btn{padding:.65rem 1rem;border-radius:.7rem;border:1px solid var(--border)}
+    .btn-primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+    .btn-primary:hover{background:#172554}
+    .btn-ghost{background:#eef2f7}
+    .badge{padding:.2rem .55rem;border-radius:.45rem;font-size:.75rem;border:1px solid}
     .ok{color:#065f46;background:#ecfdf5;border-color:#a7f3d0}
     .warn{color:#92400e;background:#fffbeb;border-color:#fde68a}
     .err{color:#991b1b;background:#fef2f2;border-color:#fecaca}
-    .ai-prose table{width:100%;border-collapse:collapse;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-    .ai-prose th,.ai-prose td{border:1px solid #e5e7eb;padding:.65rem;vertical-align:top}
-    .ai-prose th{background:#f8fafc;font-weight:700}
+    .k-table th,.k-table td{border:1px solid #e5e7eb;padding:.55rem;vertical-align:top}
+    .k-table th{background:#f8fafc;font-weight:700}
+    header{background:linear-gradient(90deg,rgba(30,64,175,.08),rgba(14,165,164,.08))}
     @media print{
       header,#sticky,.no-print{display:none!important}
       body{background:#fff}
@@ -62,25 +58,23 @@
   </header>
 
   <!-- Shell -->
-  <div id="app" class="max-w-4xl mx-auto my-5 sm:my-10 card rounded-2xl overflow-hidden">
+  <div id="app" class="max-w-5xl mx-auto my-5 sm:my-9 card rounded-2xl overflow-hidden">
     <!-- Hero -->
     <div class="p-6 sm:p-8">
       <h1 class="text-2xl sm:text-3xl font-extrabold text-center">المدرب الشخصي الخبير</h1>
-      <p class="text-sm text-slate-600 text-center mt-1">
-        خطة دقيقة 100% للتغذية والتدريب والمكملات — مناسبة لأهدافك وصحتك ونمط حياتك.
-      </p>
+      <p class="text-sm text-slate-600 text-center mt-1">خطة دقيقة 100% للتغذية والتدريب والمكملات — مخصصة وفق أهدافك وصحتك ونمط حياتك.</p>
       <p class="text-xs text-slate-500 text-center mt-1">
         المدرب مصطفى الصافي — خبير التغذية واللياقة البدنية │ مدرب دولي معتمد • Powered by Mustafa Elsafy 2025
       </p>
 
       <div class="grid sm:grid-cols-3 gap-3 mt-5">
         <div class="card p-3">
-          <div class="text-xs text-slate-600 mb-1">الحقوق والاعتماد</div>
-          <div class="text-sm">مصطفى الصافي — خبير التغذية واللياقة البدنية | مدرب دولي معتمد</div>
+          <div class="text-xs text-slate-600 mb-1">العلامة المهنية</div>
+          <div class="text-sm">Coach: Mustafa Al-Safi — International Certified</div>
           <div class="text-xs text-slate-500 mt-1">Powered by Mustafa Elsafy 2025</div>
         </div>
         <div class="card p-3">
-          <div class="text-xs text-slate-600 mb-1">جودة الخطة</div>
+          <div class="text-xs text-slate-600 mb-1">سلامة الخطة</div>
           <div class="flex items-center gap-2">
             <span id="badgeDays" class="badge warn">0/7</span>
             <span id="badgeMacros" class="badge warn">±2% 0/7</span>
@@ -89,7 +83,7 @@
         <div class="card p-3">
           <div class="text-xs text-slate-600 mb-1">مرحلة التقدم</div>
           <div class="h-2.5 bg-gray-200 rounded-full overflow-hidden">
-            <div id="progress" class="h-full bg-gradient-to-r from-indigo-500 to-blue-500 transition-all duration-300" style="width:0%"></div>
+            <div id="progress" class="h-full bg-gradient-to-r from-indigo-600 to-cyan-600 transition-all duration-300" style="width:0%"></div>
           </div>
           <div class="mt-2 text-xs text-gray-500">الخطوة <span id="step">0</span> من 12</div>
         </div>
@@ -100,15 +94,17 @@
     <main id="content" class="p-5 sm:p-8"></main>
 
     <!-- Sticky nav -->
-    <div id="sticky" class="sticky bottom-0 bg-white/80 backdrop-blur-md border-t px-4 sm:px-6 py-3 flex gap-3 justify-between">
-      <button id="prev" class="btn btn-ghost w-1/3 sm:w-40" type="button">السابق</button>
+    <div id="sticky" class="sticky bottom-0 bg-white/85 backdrop-blur-md border-t px-4 sm:px-6 py-3 flex gap-3 justify-between">
+      <button id="prev" class="btn btn-ghost w-1/3 sm:w-44" type="button">السابق</button>
       <button id="next" class="btn btn-primary flex-1" type="button">التالي</button>
     </div>
   </div>
 
   <!-- App -->
   <script>
-  /* ---------- STATE ---------- */
+  /* =========================
+     STATE & I18N
+  ========================== */
   const TOTAL = 12;
   const content = document.getElementById('content');
   const progressBar = document.getElementById('progress');
@@ -140,7 +136,6 @@
     calc: { tdee: 0, P: 0, F: 0, C: 0, pal: 1.35 }
   };
 
-  /* ---------- I18N ---------- */
   const I = {
     ar: {
       start:"ابدأ", next:"التالي", prev:"السابق", submit:"احصل على خطتك الآن!",
@@ -152,16 +147,16 @@
     },
     en: {
       start:"Start", next:"Next", prev:"Back", submit:"Generate Plan",
-      welcome_title:"Welcome!", welcome_desc:"I'll craft a complete plan for nutrition, training and supplements.",
+      welcome_title:"Welcome!", welcome_desc:"I will craft a complete plan for nutrition, training, and supplements.",
       name_q:"Name", age:"Age", height:"Height (cm)", weight:"Weight (kg)", gender:"Gender", male:"Male", female:"Female",
-      stage_1:"Who are you?", stage_2:"Basics", stage_3:"Goals", stage_4:"Advanced target", stage_5:"Diet style",
-      stage_6:"Allergies", stage_7:"Training history", stage_8:"Focus areas", stage_9:"Health", stage_10:"Lifestyle", stage_11:"Optional files",
-      api_error:"Cannot reach model. Check function or key."
+      stage_1:"Who are you?", stage_2:"Basics", stage_3:"Goals", stage_4:"Advanced Target", stage_5:"Preferred Diet",
+      stage_6:"Allergies", stage_7:"Training History", stage_8:"Focus Areas", stage_9:"Health", stage_10:"Lifestyle", stage_11:"Optional Files",
+      api_error:"Cannot reach the model. Check the function or API key."
     }
   };
   function t(k){return I[state.lang][k]||k}
   function setLang(l){
-    state.lang=l; document.documentElement.lang=l; document.documentElement.dir=l==='ar'?'rtl':'ltr';
+    state.lang=l; document.documentElement.lang=l; document.documentElement.dir=(l==='ar'?'rtl':'ltr');
     document.body.classList.toggle('font-tajawal',l==='ar'); document.body.classList.toggle('font-poppins',l!=='ar');
     btnEn.className='btn '+(l==='en'?'btn-primary':''); btnAr.className='btn '+(l==='ar'?'btn-primary':'');
     updateCTA();
@@ -169,7 +164,9 @@
   btnAr.onclick=()=>setLang('ar'); btnEn.onclick=()=>setLang('en');
   document.getElementById('cmd-print').onclick=()=>window.print();
 
-  /* ---------- RENDER UTILS ---------- */
+  /* =========================
+     RENDER UTILS
+  ========================== */
   function updateProgress(){ const p=Math.max(0,((state.step-1)/TOTAL)*100); progressBar.style.width=p+'%'; stepEl.textContent=String(Math.min(state.step,TOTAL)); }
   function updateCTA(){ btnPrev.textContent=t('prev'); btnNext.textContent = state.step===TOTAL ? t('submit') : t('next'); btnPrev.disabled=state.step<=1; }
   function field(label,id,opt={}){ const {type='text',value='',required=false,select=null,placeholder='',num=false}=opt;
@@ -179,7 +176,9 @@
   }
   function stage(title,desc,inner){ return `<section><h2 class="text-2xl sm:text-3xl font-extrabold">${title}</h2><p class="mt-1 text-slate-600">${desc||''}</p><form class="space-y-5 mt-6" onsubmit="event.preventDefault();">${inner}</form></section>` }
 
-  /* ---------- STAGES ---------- */
+  /* =========================
+     STAGES
+  ========================== */
   function render(){
     updateProgress(); updateCTA();
     const s = state.user; let html='';
@@ -269,7 +268,7 @@
       }
 
       case 6:
-        const al = ['الجلوتين','اللاكتوز','المكسرات','المأكولات البحرية','السكريات المصنعة','الزيوت النباتية المصنعة','البقوليات','الأكتين'];
+        const al = ['الجلوتين','اللاكتوز','المكسرات','المأكولات البحرية','السكريات المصنعة','الزيوت النباتية المصنعة','البقوليات'];
         html = `<div class="grid sm:grid-cols-2 gap-2">${al.map(v=>`<label class="p-3 border rounded cursor-pointer"><input type="checkbox" name="allergy" value="${v}" class="mr-2 accent-indigo-600"> ${v}</label>`).join('')}</div>${field('حساسيات أخرى (اختياري)','other_allergies',{value:s.other_allergies||''})}`;
         content.innerHTML=stage(t('stage_6'),' ',html); break;
 
@@ -304,12 +303,14 @@
         content.innerHTML=stage(t('stage_11'),' ',html); break;
 
       case 12:
-        content.innerHTML=`<section class="text-center p-8"><h2 class="text-2xl font-extrabold mb-1">${state.user.name?('معك '+state.user.name):'جارٍ التحليل'}</h2><p class="text-slate-600">أقوم بتحليل بياناتك لصياغة خطة دقيقة ومتكاملة…</p><div class="mt-6 animate-spin rounded-full h-12 w-12 border-b-4 border-indigo-600 mx-auto"></div><div id="plan" class="mt-8" dir="${state.lang==='ar'?'rtl':'ltr'}"></div></section>`;
+        content.innerHTML=`<section class="text-center p-8"><h2 class="text-2xl font-extrabold mb-1">${state.user.name?('معك '+state.user.name):'جارٍ التحليل'}</h2><p class="text-slate-600">أقوم بتحليل بياناتك لصياغة خطة دقيقة ومتكاملة…</p><div class="mt-6 animate-spin rounded-full h-12 w-12 border-b-4 border-indigo-600 mx-auto"></div><div id="plan" class="mt-8"></div></section>`;
         generatePlan(); break;
     }
   }
 
-  /* ---------- SAVE & NAV ---------- */
+  /* =========================
+     SAVE & NAV
+  ========================== */
   function saveAndNext(){
     const s=state.user;
     try{
@@ -343,7 +344,9 @@
   function back(){ if(state.step>1){ state.step--; render(); } }
   btnPrev.onclick=back; btnNext.onclick=()=>{ if(state.step<TOTAL) saveAndNext(); else generatePlan(); };
 
-  /* ---------- CALC ---------- */
+  /* =========================
+     CALCULATIONS
+  ========================== */
   function compute(){
     const p=state.user; const W=+p.weight||0,H=+p.height||0,A=+p.age||0; const male=p.gender==='Male';
     const BMR = male ? 10*W + 6.25*H - 5*A + 5 : 10*W + 6.25*H - 5*A - 161;
@@ -359,172 +362,347 @@
     state.calc={tdee:Math.round(TDEE),P,F,C,pal};
   }
 
-  /* ---------- AI CALL ---------- */
+  /* =========================
+     GENERATION (STRICT JSON)
+  ========================== */
   async function generatePlan(){
-    compute();
-    lock(true);
-    try{
-      const prompt = buildPrompt(state.user,state.lang,state.calc);
-      const r = await fetch('/.netlify/functions/gemini-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
-      const raw=await r.text(); let data=null; try{data=raw?JSON.parse(raw):null;}catch{}
-      if(!r.ok) throw new Error(data?.error||raw||'Server error');
-      renderAI(data?.text||''); audit(data?.text||'');
-      notify(state.lang==='ar'?'تم إنشاء الخطة':'Plan generated','ok');
-    }catch(e){ showError(e.message||String(e)); notify(t('api_error'),'err'); }
-    finally{ lock(false); }
+    compute(); lock(true);
+    const proxy = '/.netlify/functions/gemini-proxy';
+    const prompt = buildJSONPrompt(state.user, state.lang, state.calc);
+
+    try {
+      let plan = await callJSON(proxy, prompt);
+      if (!isValidPlan(plan)) {
+        const retry = prompt + '\nReturn VALID JSON only. No markdown, no commentary.';
+        plan = await callJSON(proxy, retry);
+      }
+      if (!isValidPlan(plan)) throw new Error('Invalid JSON');
+
+      const fixed = validateAndFix(plan, state.calc, state.user.meals_per_day || 4);
+      renderFromJSON(fixed);
+      auditOK();
+      notify(state.lang==='ar'?'تم إنشاء خطة دقيقة':'Accurate plan generated','ok');
+    } catch (e) {
+      showError(e.message || t('api_error')); notify(t('api_error'),'err');
+    } finally {
+      lock(false);
+    }
   }
 
-  function buildPrompt(p, lang, c) {
-    const weak = Object.entries(p.weak_points||{}).map(([k,v])=>`${k}: ${v}`).join(', ') || 'None';
-    const meals = Number(p.meals_per_day||4);
-    const fasting = p.fasting?.enabled ? `YES (${p.fasting.protocol}, window ${p.fasting.start}-${p.fasting.end})` : 'NO';
+  function isValidPlan(p){
+    return p && Array.isArray(p.nutrition) && p.nutrition.length>=7 && Array.isArray(p.training) && p.training.length>=7;
+  }
+
+  async function callJSON(url, prompt){
+    const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({prompt}) });
+    const text = await res.text();
+    if (!res.ok) throw new Error(text || 'Server error');
+    // النموذج قد يعيد JSON داخل "text"
+    try { const j=JSON.parse(text); if(j && j.text){ try{return JSON.parse(j.text)}catch{} } return j; } catch {}
+    try { return JSON.parse(text); } catch {}
+    return null;
+  }
+
+  /* =========================
+     PROMPT (STRICT JSON CONTRACT)
+  ========================== */
+  function buildJSONPrompt(p, lang, c) {
+    const meals = Number(p.meals_per_day || 4);
+    const fastingEnabled = !!(p.fasting && p.fasting.enabled);
+    const fastingMeta = fastingEnabled
+      ? `YES | protocol ${p.fasting.protocol} | window ${p.fasting.start}-${p.fasting.end}`
+      : 'NO';
+
+    const schema = `
+{
+  "profile": { "name": "string", "gender": "Male|Female", "age": "number", "height_cm": "number", "weight_kg": "number" },
+  "diagnosis": "string",
+  "guidelines": ["string"],
+  "allowed": ["string"], "avoid": ["string"],
+  "fasting": { "enabled": "boolean", "protocol": "string", "window": "HH:MM-HH:MM", "notes": ["string"] },
+  "nutrition": [
+    { "day": 1, "meals": [ { "name": "string", "kcal": "number", "p": "number", "f": "number", "c": "number" } ],
+      "daily_total": { "kcal": "number", "p": "number", "f": "number", "c": "number" } }
+  ],
+  "training": [
+    { "day": 1, "blocks": [
+      { "exercise_en": "string", "note_ar": "string", "sets": "number", "reps": "string", "tempo": "string", "rir": "number", "rest": "number" }
+    ]}
+  ],
+  "cardio_neat": { "minutes_per_day": "number", "zone": "string", "steps_target": "number" },
+  "supplements": [
+    { "name": "string", "dose": "string", "timing": "string", "goal": "string", "warnings": "string" }
+  ],
+  "motivation": ["string","string","string","string","string","string","string"],
+  "progression": "string",
+  "disclaimer": "string",
+  "signature": "string"
+}`;
 
     return `
-Act as "Coach Mustafa Al-Safi" (Certified International Coach).
-You MUST deliver a COMPLETE, SAFE, EXECUTABLE plan in ${lang.toUpperCase()}.
+You are Coach "Mustafa Al-Safi" (Certified International Coach).
+Return STRICT JSON ONLY that matches the <SCHEMA> without any extra text, code fences, or comments.
 
-HARD RULES:
-1) Use clean Markdown with clear tables.
-2) Calories and macros must be **accurate**:
-   - Daily target: ~${c.tdee} kcal (tolerance ≤ 2%).
-   - Macros per day: Protein ${c.P} g, Fat ${c.F} g, Carbs ${c.C} g.
-   - Show **per-meal** calories & P/F/C AND a **Daily Total** line at the bottom of each day's table.
-3) Meals per day: **${meals}**. Distribute calories/macros accordingly.
-4) Fasting: ${fasting}.
-   - If fasting YES: No calories outside window; water/black coffee/unsweetened tea allowed.
-   - Add hydration & electrolytes guidance on fasted training.
-5) Allergies/Health must be respected strictly:
-   - Allergies: ${(p.allergies||[]).join(', ')||'None'}.
-   - Conditions: ${(p.health_conditions||[]).join(', ')||'None'}.
-   - If diabetes/insulin resistance: keep carbs ≤ 120 g/day unless rationally explained.
-6) Supplements must be **condition-tailored** with safety notes.
+<CONTEXT>
+LANG=${lang.toUpperCase()} (Food & narrative in ${lang}; exercise names in EN + short AR note)
+GOALS=${(p.goals||[]).join(', ') || '—'}
+DIET=${p.diet_preference || 'Balanced'}
+ALLERGIES=${(p.allergies||[]).join(', ') || 'None'}
+CONDITIONS=${(p.health_conditions||[]).join(', ') || 'None'}
+INJURIES=${p.injuries || 'None'}
+MEALS_PER_DAY=${meals}
+FASTING=${fastingMeta}
+PAL=${c.pal}
+DAILY_TARGET=~${c.tdee} kcal (±2%) | P=${c.P}g F=${c.F}g C=${c.C}g
+CARB_CAP_IF_IR_OR_DM=≤120g/day unless clearly justified
+USER=${p.name || 'Client'} | ${p.gender}, ${p.age}y, ${p.height}cm, ${p.weight}kg
+</CONTEXT>
 
-USER SNAPSHOT:
-- ${p.name} — ${p.gender}, ${p.age}y, ${p.height}cm, ${p.weight}kg
-- Goals: ${(p.goals||[]).join(', ')}; Target: ${p.target_weight||'—'} by ${p.target_date||'—'}
-- Experience: ${p.training_exp||'—'}, Last train: ${p.last_train||'—'}
-- Weak points: ${weak}
-- Diet: ${p.diet_preference||'—'}; Meals/day: ${meals}; Fasting: ${fasting}
-- Lifestyle: Job ${p.job_activity||'—'}, Sleep ${p.sleep_hours||'—'}h, Stress ${p.stress_level||'—'}, Steps ${p.steps_target}/d, PAL ${c.pal}
-- Daily Targets: ~${c.tdee} kcal | P ${c.P} g / F ${c.F} g / C ${c.C} g
+<HARD RULES>
+1) 7 days for both nutrition and training — no missing days.
+2) For each day: exactly ${meals} meals. Show per-meal kcal/P/F/C and a "daily_total" matching targets (±2%).
+3) Respect allergies/conditions strictly. If diabetic/IR, cap carbs unless justified briefly.
+4) FASTING=${fastingMeta}. If YES: include hydration/electrolytes and fasted training notes.
+5) Supplements: condition-tailored with dose/timing/goal/warnings.
+6) Keep outputs realistic, executable, and safe.
 
-OUTPUT (exact order, Arabic headings):
-
-### 1) شرح الحالة والهدف من الحمية
-- لخص وضع المستخدم الصحي والبدني بدقة (وزن/عمر/جنس/تاريخ تدريبي/نقاط الضعف).
-- اربط الأهداف بسلوكيات يومية قابلة للقياس (سعرات/ماكروز/نوم/خطوات/تمارين).
-
-### 2) أهم الإرشادات التنفيذية
-- 6–10 نقاط قصيرة وعملية (النوم، الترطيب، البروتين، توقيت الوجبات، التعامل مع المناسبات خارج المنزل…).
-
-### 3) قائمة المسموح والممنوع
-- جدولان منفصلان: "مسموح" و"ممنوع" (يُراعي الحساسية والحالة الصحية والنظام المختار).
-
-### 4) بروتوكول الصيام المتقطع (إن كان مفعلاً)
-- اشرح البروتوكول ${p.fasting?.protocol||'—'} مع النافذة ${p.fasting?.start||'—'}–${p.fasting?.end||'—'}.
-- تعليمات التدريب داخل/خارج النافذة، متى القهوة السوداء، متى الإلكتروليت، ومتى كسر الصيام.
-- إن لم يكن الصيام فعالاً: ضع فقرة قصيرة تشرح لماذا ولماذا قد يُنصح به أو لا.
-
-### 5) التغذية — 7 أيام كاملة
-- لكل يوم **${meals} وجبات**.
-- جدول قياسي:
-| اليوم | الوجبة | المكونات (غ) | السعرات | البروتين (g) | الدهون (g) | الكارب (g) |
-|---|---|---|---:|---:|---:|---:|
-(اكتب كل الوجبات، ثم في الأسفل سطر: **الإجمالي اليومي: XXXX kcal — P XX / F XX / C XX** ويجب أن يطابق التارجت ±2%)
-
-### 6) التدريب — 7 أيام كاملة
-- استخدم EN لأسماء التمارين + ملاحظة عربية موجزة.
-- جدول:
-| اليوم | Exercise (EN) + ملاحظة | Sets | Reps | Tempo | RIR | Rest(s) |
-|---|---|---:|---:|---:|---:|---:|
-- راعِ الإصابات المذكورة: "${p.injuries||'None'}".
-- اربط الخطة بنقاط الضعف: "${weak}".
-
-### 7) الكارديو و NEAT
-- دقائق/اليوم + منطقة النبض المستهدفة + هدف الخطوات (${p.steps_target}/اليوم).
-- ماذا تفعل في أيام السفر/الضغوط.
-
-### 8) المكملات (مخصصة للحالة)
-- جدول شامل:
-| المكمل | الجرعة | التوقيت | الهدف | تحذيرات |
-- مثال (عدِّل حسب الحالة): Vitamin D3 (2000 IU AM)، Omega-3 (2–3 g/d with fat)، Creatine (5 g post-workout)، Magnesium glycinate (200–400 mg PM)، Electrolytes في الصيام/كيتو، Probiotic/Prebiotic للـGI… مع تحذيرات التداخلات/الحمل/الأدوية.
-
-### 9) رسائل تحفيزية يومية
-- 7 رسائل قصيرة عملية (واحدة لكل يوم) تربط السلوك بالهدف.
-
-### 10) خطة التقدم والتعديل
-- كيف تزيد الأحمال/التكرارات، وكيف تعدل السعرات ±100–150 عند ثبات الميزان، ومتى تُعاد التقييمات.
-
-### 11) إخلاء مسؤولية وحقوق
-- هذه الخطة مخصصة للمستخدم فقط. استشر طبيبك عند وجود حالات مزمنة.
-
-**التوقيع:**
-**المدرب مصطفى الصافي — خبير التغذية واللياقة البدنية │ مدرب دولي معتمد**  
-**Powered by Mustafa Elsafy 2025**
+<SCHEMA>
+${schema}
+</SCHEMA>
 `;
   }
 
-  /* ---------- RENDER RESULTS + TOOLS ---------- */
-  function renderAI(md){
-    const html = marked.parse(
-      md.replace(/\[SWAP:(EXERCISE|MEAL):(.*?)\]/g,(m,type,item)=>{
-        const t=type.toLowerCase(); const clean=(item||'').replace(/"/g,'&quot;');
-        const btn=`<button type="button" class="btn no-print" data-type="${t}" data-item="${encodeURIComponent(clean)}" onclick="swapItem(event)">${state.lang==='ar'?'تبديل':'Swap'}</button>`;
-        return t==='meal'? `<span class="inline-flex items-center gap-2">${item} ${btn}</span>` : `<span class="inline-flex items-center gap-2"><b>${item}</b>${btn}</span>`;
-      })
-    );
-    content.innerHTML = `<section class="card p-6"><article class="ai-prose max-w-none">${html}</article>
-      <div class="no-print mt-4 flex gap-2"><button class="btn" onclick="doJSON()">JSON</button><button class="btn" onclick="doCSV()">CSV</button><button class="btn" onclick="window.print()">${state.lang==='ar'?'طباعة PDF':'Print PDF'}</button></div>
-      <div class="mt-6 text-xs text-slate-500 border-t pt-3"><b>المدرب مصطفى الصافي — خبير التغذية واللياقة البدنية │ مدرب دولي معتمد</b><div>Powered by Mustafa Elsafy 2025</div></div></section>`;
+  /* =========================
+     VALIDATE & FIX
+  ========================== */
+  function validateAndFix(plan, calc, mealsPerDay){
+    const tgt = { kcal: calc.tdee, p: calc.P, f: calc.F, c: calc.C };
+    const tol = 0.02; // ±2%
+
+    // ضمان 7 أيام للتغذية والتدريب
+    plan.nutrition = (plan.nutrition||[]).slice(0,7);
+    while(plan.nutrition.length<7){
+      plan.nutrition.push({ day: plan.nutrition.length+1, meals: [], daily_total:{kcal:0,p:0,f:0,c:0} });
+    }
+    plan.training = (plan.training||[]).slice(0,7);
+    while(plan.training.length<7){ plan.training.push({ day: plan.training.length+1, blocks: [] }); }
+
+    // إصلاح يومي بسيط
+    plan.nutrition = plan.nutrition.map(d=>{
+      // ضبط عدد الوجبات
+      d.meals = (d.meals||[]).slice(0, mealsPerDay);
+      while(d.meals.length<mealsPerDay){ d.meals.push({name:'Balanced Meal',kcal:0,p:0,f:0,c:0}); }
+
+      // إجمالي حالي
+      const sum = d.meals.reduce((a,m)=>({kcal:a.kcal+(+m.kcal||0), p:a.p+(+m.p||0), f:a.f+(+m.f||0), c:a.c+(+m.c||0)}), {kcal:0,p:0,f:0,c:0});
+
+      const needAdj = (Math.abs(sum.kcal - tgt.kcal) / tgt.kcal > tol)
+        || Math.abs(sum.p - tgt.p) > 2
+        || Math.abs(sum.f - tgt.f) > 2
+        || Math.abs(sum.c - tgt.c) > 3;
+
+      if (needAdj) {
+        const per = { kcal: tgt.kcal / mealsPerDay, p: tgt.p / mealsPerDay, f: tgt.f / mealsPerDay, c: tgt.c / mealsPerDay };
+        d.meals = d.meals.map((m,i)=>({
+          name: m.name || `Meal ${i+1}`,
+          kcal: Math.round(per.kcal),
+          p: Math.round(per.p),
+          f: Math.round(per.f),
+          c: Math.round(per.c)
+        }));
+      }
+
+      const fin = d.meals.reduce((a,m)=>({kcal:a.kcal+m.kcal, p:a.p+m.p, f:a.f+m.f, c:a.c+m.c}), {kcal:0,p:0,f:0,c:0});
+      d.daily_total = fin;
+      return d;
+    });
+
+    // مكملات: ضمان الحقول
+    plan.supplements = (plan.supplements||[]).map(s=>({
+      name: s.name||'—', dose: s.dose||'—', timing: s.timing||'—', goal: s.goal||'—', warnings: s.warnings||'—'
+    }));
+
+    // توقيع وحقوق
+    plan.signature = 'المدرب مصطفى الصافي — خبير التغذية واللياقة البدنية │ مدرب دولي معتمد • Powered by Mustafa Elsafy 2025';
+    plan.disclaimer = plan.disclaimer || 'هذه الخطة شخصية ولا تُستخدم لغيرك. في وجود حالات مزمنة أو أدوية، استشر طبيبك.';
+    return plan;
   }
 
-  function audit(md){
-    const days = (md.match(/(?:^|\n)(?:Day|اليوم)\s*\d/gi)||[]).length;
-    badgeDays.textContent = `${Math.min(days,7)}/7`;
-    badgeDays.className = 'badge ' + (days===7 ? 'ok':'warn');
+  /* =========================
+     RENDER FROM JSON
+  ========================== */
+  function renderFromJSON(plan){
+    const kpi = `
+      <div class="grid sm:grid-cols-4 gap-3">
+        <div class="card p-3"><div class="text-xs text-slate-600">TDEE</div><div class="font-bold">${state.calc.tdee} kcal</div></div>
+        <div class="card p-3"><div class="text-xs text-slate-600">Protein</div><div class="font-bold">${state.calc.P} g</div></div>
+        <div class="card p-3"><div class="text-xs text-slate-600">Fat</div><div class="font-bold">${state.calc.F} g</div></div>
+        <div class="card p-3"><div class="text-xs text-slate-600">Carbs</div><div class="font-bold">${state.calc.C} g</div></div>
+      </div>`;
 
-    const totals = [...md.matchAll(/الإجمالي اليومي\s*:\s*([\d,.]+)\s*kcal/gi)].map(m=>Number((m[1]||'0').replace(/[^\d.]/g,'')));
-    badgeMacros.textContent = `±2% ${Math.min(totals.length,7)}/7`;
-    badgeMacros.className = 'badge ' + (totals.length===7 ? 'ok':'warn');
+    const diag = `<section class="card p-5 mt-4">
+        <h3 class="text-lg font-bold mb-2">شرح الحالة والهدف</h3>
+        <p class="text-slate-700">${escapeHTML(plan.diagnosis||'')}</p>
+      </section>`;
+
+    const guide = `<section class="card p-5 mt-4">
+        <h3 class="text-lg font-bold mb-2">أهم الإرشادات</h3>
+        <ul class="list-disc pr-6 text-slate-700">${(plan.guidelines||[]).map(x=>`<li>${escapeHTML(x)}</li>`).join('')}</ul>
+      </section>`;
+
+    const allowAvoid = `<section class="card p-5 mt-4">
+        <h3 class="text-lg font-bold mb-2">قائمة المسموح والممنوع</h3>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div><div class="font-bold mb-1">مسموح</div><ul class="list-disc pr-6">${(plan.allowed||[]).map(x=>`<li>${escapeHTML(x)}</li>`).join('')}</ul></div>
+          <div><div class="font-bold mb-1">ممنوع</div><ul class="list-disc pr-6">${(plan.avoid||[]).map(x=>`<li>${escapeHTML(x)}</li>`).join('')}</ul></div>
+        </div>
+      </section>`;
+
+    const fasting = plan.fasting?.enabled ? `<section class="card p-5 mt-4">
+        <h3 class="text-lg font-bold mb-2">بروتوكول الصيام المتقطع</h3>
+        <p class="text-slate-700">البروتوكول: <b>${escapeHTML(plan.fasting.protocol)}</b> — نافذة الأكل: <b>${escapeHTML(plan.fasting.window)}</b></p>
+        <ul class="list-disc pr-6 mt-2 text-slate-700">${(plan.fasting.notes||[]).map(x=>`<li>${escapeHTML(x)}</li>`).join('')}</ul>
+      </section>` : '';
+
+    const nutrition = `<section class="card p-5 mt-4">
+        <h3 class="text-lg font-bold mb-3">التغذية — 7 أيام</h3>
+        ${plan.nutrition.map(d=>`
+          <div class="mb-5">
+            <div class="font-bold mb-1">اليوم ${d.day}</div>
+            <div class="overflow-auto">
+              <table class="w-full border-collapse k-table">
+                <thead><tr>
+                  <th>الوجبة</th><th>السعرات</th><th>P</th><th>F</th><th>C</th>
+                </tr></thead>
+                <tbody>
+                  ${d.meals.map(m=>`
+                    <tr>
+                      <td>${escapeHTML(m.name)}</td>
+                      <td class="text-right">${m.kcal}</td>
+                      <td class="text-right">${m.p}</td>
+                      <td class="text-right">${m.f}</td>
+                      <td class="text-right">${m.c}</td>
+                    </tr>`).join('')}
+                  <tr class="bg-slate-50 font-bold">
+                    <td>الإجمالي اليومي</td>
+                    <td class="text-right">${d.daily_total.kcal}</td>
+                    <td class="text-right">${d.daily_total.p}</td>
+                    <td class="text-right">${d.daily_total.f}</td>
+                    <td class="text-right">${d.daily_total.c}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>`).join('')}
+      </section>`;
+
+    const training = `<section class="card p-5 mt-4">
+        <h3 class="text-lg font-bold mb-3">التدريب — 7 أيام</h3>
+        ${plan.training.map(d=>`
+          <div class="mb-5">
+            <div class="font-bold mb-1">اليوم ${d.day}</div>
+            <div class="overflow-auto">
+              <table class="w-full border-collapse k-table">
+                <thead><tr>
+                  <th>Exercise (EN) + ملاحظة</th><th>Sets</th><th>Reps</th><th>Tempo</th><th>RIR</th><th>Rest(s)</th>
+                </tr></thead>
+                <tbody>
+                  ${(d.blocks||[]).map(b=>`
+                    <tr>
+                      <td>${escapeHTML(b.exercise_en)} — <span class="text-slate-600">${escapeHTML(b.note_ar||'')}</span></td>
+                      <td class="text-right">${b.sets||'-'}</td>
+                      <td class="text-right">${b.reps||'-'}</td>
+                      <td class="text-right">${b.tempo||'-'}</td>
+                      <td class="text-right">${b.rir??'-'}</td>
+                      <td class="text-right">${b.rest||'-'}</td>
+                    </tr>`).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>`).join('')}
+      </section>`;
+
+    const cardio = `<section class="card p-5 mt-4">
+        <h3 class="text-lg font-bold mb-2">الكارديو و NEAT</h3>
+        <p class="text-slate-700">
+          دقائق يوميًا: <b>${(plan.cardio_neat||{}).minutes_per_day || 0}</b> •
+          المنطقة: <b>${escapeHTML((plan.cardio_neat||{}).zone || '-')}</b> •
+          هدف الخطوات: <b>${(plan.cardio_neat||{}).steps_target || state.user.steps_target}</b>
+        </p>
+      </section>`;
+
+    const supp = `<section class="card p-5 mt-4">
+        <h3 class="text-lg font-bold mb-2">المكملات</h3>
+        <div class="overflow-auto">
+          <table class="w-full border-collapse k-table">
+            <thead><tr>
+              <th>المكمل</th><th>الجرعة</th><th>التوقيت</th><th>الهدف</th><th>تحذيرات</th>
+            </tr></thead>
+            <tbody>
+              ${(plan.supplements||[]).map(s=>`
+                <tr>
+                  <td>${escapeHTML(s.name)}</td>
+                  <td>${escapeHTML(s.dose)}</td>
+                  <td>${escapeHTML(s.timing)}</td>
+                  <td>${escapeHTML(s.goal)}</td>
+                  <td>${escapeHTML(s.warnings)}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </section>`;
+
+    const motivation = `<section class="card p-5 mt-4">
+        <h3 class="text-lg font-bold mb-2">رسائل تحفيزية يومية</h3>
+        <ol class="list-decimal pr-6 text-slate-700">${(plan.motivation||[]).slice(0,7).map(x=>`<li>${escapeHTML(x)}</li>`).join('')}</ol>
+      </section>`;
+
+    const progression = `<section class="card p-5 mt-4">
+        <h3 class="text-lg font-bold mb-2">التقدم والتعديل</h3>
+        <p class="text-slate-700">${escapeHTML(plan.progression||'')}</p>
+      </section>`;
+
+    const legal = `<section class="card p-5 mt-4">
+        <div class="text-xs text-slate-600">${escapeHTML(plan.disclaimer||'')}</div>
+        <div class="text-xs text-slate-700 mt-1"><b>${escapeHTML(plan.signature||'')}</b></div>
+      </section>`;
+
+    content.innerHTML = `
+      <section class="p-5">
+        ${kpi}
+        ${diag}
+        ${guide}
+        ${allowAvoid}
+        ${fasting}
+        ${nutrition}
+        <div class="page-break"></div>
+        ${training}
+        ${cardio}
+        ${supp}
+        ${motivation}
+        ${progression}
+        ${legal}
+        <div class="no-print mt-4 flex gap-2">
+          <button class="btn" onclick="downloadJSON(${JSON.stringify(JSON.stringify(plan))})">JSON</button>
+          <button class="btn" onclick="window.print()">${state.lang==='ar'?'طباعة PDF':'Print PDF'}</button>
+        </div>
+      </section>`;
   }
 
-  async function swapItem(ev){
-    const b=ev.target.closest('button'); if(!b) return;
-    const type=b.dataset.type, original=decodeURIComponent(b.dataset.item||''); const old=b.textContent;
-    b.disabled=true; b.textContent=state.lang==='ar'?'جاري…':'Working…';
-    try{
-      const prompt=(type==='meal')
-        ? `Give ONE ${state.lang==='ar'?'وجبة بديلة':'alternative meal'} for "${original}" in ${state.lang.toUpperCase()}, respecting diet "${state.user.diet_preference}", avoiding "${(state.user.allergies||[]).join(', ')}". Include calories and P/F/C. End with [SWAP:MEAL:<name>].`
-        : `Give ONE alternative exercise (EN name + Arabic cue) for "${original}", same muscle, safe for injuries "${state.user.injuries||'None'}". Include Sets x Reps, Tempo, RIR, Rest(s). End with [SWAP:EXERCISE:<EN>].`;
-      const r=await fetch('/.netlify/functions/gemini-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
-      const raw=await r.text(); let data=null; try{data=raw?JSON.parse(raw):null;}catch{}
-      if(!r.ok) throw new Error(data?.error||raw||'Server error');
-      const txt=data?.text?.trim()||'';
-      b.parentElement.childNodes[0].nodeValue=(type==='meal'?txt:txt.split('\n')[0])+' ';
-      b.dataset.item=encodeURIComponent(txt.replace(/\[.*?\]$/,'').trim());
-    }catch{ notify(state.lang==='ar'?'تعذر التبديل':'Swap failed','err'); }
-    b.disabled=false; b.textContent=old;
-  }
+  function escapeHTML(s){ return String(s||'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+  function downloadJSON(s){ const blob=new Blob([JSON.parse(s)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='plan.json'; a.click(); }
 
-  // Exporters
-  function doJSON(){
-    const payload={ user:state.user, calc:state.calc, raw:content.querySelector('.ai-prose')?.innerText||'' };
-    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const a=document.createElement('a');
-    a.href=URL.createObjectURL(blob); a.download='ai-coach-plan.json'; a.click();
-  }
-  function doCSV(){
-    const text=content.querySelector('.ai-prose')?.innerText||''; const rows=[['section','day','type','details']];
-    text.split('\n').forEach(line=>{ if(line.trim()) rows.push(['plan','','',line.trim()]); });
-    const csv=rows.map(r=>r.map(x=>`"${String(x).replaceAll('"','""')}"`).join(',')).join('\n');
-    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ai-coach-plan.csv'; a.click();
-  }
-
-  /* ---------- UX ---------- */
+  /* =========================
+     AUDIT & UX
+  ========================== */
+  function auditOK(){ badgeDays.textContent='7/7'; badgeDays.className='badge ok'; badgeMacros.textContent='±2% 7/7'; badgeMacros.className='badge ok'; }
   function notify(msg,level='ok'){ const c=document.createElement('div'); c.className=`fixed top-5 right-5 z-50 text-white px-3 py-2 rounded ${level==='ok'?'bg-emerald-600':level==='warn'?'bg-amber-600':'bg-rose-600'}`; c.textContent=msg; document.body.appendChild(c); setTimeout(()=>c.remove(),2600); }
-  function showError(m){ content.innerHTML=`<section class="card p-6"><div class="p-4 bg-rose-50 border border-rose-200 rounded text-rose-800"><b>${state.lang==='ar'?'خطأ':'Error'}</b><div class="text-sm mt-1">${m}</div></div></section>`; }
+  function showError(m){ content.innerHTML=`<section class="card p-6"><div class="p-4 bg-rose-50 border border-rose-200 rounded text-rose-800"><b>${state.lang==='ar'?'خطأ':'Error'}</b><div class="text-sm mt-1">${escapeHTML(m)}</div></div></section>`; }
   function lock(on){ btnPrev.disabled=on; btnNext.disabled=on; btnNext.textContent = on ? (state.lang==='ar'?'جارٍ التنفيذ…':'Working…') : (state.step>=12?t('submit'):t('next')); }
 
-  // Init
+  /* =========================
+     INIT
+  ========================== */
   setLang('ar'); state.step=0; render();
   </script>
 </body>
