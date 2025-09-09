@@ -1,84 +1,52 @@
-// This is a Netlify serverless function.
-// It acts as a secure proxy to the Google AI API.
-const fetch = require('node-fetch');
+// netlify/functions/gemini-proxy.js
+// Serverless function on Netlify to proxy requests securely to Google AI API
 
-exports.handler = async (event, context) => {
-  // First line of defense: Log that the function has been invoked.
-  console.log("Function invoked!");
-
+exports.handler = async (event) => {
   const headers = {
-    'Access-Control-Allow-Origin': '*', // Allows your website to call this function
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
   };
 
-  // Handle browser's pre-flight OPTIONS request
+  // Handle CORS preflight
   if (event.httpMethod === 'OPTIONS') {
-    console.log("Handling OPTIONS request.");
     return { statusCode: 204, headers, body: '' };
   }
-  
-  console.log(`Received a ${event.httpMethod} request.`);
 
-  // We only accept POST requests
   if (event.httpMethod !== 'POST') {
-    console.error("Error: Request method was not POST.");
     return { statusCode: 405, headers, body: 'Method Not Allowed' };
   }
 
   try {
-    console.log("Attempting to get API key from environment variables...");
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY; // تأكد من إضافته في Netlify
     if (!apiKey) {
-      console.error("CRITICAL ERROR: GEMINI_API_KEY is not set in Netlify!");
-      throw new Error("GEMINI_API_KEY is not set in Netlify environment variables.");
+      return { statusCode: 500, headers, body: JSON.stringify({ error: 'Missing GEMINI_API_KEY' }) };
     }
-    console.log("API Key successfully retrieved.");
 
-    console.log("Parsing request body to find the prompt...");
-    const body = JSON.parse(event.body);
-    const userPrompt = body.prompt;
-    if (!userPrompt) {
-      console.error("CRITICAL ERROR: No prompt found in the request body.");
-      throw new Error("No prompt provided in the request body.");
+    const { prompt } = JSON.parse(event.body || '{}');
+    if (!prompt) {
+      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing prompt' }) };
     }
-    console.log("Prompt successfully retrieved.");
 
-    const payload = { contents: [{ parts: [{ text: userPrompt }] }] };
-    const api_url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+    const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
-    console.log("Sending request to Google AI API...");
-    const response = await fetch(api_url, {
+    const res = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': apiKey,
+      },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }]}] }),
     });
-    console.log(`Google AI API responded with status: ${response.status}`);
 
-    if (!response.ok) {
-      const errorBody = await response.text();
-      console.error('Google AI API Error Body:', errorBody);
-      throw new Error(`Google AI API failed. Status: ${response.status}`);
+    const data = await res.json();
+    if (!res.ok) {
+      return { statusCode: res.status, headers, body: JSON.stringify(data) };
     }
 
-    const data = await response.json();
-    const generatedText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    console.log("Successfully received and parsed response from Google AI.");
-
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ text: generatedText })
-    };
-
-  } catch (error) {
-    // This will catch any error from the try block and log it clearly.
-    console.error('FATAL ERROR in proxy function execution:', error.message);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: error.message })
-    };
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+    return { statusCode: 200, headers, body: JSON.stringify({ text }) };
+  } catch (e) {
+    return { statusCode: 500, headers, body: JSON.stringify({ error: e.message }) };
   }
 };
-
