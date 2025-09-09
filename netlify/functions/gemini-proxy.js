@@ -1,52 +1,93 @@
 // netlify/functions/gemini-proxy.js
-// Serverless function on Netlify to proxy requests securely to Google AI API
+// Secure proxy for Google AI API with enforced long outputs
 
-exports.handler = async (event) => {
+const fetch = require("node-fetch");
+
+exports.handler = async (event, context) => {
+  console.log("⚡ Gemini Proxy invoked");
+
   const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS"
   };
 
-  // Handle CORS preflight
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 204, headers, body: '' };
+  // Handle preflight (CORS)
+  if (event.httpMethod === "OPTIONS") {
+    return { statusCode: 204, headers, body: "" };
   }
 
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, headers, body: 'Method Not Allowed' };
+  if (event.httpMethod !== "POST") {
+    return { statusCode: 405, headers, body: "Method Not Allowed" };
   }
 
   try {
-    const apiKey = process.env.GEMINI_API_KEY; // تأكد من إضافته في Netlify
+    // 🔑 Get API key
+    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return { statusCode: 500, headers, body: JSON.stringify({ error: 'Missing GEMINI_API_KEY' }) };
+      throw new Error("❌ Missing GEMINI_API_KEY in Netlify environment variables.");
     }
 
-    const { prompt } = JSON.parse(event.body || '{}');
-    if (!prompt) {
-      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing prompt' }) };
-    }
+    // 📩 Parse request body
+    const body = JSON.parse(event.body || "{}");
+    const userPrompt = body.prompt;
+    if (!userPrompt) throw new Error("❌ No prompt provided in body.");
 
-    const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
-
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': apiKey,
+    // 🧩 Payload with enforced strong generation config
+    const payload = {
+      contents: [{ parts: [{ text: userPrompt }] }],
+      generationConfig: {
+        maxOutputTokens: 8192,  // 💡 Enough for very long structured plans
+        temperature: 0.7,
+        topP: 0.95,
+        candidateCount: 1
       },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }]}] }),
+      safetySettings: [
+        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+        { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+        { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+      ]
+    };
+
+    // 🌐 Google AI endpoint
+    const api_url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+    console.log("➡ Sending request to Google AI");
+    const response = await fetch(api_url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
     });
 
-    const data = await res.json();
-    if (!res.ok) {
-      return { statusCode: res.status, headers, body: JSON.stringify(data) };
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error("❌ Google AI API Error:", errorBody);
+      return {
+        statusCode: response.status,
+        headers,
+        body: JSON.stringify({ error: errorBody })
+      };
     }
 
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
-    return { statusCode: 200, headers, body: JSON.stringify({ text }) };
-  } catch (e) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: e.message }) };
+    const data = await response.json();
+    const generatedText =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "⚠ لم يتم استلام أي محتوى من الذكاء الاصطناعي.";
+
+    console.log("✅ Success: Response received from Google AI");
+
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({ text: generatedText })
+    };
+  } catch (error) {
+    console.error("🔥 FATAL in proxy:", error.message);
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ error: error.message })
+    };
   }
 };
