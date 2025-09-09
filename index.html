@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="light">
   <title>المدرب الشخصي الخبير — خطة مخصصة 7 أيام</title>
 
@@ -24,16 +24,15 @@
     .card { background: rgba(var(--card)/1); }
     .file-drop { border: 2px dashed #d1d5db; transition: all .2s; }
     .file-drop.ready { border-color:#16a34a; background:#f0fdf4; }
-    .ai-content h3 { font-size: 1.35rem; font-weight: 800; color: #4338ca; padding-bottom:.5rem; border-bottom:2px solid #e5e7eb; margin-top:1.5rem; margin-bottom:.75rem; }
+    .ai-content h3 { font-size:1.35rem; font-weight:800; color:#4338ca; padding-bottom:.5rem; border-bottom:2px solid #e5e7eb; margin-top:1.5rem; margin-bottom:.75rem; }
     .ai-content table { width:100%; border-collapse:collapse; margin:1.25rem 0; box-shadow:0 2px 8px rgba(0,0,0,.05); border-radius:.5rem; overflow:hidden; }
-    .ai-content th, .ai-content td { border:1px solid #e5e7eb; padding:.75rem; vertical-align:top; }
+    .ai-content th,.ai-content td { border:1px solid #e5e7eb; padding:.75rem; vertical-align:top; }
     .ai-content th { background:#f9fafb; font-weight:700; }
     [dir="rtl"] .ai-content th, [dir="rtl"] .ai-content td { text-align:right; }
     [dir="ltr"] .ai-content th, [dir="ltr"] .ai-content td { text-align:left; }
     .ltr-text { direction:ltr; text-align:left; }
     .num-input { direction:ltr; text-align:left; }
 
-    /* Footer + watermark for print */
     footer.site-footer { background:#0f172a; color:#fff; }
     .watermark { position:fixed; bottom:12px; inset-inline:0; text-align:center; font-size:.75rem; color:#334155; pointer-events:none; }
     @media print {
@@ -150,7 +149,7 @@
   const btnPrev = document.getElementById('prev');
   const btnNext = document.getElementById('next');
 
-  /******************** i18n (AR shown) ********************/
+  /*************** Internationalization (i18n) ***************/
   const i18n = {
     ar: {
       start:"ابدأ", welcome_title:"أهلاً بك في رحلة التحول!", welcome_desc:"سننتج خطة تنفيذية قوية ومخصصة لمدة 7 أيام.",
@@ -176,15 +175,50 @@
       health_q:"صحتك أولاً", health_cond1:"ضغط الدم", health_cond2:"السكري", health_cond3:"مقاومة الأنسولين", health_cond4:"الغدة الدرقية", health_cond5:"الكبد الدهني", health_cond6:"مشاكل هرمونية", health_cond7:"الجهاز الهضمي", injuries_q:"إصابات؟", injuries_sub:"اذكر الوصف والمكان",
       lifestyle_q:"نمط الحياة", job:"العمل", job_opt1:"مكتبي", job_opt2:"نشاط خفيف", job_opt3:"نشاط متوسط", sleep:"ساعات النوم", stress:"مستوى التوتر", stress_opt1:"منخفض", stress_opt2:"متوسط", stress_opt3:"مرتفع",
       physical_activity:"مستوى النشاط البدني", pal_opt1:"Sedentary (قليل الحركة)", pal_opt2:"Light", pal_opt3:"Moderate", pal_opt4:"High", pal_opt5:"Athlete",
-      cardio_weekly:"دقائق الكارديو أسبوعيًا", accuracy_consent:"أقرّ بأن البيانات دقيقة وصحيحة لضمان دقة النتيجة", prescription_label:"وصفة/تقرير طبي (اختياري)", prescription_hint:"اكتب أي توصيات أو قيود طبية مهمة",
+      cardio_weekly:"دقائق الكارديو أسبوعيًا",
+      accuracy_consent:"أقرّ بأن البيانات دقيقة لضمان دقة النتيجة",
+      prescription_label:"وصفة/تقرير طبي (اختياري)", prescription_hint:"أي توصيات أو قيود طبية مهمة",
       files_q:"رفع ملفات اختيارية", photos_up:"📷 رفع صور الجسم", inbody_up:"📄 رفع InBody", photos_done:(n)=>`✅ ${n} صورة`, inbody_done:"✅ تم اختيار ملف",
       loading_title:(n)=>`جاهز يا ${n}!`, loading_sub:"نولد خطة مفصلة الآن…",
       print_btn:"طباعة / تحميل", restart_btn:"البدء من جديد", next:"التالي", prev:"السابق", submit:"احصل على خطتك الآن!", swap:"تبديل", swapping:"جاري…", error_fill_fields:"أكمل الحقول المطلوبة.",
       chest:"الصدر", back:"الظهر", shoulders:"الأكتاف", biceps:"البايسبس", triceps:"الترايسبس", quads:"الفخذ الأمامي", hamstrings:"الفخذ الخلفي", glutes:"الألوية", calves:"السمانة", abs:"البطن",
       export:"تصدير", export_json:"JSON", export_csv:"CSV", days_check:"فحص الأيام", nutrition:"التغذية (7 أيام)", training:"التدريب (7 أيام)", daily_targets:"الأهداف اليومية",
-      api_key_error:"تعذر الاتصال بالموديل. تحقق من الدالة أو المفتاح."
+      api_key_error:"تعذر الاتصال بالموديل. تحقّق من الدالة أو المفتاح."
     },
-    en: { start:"Start", next:"Next", prev:"Back", submit:"Generate" }
+    en: {
+      start:"Start", welcome_title:"Welcome to your transformation journey!", welcome_desc:"We will generate a powerful, fully tailored 7-day plan.",
+      stage_1_title:"Step 1: Who are you?", stage_1_desc:"Type your name.",
+      stage_2_title:"Core data", stage_2_desc:"Age, height, weight, and gender.",
+      stage_3_title:"Set your goals", stage_3_desc:"Select your goals.", goal_sub:"You can select more than one.",
+      stage_4_title:"Advanced targets", stage_4_desc:"Target weight and date (optional).",
+      stage_5_title:"Preferred diet", stage_5_desc:"We’ll recommend what best fits your goal.",
+      stage_6_title:"Food allergies", stage_6_desc:"To keep the plan 100% safe.",
+      stage_7_title:"Training history", stage_7_desc:"Experience, last consistent phase, supplements.",
+      stage_8_title:"Focus areas", stage_8_desc:"Pick muscles and set a target description.",
+      stage_9_title:"Health status", stage_9_desc:"Chronic conditions and injuries if any.",
+      stage_10_title:"Lifestyle + Physical activity", stage_10_desc:"Work, sleep, stress, and real activity level.",
+      stage_11_title:"Optional analysis", stage_11_desc:"Photos/InBody for higher accuracy.",
+      name_q:"Your name?", age:"Age", height:"Height (cm)", weight:"Weight (kg)", gender:"Gender", male:"Male", female:"Female",
+      goal1:"Fat loss", goal2:"Muscle gain", goal3:"Strength", goal4:"Endurance", goal5:"General health",
+      target_weight:"Target weight", target_date:"Target date",
+      diet_pref:"Diet preference", diet_opt1:"Balanced", diet_opt2:"Low-carb", diet_opt3:"Intermittent fasting", diet_opt4:"Keto", diet_opt5:"Mediterranean", diet_opt6:"Plant-based", recommended:"Recommended",
+      allergies_q:"Allergies / intolerances?", allergy1:"Gluten", allergy2:"Lactose", allergy3:"Nuts", allergy4:"Seafood", allergy5:"Refined sugars", allergy6:"Refined seed oils", other_allergies:"Other allergy",
+      training_history_q:"Training history", history_last_train:"Last consistent phase?", last_train_opt1:"Within last 3 months", last_train_opt2:"3–12 months ago", last_train_opt3:"More than 1 year",
+      history_exp:"Resistance-training experience", exp_opt1:"Beginner", exp_opt2:"Intermediate", exp_opt3:"Advanced", history_supps:"Supplements used before", upload_supps:"Upload supplements photos",
+      weak_points_q:"Focus areas", weak_points_sub:"Write a short target for each muscle.",
+      health_q:"Health first", health_cond1:"Blood pressure", health_cond2:"Diabetes", health_cond3:"Insulin resistance", health_cond4:"Thyroid", health_cond5:"Fatty liver", health_cond6:"Hormonal", health_cond7:"GI disorders", injuries_q:"Injuries?", injuries_sub:"Describe location & details",
+      lifestyle_q:"Lifestyle", job:"Work", job_opt1:"Desk job", job_opt2:"Light activity", job_opt3:"Moderate activity", sleep:"Night sleep (hrs)", stress:"Stress level", stress_opt1:"Low", stress_opt2:"Medium", stress_opt3:"High",
+      physical_activity:"Physical activity level", pal_opt1:"Sedentary (very low)", pal_opt2:"Light", pal_opt3:"Moderate", pal_opt4:"High", pal_opt5:"Athlete",
+      cardio_weekly:"Cardio minutes / week",
+      accuracy_consent:"I confirm my data is accurate to ensure precise results",
+      prescription_label:"Medical note / prescription (optional)", prescription_hint:"Any medical recommendations or constraints",
+      files_q:"Optional uploads", photos_up:"📷 Upload body photos", inbody_up:"📄 Upload InBody", photos_done:(n)=>`✅ ${n} photo(s)`, inbody_done:"✅ File selected",
+      loading_title:(n)=>`One moment, ${n}…`, loading_sub:"Generating your detailed plan…",
+      print_btn:"Print / Download", restart_btn:"Start over", next:"Next", prev:"Back", submit:"Generate my plan", swap:"Swap", swapping:"Swapping…", error_fill_fields:"Please complete the required fields.",
+      chest:"Chest", back:"Back", shoulders:"Shoulders", biceps:"Biceps", triceps:"Triceps", quads:"Quads", hamstrings:"Hamstrings", glutes:"Glutes", calves:"Calves", abs:"Abs",
+      export:"Export", export_json:"JSON", export_csv:"CSV", days_check:"Days covered", nutrition:"Nutrition (7 days)", training:"Training (7 days)", daily_targets:"Daily targets",
+      api_key_error:"Could not reach the model. Check the function or API key."
+    }
   };
   const muscles = ['chest','back','shoulders','biceps','triceps','quads','hamstrings','glutes','calves','abs'];
 
@@ -313,18 +347,17 @@
       case 'Moderate': return 1.5;
       case 'High': return 1.7;
       case 'Athlete': return 1.9;
-      default: return 1.2; // Sedentary
+      default: return 1.2;
     }
   }
-  function cardioExtra(minutes){ // تقدير بسيط: 6 كيلوكال/دقيقة كمتوسط معتدل → توزيع يومي
-    const kcalWeek = Math.max(0, Number(minutes||0)) * 6;
+  function cardioExtra(minutes){
+    const kcalWeek = Math.max(0, Number(minutes||0)) * 6; // ~6 kcal/min
     return kcalWeek / 7;
-  }
+    }
   function computeTargets(p){
     const W=Number(p.weight)||0, H=Number(p.height)||0, A=Number(p.age)||0;
     const male=p.gender==='Male';
     const BMR = male ? 10*W + 6.25*H - 5*A + 5 : 10*W + 6.25*H - 5*A - 161;
-    // نشاط العمل + النشاط البدني الفعلي
     const pal = activityFactor(p.physical_activity_level || 'Sedentary');
     let TDEE = BMR * pal + cardioExtra(p.cardio_minutes_per_week);
     const goals=p.goals||[]; if(goals.includes(T('goal1'))) TDEE*=0.86; else if(goals.includes(T('goal2'))) TDEE*=1.1;
@@ -338,7 +371,7 @@
     return { calories: Math.round(TDEE), macros:{ protein_g, fat_g, carb_g } }
   }
 
-  /******************** Prompt — EXEC GRADE with rights/coach/activity ********************/
+  /******************** Prompt — EXEC GRADE ********************/
   function buildAIPrompt(profile, lang, targets) {
     const weak = Object.entries(profile.weak_points || {})
       .map(([muscle, desc]) => `${T(muscle)}: ${desc}`).join(', ') || 'None';
@@ -346,16 +379,13 @@
     const CONTRACT = `
 - اللغة: ${lang} فقط. أسماء التمارين بالإنجليزية فقط.
 - الحجم: 1800–2600 كلمة. 7/7 تغذية + 7/7 تدريب بلا نقص.
-- استخدم الجداول أدناه حرفيًا (عناوين الأعمدة مطلوبة).
+- استخدم الجداول أدناه حرفيًا.
 - فعّل [SWAP:MEAL:اسم] و [SWAP:EXERCISE:Exercise] داخل الجداول.
-- دمج "النشاط البدني الفعلي" (مستوى PAL + دقائق الكارديو) في الحسابات والتوصيات.
+- دمج "النشاط البدني الفعلي" (PAL + دقائق الكارديو) في التوصيات.
 - تجنب ما يتعارض مع الإصابات (${profile.injuries || 'None'}) والحساسيات (${(profile.allergies||[]).join(', ')||'None'}).
 - لا نصائح طبية تشخيصية؛ توصيات عامة وآمنة.
-- أضف ترويسة الحقوق: "Powered by Mustafa Elsafy 2025 — جميع الحقوق محفوظة".
-- أظهر اسم المدرب: "مصطفي الصافي — خبير التغذية واللياقة البدنية │ مدرب دولي معتمد" في المقدمة والتوقيع.
-
-## (0) حقوق الملكية
-Powered by Mustafa Elsafy 2025 — جميع الحقوق محفوظة
+- أظهر اسم المدرب: "مصطفي الصافي — خبير التغذية واللياقة البدنية │ مدرب دولي معتمد".
+- سطر الحقوق الختامي: "Powered by Mustafa Elsafy 2025 — جميع الحقوق محفوظة".
 
 ## (1) ملخص الأهداف اليومية
 | Target | Calories | Protein_g | Carbs_g | Fat_g |
@@ -367,13 +397,13 @@ Powered by Mustafa Elsafy 2025 — جميع الحقوق محفوظة
 |---|---|---|---:|---:|---:|---:|
 | اليوم 1 | الإفطار | … [SWAP:MEAL:اسم الوجبة] | … | … | … | … |
 
-## (3) خطة التدريب — 7 أيام + النشاط البدني الفعلي
+## (3) خطة التدريب — 7 أيام + النشاط البدني
 | اليوم | Exercise | Sets | Reps | Rest_s | Tempo | RPE |
 |---|---|---:|---:|---:|---|---:|
 | اليوم 1 | Bench Press [SWAP:EXERCISE:Bench Press] | 4 | 8-12 | 90 | 2-0-2 | 7 |
-> ضمن كل يوم: أضف توصية كارديو/خطوات متوافقة مع PAL ودقائق الكارديو المُدخلة.
+> لكل يوم: أضف توصية كارديو/خطوات متوافقة مع PAL ودقائق الكارديو.
 
-## (4) سلة المشتريات الأسبوعية
+## (4) سلة المشتريات
 | الصنف | الكمية | الوحدة | ملاحظات |
 |---|---:|---|---|
 
@@ -398,29 +428,29 @@ ${CONTRACT}
 
 ## بيانات المستخدم
 - الأهداف: ${(profile.goals||[]).join(', ')}
-- هدف متقدم: وزن ${profile.target_weight || 'N/A'} بحلول ${profile.target_date || 'N/A'}
+- الهدف المتقدم: وزن ${profile.target_weight || 'N/A'} بحلول ${profile.target_date || 'N/A'}
 - الخبرة: ${profile.training_exp}; آخر تدريب: ${profile.last_train}
 - مناطق التركيز: ${weak}
 - الإحصاءات: عمر ${profile.age}, طول ${profile.height}cm, وزن ${profile.weight}kg, جنس ${profile.gender}
 - الصحة: ${(profile.health_conditions||[]).join(', ')||'None'}؛ إصابات: ${profile.injuries||'None'}
 - الحساسية: ${(profile.allergies||[]).join(', ')||'None'}
 - النظام الغذائي: ${profile.diet_preference}
-- النشاط البدني (PAL): ${profile.physical_activity_level}; كارديو أسبوعي: ${profile.cardio_minutes_per_week} دقيقة
-- وصفة/تقرير: ${profile.prescription_text ? profile.prescription_text : '—'}
+- النشاط (PAL): ${profile.physical_activity_level}; كارديو/أسبوع: ${profile.cardio_minutes_per_week} دقيقة
+- وصفة طبية: ${profile.prescription_text ? profile.prescription_text : '—'}
 - أهداف يومية: P ${targets.macros.protein_g}g / C ${targets.macros.carb_g}g / F ${targets.macros.fat_g}g (~${targets.calories} kcal)
 
-### البنية النهائية (التزم بالعناوين):
-1) مقدمة تحليلية باسم المستخدم ومنطق الخطة (اذكر فيها: "مصطفي الصافي — خبير التغذية واللياقة البدنية │ مدرب دولي معتمد")
+### العناوين المطلوبة:
+1) مقدمة تحليلية باسم المستخدم وتوقيع المدرب
 2) ملخص الأهداف اليومية (الجدول 1)
-3) خطة التغذية 7 أيام (الجدول 2 لكل الأيام) + ملاحظات وتبديلات
-4) خطة التدريب 7 أيام (الجدول 3) + Warm-up/Cool-down + بدائل آمنة + توصيات نشاط فعلي (خطوات/كارديو)
+3) خطة التغذية 7 أيام (الجدول 2) + بدائل
+4) خطة التدريب 7 أيام (الجدول 3) + Warm-up/Cool-down + نشاط فعلي
 5) سلة المشتريات (الجدول 4)
 6) بروتوكول الاستشفاء/النوم/الماء (الجدول 5)
-7) متابعة التقدم (الجدول 6) مع قواعد تعديل
+7) متابعة التقدم (الجدول 6)
 8) مكملات آمنة (الجدول 7)
-9) أسئلة وأخطاء شائعة (5–7 نقاط)
+9) أسئلة/أخطاء شائعة
 10) توقيع: **المدرب مصطفى الصافي — خبير التغذية واللياقة البدنية │ مدرب دولي معتمد**
-11) سطر الحقوق: **Powered by Mustafa Elsafy 2025 — جميع الحقوق محفوظة**
+11) **Powered by Mustafa Elsafy 2025 — جميع الحقوق محفوظة**
 `;
   }
 
@@ -430,9 +460,10 @@ ${CONTRACT}
     try{
       markCall();
       const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ prompt }) });
-      if(!res.ok){ const errorText = await res.text(); return { ok:false, error:errorText || 'Server error' }; }
-      const data = await res.json();
-      return { ok:true, text:data.text };
+      const text = await res.text();
+      let data=null; try{ data = text? JSON.parse(text):null; }catch{}
+      if(!res.ok){ return { ok:false, error: data?.error || text || 'Server error' }; }
+      return { ok:true, text: data?.text || '' };
     } catch(e){ return { ok:false, error:String(e) }; }
   }
 
@@ -440,7 +471,7 @@ ${CONTRACT}
   function daysMissing(md){ const d=[1,2,3,4,5,6,7]; return d.filter(x=>!new RegExp(`(Day\\s*${x}|اليوم\\s*${x})`,'i').test(md)); }
   function hasTable(md, title, cols){
     const hasTitle = new RegExp(title,'i').test(md);
-    const colsRe = new RegExp(`\\|\\s*${cols.map(c=>c.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\$&')).join('\\s*\\|\\s*')}\\s*\\|`,'i');
+    const colsRe = new RegExp(`\\|\\s*${cols.map(c=>c.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('\\s*\\|\\s*')}\\s*\\|`,'i');
     return hasTitle && colsRe.test(md);
   }
 
@@ -453,11 +484,10 @@ ${CONTRACT}
     if(!needWords && !missNutri && !missTrain && missDays.length===0) return markdown;
 
     const patchPrompt = `
-أَكمل/أصلِح الخطة التالية بإضافة الأجزاء الناقصة فقط دون تكرار النص الموجود:
+أَكمل/أصلِح الخطة بإضافة الأجزاء الناقصة دون تكرار الموجود:
 - أيام ناقصة: ${missDays.join(', ') || 'لا يوجد'}
 - الجداول الناقصة: ${[missNutri?'التغذية':'', missTrain?'التدريب':''].filter(Boolean).join('، ') || 'لا يوجد'}
-- أَدرِج بند "النشاط البدني الفعلي" لكل يوم عند اللزوم.
-- التزم بالنماذج والعناوين المطلوبة وبنفس اللغة.
+- أدخل بند "النشاط البدني الفعلي" لكل يوم.
 النص الحالي:
 ${markdown}
 `;
@@ -492,7 +522,6 @@ ${markdown}
   }
 
   function renderAI(markdown){
-    // prepend coach + rights banner inside plan too
     const banner = `> **مصطفي الصافي — خبير التغذية واللياقة البدنية │ مدرب دولي معتمد**  \n> **Powered by Mustafa Elsafy 2025 — جميع الحقوق محفوظة**\n\n`;
     let html = marked.parse(banner + markdown);
     html = html.replace(/\[SWAP:(EXERCISE|MEAL):(.*?)\]/g,(m,type,item)=>{
@@ -500,7 +529,7 @@ ${markdown}
       const btn = `<button type="button" onclick="swapItem(event)" data-type="${t}" data-item="${clean}" class="no-print bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs px-2 py-1 rounded-md">${T('swap')}</button>`;
       return t==='meal' ? `<span class="inline-flex items-center gap-2">${item} ${btn}</span>` : `<span class="inline-flex items-center gap-2 ltr-text"><span class="font-semibold">${item}</span>${btn}</span>`;
     });
-    const planEl = document.getElementById('plan'); planEl.innerHTML = html;
+    document.getElementById('plan').innerHTML = html;
     document.querySelectorAll('.no-print .animate-spin, .no-print h2, .no-print p').forEach(e=>e.style.display='none');
     lastPlanJSON = { source:'ai_markdown', raw: markdown };
     qualityCheck(); renderSummary();
@@ -508,7 +537,7 @@ ${markdown}
 
   function renderErrorMessage(error){
     const planEl=document.getElementById('plan');
-    planEl.innerHTML = `<div class="p-4 bg-red-100 border-l-4 border-red-500 rounded-r-lg mb-4"><h3 class="font-bold text-red-800">${T('api_key_error')}</h3><p class="text-red-700 text-xs ltr-text">${String(error).slice(0,800)}</p></div>`;
+    planEl.innerHTML = `<div class="p-4 bg-red-100 border-l-4 border-red-500 rounded-r-lg mb-4"><h3 class="font-bold text-red-800">${T('api_key_error')}</h3><p class="text-red-700 text-xs ltr-text">${String(error).slice(0,1000)}</p></div>`;
     document.querySelectorAll('.no-print .animate-spin, .no-print h2, .no-print p').forEach(e=>e.style.display='none');
     document.getElementById('btn-restart').classList.remove('hidden'); document.getElementById('btn-restart').onclick=restartApp;
   }
