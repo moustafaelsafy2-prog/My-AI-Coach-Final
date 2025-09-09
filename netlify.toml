@@ -1,6 +1,13 @@
-# This file tells Netlify where to find our serverless function.
-# It's a crucial part of the setup for manual deploys.
+[build]
+  command = ""
+  publish = "."
 
 [functions]
   directory = "netlify/functions"
+  node_bundler = "esbuild"
 
+# إذا كان عندك SPA وتحتاج كل الروتس تروح لـ index.html، فك الكومنت:
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200
