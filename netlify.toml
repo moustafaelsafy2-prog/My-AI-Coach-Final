@@ -1,2 +1,8 @@
+[build]
+  publish = "."
+  command = ""          # لا يوجد بناء؛ الموقع static
+
 [functions]
+  directory    = "netlify/functions"
   node_bundler = "esbuild"
+  included_files = []
