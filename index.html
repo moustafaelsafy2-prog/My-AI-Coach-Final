@@ -43,8 +43,10 @@ body{background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 100%); color:var
 @media (min-width:768px){ .grid-form{grid-template-columns: repeat(12,minmax(0,1fr)); gap:14px} }
 .form-card{grid-column:1/-1}
 @media (min-width:768px){
+  .col-3{grid-column: span 3 / span 3}
   .col-4{grid-column: span 4 / span 4}
   .col-6{grid-column: span 6 / span 6}
+  .col-12{grid-column: span 12 / span 12}
 }
 
 .label{font-size:.85rem; opacity:.9; margin-bottom:6px; display:block}
@@ -60,7 +62,7 @@ body{background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 100%); color:var
 .ai-content th,.ai-content td{border:1px solid var(--border);padding:.5rem;vertical-align:top}
 .ai-content th{background:rgba(255,255,255,.06)}
 
-/* Top mini progress (غير حاجب) */
+/* Top mini progress (non-blocking) */
 #miniProgress{position:sticky; top:0; z-index:50; padding:.4rem .8rem; display:none}
 #miniProgress.show{display:flex}
 
@@ -85,13 +87,14 @@ body{background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 100%); color:var
       <button id="btn-ar" class="chip">عربي</button>
       <button id="btn-en" class="chip">EN</button>
       <button id="btn-theme" class="chip">☀/☾</button>
+      <button id="btn-mock" class="chip" title="تشغيل محاكاة عند تعذّر الذكاء">Mock: OFF</button>
       <button id="btn-print" class="btn btn-ghost">🖨 <span id="t-print">طباعة</span></button>
     </div>
   </div>
 </header>
 
-<!-- Mini progress (NON-blocking) -->
-<div id="miniProgress" class="glass" >
+<!-- Mini progress -->
+<div id="miniProgress" class="glass">
   <div class="container" style="display:flex;align-items:center;gap:10px;justify-content:space-between">
     <div id="mp-text" class="text-xs">نولّد الأقسام الآن…</div>
     <div class="progress" style="width:240px"><i id="mp-bar"></i></div>
@@ -106,7 +109,7 @@ body{background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 100%); color:var
       <div class="progress" style="width:240px"><i id="wizard-bar"></i></div>
     </div>
 
-    <div id="step-body" class="grid-form"><!-- JS renders one step at a time --></div>
+    <div id="step-body" class="grid-form"></div>
 
     <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
       <button id="prev" class="btn btn-ghost" disabled>◀ <span id="t-prev">السابق</span></button>
@@ -145,20 +148,30 @@ body{background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 100%); color:var
 </main>
 
 <script>
-/* ---------- Basics ---------- */
+/* ===== Helpers ===== */
 const $=id=>document.getElementById(id);
 const hasMD=!!window.marked, purifier=window.DOMPurify;
 if(hasMD){ try{ marked.setOptions({breaks:true,mangle:false,headerIds:false}); }catch{} }
-const saveKey='ihc.v5';
+function mdSafe(s){ let html=hasMD?marked.parse(s):(s||'').replace(/\n/g,'<br>'); return purifier?DOMPurify.sanitize(html,{USE_PROFILES:{html:true}}):html; }
+function toast(msg){ const d=document.createElement('div'); d.className='toast'; d.textContent=msg; document.body.appendChild(d); setTimeout(()=>d.remove(),3500); }
 
+/* ===== State ===== */
+const saveKey='ihc.v6';
 const S={
   lang:(navigator.language||'ar').startsWith('ar')?'ar':'en',
-  step:0, theme:'dark',
-  data:{profile:{}, diet:{}, lifestyle:{}, medical:{}, challenges:{}, currency:'USD'},
+  step:0, theme:'dark', mock:false,
+  data:{
+    profile:{name:'',age:'',height:'',weight:'',sex:'Male',bodyFat:'',waist:'',targetWeight:'',targetDate:''},
+    diet:{goals:[],mealsPerDay:3,preferredDiet:'Balanced',fasting:'off',cuisine:'Arabic/Mediter.',prepTime:20,monthlyBudget:0,foodsToAvoid:'',allergies:''},
+    lifestyle:{workActivity:'Sedentary',stepsPerDay:6000,sleep:'Low',stress:'Low',trainingPlace:'Home/Gym',sessionLength:60,availableDays:[],equipment:'',experience:'Beginner (0-6m)',rpe:8,caffeine:0,injuries:''},
+    medical:{conditions:[],other:'',meds:'',supplements:''},
+    challenges:{past:'',motivation:'Direct'},
+    currency:'USD'
+  },
   sectionList:[], statuses:{}, results:{}
 };
 
-/* ---------- I18N ---------- */
+/* ===== I18N ===== */
 const I={
   ar:{app:'المستشار الصحي الذكي', sub:'خطة دقيقة ١٠٠٪ للتغذية والتدريب والمكملات — مخصصة لك',
       steps:['الملف الشخصي','النظام الغذائي والتفضيلات','نمط الحياة والتدريب','الحالة الصحية والتحديات'],
@@ -190,7 +203,7 @@ function applyLang(){
   $('t-prev').textContent=I[S.lang].prev; $('t-next').textContent=I[S.lang].next; $('t-generate').textContent=I[S.lang].generate;
 }
 
-/* ---------- Wizard Rendering (Aligned & Clean) ---------- */
+/* ===== Wizard ===== */
 function renderStep(){
   const L=(S.lang==='ar'); const b=$('step-body'); const names=I[S.lang].steps;
   $('step-title').textContent=names[S.step];
@@ -200,50 +213,17 @@ function renderStep(){
     b.innerHTML=`
       <div class="form-card">
         <div class="grid-form">
-          <div class="col-6">
-            <label class="label">${L?'الاسم':'Name'}</label>
-            <input id="name" class="field" placeholder="${L?'الاسم':'Name'}"/>
-          </div>
-          <div class="col-6"></div>
+          <div class="col-6"><label class="label">${L?'الاسم':'Name'}</label><input id="name" class="field" placeholder="${L?'الاسم':'Name'}"/></div>
+          <div class="col-3"><label class="label">${L?'العمر':'Age'}</label><input id="age" class="field" inputmode="numeric"/></div>
+          <div class="col-3"><label class="label">${L?'الجنس':'Sex'}</label><select id="sex" class="field"><option value="Male">${L?'ذكر':'Male'}</option><option value="Female">${L?'أنثى':'Female'}</option></select></div>
 
-          <div class="col-4">
-            <label class="label">${L?'العمر':'Age'}</label>
-            <input id="age" class="field" inputmode="numeric"/>
-          </div>
-          <div class="col-4">
-            <label class="label">${L?'الجنس':'Sex'}</label>
-            <select id="sex" class="field"><option value="Male">${L?'ذكر':'Male'}</option><option value="Female">${L?'أنثى':'Female'}</option></select>
-          </div>
-          <div class="col-4"></div>
+          <div class="col-3"><label class="label">${L?'الطول (سم)':'Height (cm)'}</label><input id="height" class="field" inputmode="numeric"/></div>
+          <div class="col-3"><label class="label">${L?'الوزن (كغ)':'Weight (kg)'}</label><input id="weight" class="field" inputmode="numeric"/></div>
+          <div class="col-3"><label class="label">${L?'نسبة الدهون %':'Body fat %'}</label><input id="bodyFat" class="field" inputmode="numeric"/></div>
+          <div class="col-3"><label class="label">${L?'محيط الخصر (سم)':'Waist (cm)'}</label><input id="waist" class="field" inputmode="numeric"/></div>
 
-          <div class="col-4">
-            <label class="label">${L?'الطول (سم)':'Height (cm)'}</label>
-            <input id="height" class="field" inputmode="numeric"/>
-          </div>
-          <div class="col-4">
-            <label class="label">${L?'الوزن (كغ)':'Weight (kg)'}</label>
-            <input id="weight" class="field" inputmode="numeric"/>
-          </div>
-          <div class="col-4"></div>
-
-          <div class="col-4">
-            <label class="label">${L?'نسبة الدهون % (اختياري)':'Body fat % (optional)'}</label>
-            <input id="bodyFat" class="field" inputmode="numeric"/>
-          </div>
-          <div class="col-4">
-            <label class="label">${L?'محيط الخصر (سم) (اختياري)':'Waist (cm) (optional)'}</label>
-            <input id="waist" class="field" inputmode="numeric"/>
-          </div>
-          <div class="col-4"></div>
-
-          <div class="col-4">
-            <label class="label">${L?'الوزن المستهدف (كغ)':'Target weight (kg)'}</label>
-            <input id="targetWeight" class="field" inputmode="numeric"/>
-          </div>
-          <div class="col-4">
-            <label class="label">${L?'موعد تحقيق الهدف':'Target date'}</label>
-            <input id="targetDate" type="date" class="field"/>
-          </div>
+          <div class="col-3"><label class="label">${L?'الوزن المستهدف (كغ)':'Target weight (kg)'}</label><input id="targetWeight" class="field" inputmode="numeric"/></div>
+          <div class="col-3"><label class="label">${L?'موعد تحقيق الهدف':'Target date'}</label><input id="targetDate" type="date" class="field"/></div>
         </div>
       </div>`;
   } else if(S.step===1){
@@ -257,10 +237,9 @@ function renderStep(){
                 .map(([v,ar,en])=>`<label><input type="checkbox" class="goal" value="${v}"/> ${L?ar:en}</label>`).join('')}
             </div>
           </div>
-          <div class="col-6"></div>
 
-          <div class="col-4"><label class="label">${L?'عدد الوجبات':'Meals/day'}</label><input id="meals" class="field" value="3" inputmode="numeric"/></div>
-          <div class="col-4"><label class="label">${L?'النظام المفضّل':'Preferred diet'}</label>
+          <div class="col-3"><label class="label">${L?'عدد الوجبات':'Meals/day'}</label><input id="meals" class="field" value="3" inputmode="numeric"/></div>
+          <div class="col-3"><label class="label">${L?'النظام المفضّل':'Preferred diet'}</label>
             <select id="prefDiet" class="field">
               <option value="Balanced">${L?'نظام متوازن':'Balanced'}</option>
               <option value="LowCarb">${L?'قليل الكربوهيدرات':'Low-carb'}</option>
@@ -269,15 +248,15 @@ function renderStep(){
               <option value="Plant">${L?'نباتي/مرن':'Plant-forward'}</option>
             </select>
           </div>
-          <div class="col-4"><label class="label">${L?'الصيام المتقطع':'Intermittent fasting'}</label>
+
+          <div class="col-3"><label class="label">${L?'الصيام المتقطع':'Intermittent fasting'}</label>
             <select id="fasting" class="field"><option value="off">${L?'غير مفعّل':'Off'}</option><option>16:8</option><option>18:6</option><option>20:4</option></select>
           </div>
+          <div class="col-3"><label class="label">${L?'المطبخ':'Cuisine'}</label><input id="cuisine" class="field" value="Arabic/Mediter."/></div>
 
-          <div class="col-4"><label class="label">${L?'المطبخ':'Cuisine'}</label><input id="cuisine" class="field" value="Arabic/Mediter."/></div>
-          <div class="col-4"><label class="label">${L?'زمن التحضير (د)':'Prep time (min)'}</label><input id="prep" class="field" value="20" inputmode="numeric"/></div>
-          <div class="col-4"><label class="label">${L?'الميزانية الشهرية':'Monthly budget'}</label>
-            <div style="display:flex;gap:8px"><input id="budget" class="field" value="0" inputmode="numeric"/><select id="currency" class="field" style="width:110px"><option>USD</option><option>EUR</option><option>GBP</option><option>SAR</option><option>AED</option><option>KWD</option><option>QAR</option><option>EGP</option></select></div>
-          </div>
+          <div class="col-3"><label class="label">${L?'زمن التحضير (د)':'Prep time (min)'}</label><input id="prep" class="field" value="20" inputmode="numeric"/></div>
+          <div class="col-3"><label class="label">${L?'الميزانية الشهرية':'Monthly budget'}</label><input id="budget" class="field" value="0" inputmode="numeric"/></div>
+          <div class="col-3"><label class="label">Currency</label><select id="currency" class="field"><option>USD</option><option>EUR</option><option>GBP</option><option>SAR</option><option>AED</option><option>KWD</option><option>QAR</option><option>EGP</option></select></div>
 
           <div class="col-6"><label class="label">${L?'أطعمة لا ترغب بها/حساسيات':'Foods to avoid / dislikes'}</label><input id="avoid" class="field" placeholder="Fish dislike, nut allergy …"/></div>
           <div class="col-6"><label class="label">${L?'حساسيات شائعة':'Common allergies'}</label><input id="allergies" class="field" placeholder="Gluten, Lactose, Nuts …"/></div>
@@ -287,14 +266,15 @@ function renderStep(){
     b.innerHTML=`
       <div class="form-card">
         <div class="grid-form">
-          <div class="col-4"><label class="label">${L?'العمل/النشاط':'Work/Activity'}</label>
+          <div class="col-3"><label class="label">${L?'العمل/النشاط':'Work/Activity'}</label>
             <select id="work" class="field"><option value="Sedentary">${L?'مكتبي':'Sedentary'}</option><option value="Light">${L?'نشاط خفيف':'Light'}</option><option value="Moderate">${L?'متوسط':'Moderate'}</option><option value="High">${L?'مرتفع':'High'}</option></select></div>
-          <div class="col-4"><label class="label">${L?'خطوات/اليوم':'Steps/day'}</label><input id="steps" class="field" value="6000" inputmode="numeric"/></div>
-          <div class="col-4"><label class="label">${L?'مدة الجلسة (د)':'Session length (min)'}</label><input id="session" class="field" value="60" inputmode="numeric"/></div>
+          <div class="col-3"><label class="label">${L?'خطوات/اليوم':'Steps/day'}</label><input id="steps" class="field" value="6000" inputmode="numeric"/></div>
+          <div class="col-3"><label class="label">${L?'النوم':'Sleep'}</label><select id="sleep" class="field"><option>Low</option><option>Medium</option><option>High</option></select></div>
+          <div class="col-3"><label class="label">${L?'التوتر':'Stress'}</label><select id="stress" class="field"><option>Low</option><option>Medium</option><option>High</option></select></div>
 
-          <div class="col-4"><label class="label">${L?'النوم':'Sleep'}</label><select id="sleep" class="field"><option>Low</option><option>Medium</option><option>High</option></select></div>
-          <div class="col-4"><label class="label">${L?'التوتر':'Stress'}</label><select id="stress" class="field"><option>Low</option><option>Medium</option><option>High</option></select></div>
-          <div class="col-4"><label class="label">${L?'مكان التمرين':'Training place'}</label><input id="place" class="field" value="Home/Gym"/></div>
+          <div class="col-3"><label class="label">${L?'مكان التمرين':'Training place'}</label><input id="place" class="field" value="Home/Gym"/></div>
+          <div class="col-3"><label class="label">${L?'مدة الجلسة (د)':'Session length (min)'}</label><input id="session" class="field" value="60" inputmode="numeric"/></div>
+          <div class="col-6"><label class="label">${L?'المعدات المتاحة':'Available equipment'}</label><input id="equip" class="field" placeholder="Dumbbells, barbell, bands…"/></div>
 
           <div class="col-12">
             <label class="label">${L?'أيام التدريب المتاحة':'Available training days'}</label>
@@ -303,12 +283,10 @@ function renderStep(){
             </div>
           </div>
 
-          <div class="col-6"><label class="label">${L?'المعدات المتاحة':'Available equipment'}</label><input id="equip" class="field" placeholder="Dumbbells, barbell, bands…"/></div>
           <div class="col-3"><label class="label">${L?'الخبرة':'Experience'}</label><select id="exp" class="field"><option>Beginner (0-6m)</option><option>Intermediate (6-24m)</option><option>Advanced (24m+)</option></select></div>
           <div class="col-3"><label class="label">RPE</label><input id="rpe" class="field" value="8" inputmode="numeric"/></div>
-
           <div class="col-3"><label class="label">${L?'كافيين/اليوم':'Caffeine/day'}</label><input id="caf" class="field" value="0" inputmode="numeric"/></div>
-          <div class="col-9"><label class="label">${L?'إصابات/قيود':'Injuries/constraints'}</label><input id="inj" class="field" placeholder="Shoulder impingement…"/></div>
+          <div class="col-3"><label class="label">${L?'إصابات/قيود':'Injuries/constraints'}</label><input id="inj" class="field" placeholder="Shoulder impingement…"/></div>
         </div>
       </div>`;
   } else {
@@ -335,41 +313,40 @@ function renderStep(){
   $('next').classList.toggle('hidden',S.step===3);
   $('generate').classList.toggle('hidden',S.step!==3);
 }
-function toast(msg){ const d=document.createElement('div'); d.className='toast'; d.textContent=msg; document.body.appendChild(d); setTimeout(()=>d.remove(),3200); }
-
-/* Save/restore */
 function saveStep(){
   try{
-    if(S.step===0){const p=S.data.profile={}; p.name=$('name').value.trim(); p.age=$('age').value.trim(); p.height=$('height').value.trim(); p.weight=$('weight').value.trim(); p.bodyFat=$('bodyFat').value.trim(); p.waist=$('waist').value.trim(); p.sex=$('sex').value; p.targetWeight=$('targetWeight').value.trim(); p.targetDate=$('targetDate').value;}
-    else if(S.step===1){const goals=[...document.querySelectorAll('.goal')].filter(x=>x.checked).map(x=>x.value); const d=S.data.diet={}; d.goals=goals; d.mealsPerDay=+($('meals').value||3); d.preferredDiet=$('prefDiet').value; d.fasting=$('fasting').value; d.cuisine=$('cuisine').value; d.prepTime=+($('prep').value||20); d.monthlyBudget=+($('budget').value||0); d.foodsToAvoid=$('avoid').value; d.allergies=$('allergies').value; S.data.currency=$('currency').value;}
-    else if(S.step===2){const L=S.data.lifestyle={}; L.workActivity=$('work').value; L.stepsPerDay=+($('steps').value||6000); L.sleep=$('sleep').value; L.stress=$('stress').value; L.trainingPlace=$('place').value; L.sessionLength=+($('session').value||60); const days=[]; for(let i=0;i<7;i++) if($('d'+i).checked) days.push(i); L.availableDays=days; L.equipment=$('equip').value; L.experience=$('exp').value; L.rpe=+($('rpe').value||8); L.caffeine=+($('caf').value||0); L.injuries=$('inj').value;}
-    else{const cond=[...document.querySelectorAll('.cond')].filter(x=>x.checked).map(x=>x.value); S.data.medical={conditions:cond, other:$('otherCond').value, meds:$('meds').value, supplements:$('supps').value}; S.data.challenges={past:$('past').value, motivation:$('motiv').value};}
+    if(S.step===0){const p=S.data.profile; p.name=$('name').value.trim(); p.age=$('age').value.trim(); p.height=$('height').value.trim(); p.weight=$('weight').value.trim(); p.bodyFat=$('bodyFat').value.trim(); p.waist=$('waist').value.trim(); p.sex=$('sex').value; p.targetWeight=$('targetWeight').value.trim(); p.targetDate=$('targetDate').value;}
+    else if(S.step===1){const goals=[...document.querySelectorAll('.goal')].filter(x=>x.checked).map(x=>x.value); const d=S.data.diet; d.goals=goals; d.mealsPerDay=+($('meals').value||3); d.preferredDiet=$('prefDiet').value; d.fasting=$('fasting').value; d.cuisine=$('cuisine').value; d.prepTime=+($('prep').value||20); d.monthlyBudget=+($('budget').value||0); d.foodsToAvoid=$('avoid').value; d.allergies=$('allergies').value; S.data.currency=$('currency').value;}
+    else if(S.step===2){const L=S.data.lifestyle; L.workActivity=$('work').value; L.stepsPerDay=+($('steps').value||6000); L.sleep=$('sleep').value; L.stress=$('stress').value; L.trainingPlace=$('place').value; L.sessionLength=+($('session').value||60); const days=[]; for(let i=0;i<7;i++) if($('d'+i).checked) days.push(i); L.availableDays=days; L.equipment=$('equip').value; L.experience=$('exp').value; L.rpe=+($('rpe').value||8); L.caffeine=+($('caf').value||0); L.injuries=$('inj').value;}
+    else{const cond=[...document.querySelectorAll('.cond')].filter(x=>x.checked).map(x=>x.value); S.data.medical.conditions=cond; S.data.medical.other=$('otherCond').value; S.data.medical.meds=$('meds').value; S.data.medical.supplements=$('supps').value; S.data.challenges.past=$('past').value; S.data.challenges.motivation=$('motiv').value;}
     localStorage.setItem(saveKey, JSON.stringify(S.data));
-  }catch{}
+  }catch(e){}
 }
 function restoreValues(){
-  const d=S.data, set=(id,v)=>{ const el=$(id); if(el!=null && v!=null) el.value=v; };
-  if(S.step===0){const p=d.profile||{}; set('name',p.name); set('age',p.age); set('height',p.height); set('weight',p.weight); set('bodyFat',p.bodyFat); set('waist',p.waist); set('sex',p.sex); set('targetWeight',p.targetWeight); set('targetDate',p.targetDate);}
-  if(S.step===1){(d.diet?.goals||[]).forEach(g=>{const el=[...document.querySelectorAll('.goal')].find(x=>x.value===g); if(el) el.checked=true;}); set('meals',d.diet?.mealsPerDay); set('prefDiet',d.diet?.preferredDiet); set('fasting',d.diet?.fasting); set('cuisine',d.diet?.cuisine); set('prep',d.diet?.prepTime); set('budget',d.diet?.monthlyBudget); set('avoid',d.diet?.foodsToAvoid); set('allergies',d.diet?.allergies); set('currency',d.currency);}
-  if(S.step===2){const L=d.lifestyle||{}; set('work',L.workActivity); set('steps',L.stepsPerDay); set('sleep',L.sleep); set('stress',L.stress); set('place',L.trainingPlace); set('session',L.sessionLength); (L.availableDays||[]).forEach(i=>{const el=$('d'+i); if(el) el.checked=true;}); set('equip',L.equipment); set('exp',L.experience); set('rpe',L.rpe); set('caf',L.caffeine); set('inj',L.injuries);}
-  if(S.step===3){(d.medical?.conditions||[]).forEach(c=>{const el=[...document.querySelectorAll('.cond')].find(x=>x.value===c); if(el) el.checked=true;}); set('otherCond',d.medical?.other); set('meds',d.medical?.meds); set('supps',d.medical?.supplements); set('past',d.challenges?.past); set('motiv',d.challenges?.motivation);}
+  try{
+    const d=S.data, set=(id,v)=>{ const el=$(id); if(el!=null && v!=null) el.value=v; };
+    if(S.step===0){const p=d.profile; set('name',p.name); set('age',p.age); set('height',p.height); set('weight',p.weight); set('bodyFat',p.bodyFat); set('waist',p.waist); set('sex',p.sex); set('targetWeight',p.targetWeight); set('targetDate',p.targetDate);}
+    if(S.step===1){(d.diet.goals||[]).forEach(g=>{const el=[...document.querySelectorAll('.goal')].find(x=>x.value===g); if(el) el.checked=true;}); set('meals',d.diet.mealsPerDay); set('prefDiet',d.diet.preferredDiet); set('fasting',d.diet.fasting); set('cuisine',d.diet.cuisine); set('prep',d.diet.prepTime); set('budget',d.diet.monthlyBudget); set('avoid',d.diet.foodsToAvoid); set('allergies',d.diet.allergies); set('currency',d.currency);}
+    if(S.step===2){const L=d.lifestyle; set('work',L.workActivity); set('steps',L.stepsPerDay); set('sleep',L.sleep); set('stress',L.stress); set('place',L.trainingPlace); set('session',L.sessionLength); (L.availableDays||[]).forEach(i=>{const el=$('d'+i); if(el) el.checked=true;}); set('equip',L.equipment); set('exp',L.experience); set('rpe',L.rpe); set('caf',L.caffeine); set('inj',L.injuries);}
+    if(S.step===3){(d.medical.conditions||[]).forEach(c=>{const el=[...document.querySelectorAll('.cond')].find(x=>x.value===c); if(el) el.checked=true;}); set('otherCond',d.medical.other); set('meds',d.medical.meds); set('supps',d.medical.supplements); set('past',d.challenges.past); set('motiv',d.challenges.motivation);}
+  }catch{}
 }
 
-/* ---------- Energy Targets ---------- */
+/* ===== Targets ===== */
 function targets(){
-  const p=S.data.profile||{}, L=S.data.lifestyle||{}, goals=S.data.diet?.goals||[];
+  const p=S.data.profile, L=S.data.lifestyle, goals=S.data.diet.goals;
   const W=+p.weight||0, H=+p.height||0, A=+p.age||0, male=(p.sex==='Male'||p.sex==='ذكر');
   const BMR= male? 10*W+6.25*H-5*A+5 : 10*W+6.25*H-5*A-161;
   const mult={Sedentary:1.2,Light:1.35,Moderate:1.5,High:1.7}[L.workActivity||'Light'];
   let T=BMR*mult; if(goals.includes('fatLoss')) T*=0.85; if(goals.includes('build')) T*=1.10;
   let P=Math.round(2.0*Math.max(+p.targetWeight||W||40,40)), F=Math.round(Math.max(0.8*W,40)), C=Math.round((T-(P*4+F*9))/4);
-  if((S.data.medical?.conditions||[]).some(c=>c==='Diabetes'||c==='Insulin Resistance')) C=Math.min(C,120);
+  if((S.data.medical.conditions||[]).some(c=>c==='Diabetes'||c==='Insulin Resistance')) C=Math.min(C,120);
   return {bmr:Math.round(BMR), tdee:Math.round(T), protein_g:P, fat_g:F, carb_g:Math.max(40,C)};
 }
 
-/* ---------- Sections ---------- */
+/* ===== Sections ===== */
 function buildSections(){
-  const arr=['welcome','analysis','allowed']; const f=S.data.diet?.fasting||'off'; if(f!=='off') arr.push('fasting');
+  const arr=['welcome','analysis','allowed']; const f=S.data.diet.fasting||'off'; if(f!=='off') arr.push('fasting');
   for(let i=1;i<=7;i++) arr.push('nutrition-day-'+i);
   for(let i=1;i<=7;i++) arr.push('training-day-'+i);
   arr.push('supplements','progression','troubleshoot','safety','closing'); S.sectionList=arr;
@@ -378,7 +355,7 @@ function headerBlock(){
   const P=S.data.profile,D=S.data.diet,L=S.data.lifestyle,M=S.data.medical,C=S.data.currency,T=targets();
   const daysAR=['السبت','الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'], daysEN=['Sat','Sun','Mon','Tue','Wed','Thu','Fri'];
   const days=(S.lang==='ar')?daysAR:daysEN; const avail=(L.availableDays||[]).map(i=>days[i]).join(', ')||(S.lang==='ar'?'غير محدد':'Not specified');
-  const tone=S.data.challenges?.motivation==='Direct' ? (S.lang==='ar'?'عملي مباشر بلا مبالغة':'Pragmatic, direct, no fluff') : (S.lang==='ar'?'تشجيعي وداعم':'Supportive & warm');
+  const tone=S.data.challenges.motivation==='Direct' ? (S.lang==='ar'?'عملي مباشر بلا مبالغة':'Pragmatic, direct, no fluff') : (S.lang==='ar'?'تشجيعي وداعم':'Supportive & warm');
   return `Name:${P.name} | Sex:${P.sex} | Age:${P.age} | H:${P.height}cm | W:${P.weight}kg
 Goals:${(D.goals||[]).join(', ')} | Pref diet:${D.preferredDiet} | Meals:${D.mealsPerDay} | IF:${D.fasting}
 Cuisine:${D.cuisine} | Prep:${D.prepTime}min | Budget:${C} ${D.monthlyBudget}
@@ -406,14 +383,17 @@ function prompt(section,extra={},mode='full'){
   return H;
 }
 
-/* ---------- AI call with multi-strategy ---------- */
-async function callAI(p,{tries=2,base=1000,timeout=60000}={}){ // استراتيجية 1 + 2
+/* ===== AI / Mock ===== */
+async function callAI(p,{tries=2,base=900,timeout=60000}={}){
+  if(S.mock){ return {ok:true,text:mockText(p)}; }
   for(let i=0;i<tries;i++){
     const ctrl=new AbortController(); const to=setTimeout(()=>ctrl.abort(),timeout);
     try{
       const res=await fetch('/.netlify/functions/gemini-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:p}),signal:ctrl.signal});
-      clearTimeout(to); if(!res.ok) throw new Error('HTTP '+res.status);
-      const data=await res.json(); const text=data.text||''; if(validate(text)) return {ok:true,text};
+      clearTimeout(to);
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data=await res.json(); const text=data.text||'';
+      if(validate(text)) return {ok:true,text};
       throw new Error('Invalid output');
     }catch(e){ if(i===tries-1) return {ok:false,error:String(e)}; await new Promise(r=>setTimeout(r, base*(2**i))); }
   }
@@ -424,16 +404,21 @@ function validate(s){
   if(/التغذية|Nutrition/.test(s) && !/\|.*kcal/i.test(s)) return false;
   return true;
 }
+function mockText(p){
+  // نص محاكاة واضح للمستخدم — مفيد للتشغيل حين يتعذّر الـLLM
+  if(/خطة التغذية ليوم/.test(p)) return localNutritionSkeleton(1);
+  if(/خطة التمرين ليوم/.test(p)) return localTrainingSkeleton(1);
+  if(/الترحيب|Welcome/.test(p)) return (S.lang==='ar')?`### أهلاً ${S.data.profile.name}\nسنبني خطة عملية دقيقة ومخصصة لك. ستظهر الأقسام تباعًا هنا.`:`### Welcome ${S.data.profile.name}\nYour personalized plan will stream in below.`;
+  if(/المسموح/.test(p)) return (S.lang==='ar')?`- بروتينات: دجاج، لحم خفيف، سمك\n- كارب: أرز/بطاطس/شوفان\n- دهون: زيت زيتون/مكسرات\n\n**التقليل:** سكريات سائلة، أطعمة مقلية.`:`- Proteins: chicken/lean beef/fish\n- Carbs: rice/potatoes/oats\n- Fats: olive oil/nuts\n\n**Limit:** liquid sugars, deep-fried foods.`;
+  return (S.lang==='ar')?`نص تجريبي من وضع المحاكاة.`:`Mock text generated locally.`;
+}
 
-/* ---------- Local fallback (emergency skeleton) ---------- */
+/* Local skeletons (fallback) */
 function localNutritionSkeleton(day){
-  const T=targets(); const meals=Math.max(3, +S.data.diet?.mealsPerDay||3);
-  const p=T.protein_g, f=T.fat_g, c=T.carb_g, kcal=T.tdee;
-  const per=(x)=>Math.round(x/meals);
+  const T=targets(); const meals=Math.max(3, +S.data.diet.mealsPerDay||3);
+  const p=T.protein_g, f=T.fat_g, c=T.carb_g, kcal=T.tdee, per=(x)=>Math.round(x/meals);
   let out=`| الوجبة | المكونات (جرام) | kcal | Protein | Fat | Carbs |\n|---|---|---|---|---|---|\n`;
-  for(let i=1;i<=meals;i++){
-    out+=`| وجبة ${i} | بروتين خفيف + كارب معقّد + دهون صحية | ${per(kcal)} | ${per(p)} | ${per(f)} | ${per(c)} |\n`;
-  }
+  for(let i=1;i<=meals;i++) out+=`| وجبة ${i} | بروتين + كارب معقّد + دهون صحية | ${per(kcal)} | ${per(p)} | ${per(f)} | ${per(c)} |\n`;
   out+=`| **الإجمالي** | — | **${kcal}** | **${p}** | **${f}** | **${c}** |`;
   return out;
 }
@@ -441,10 +426,9 @@ function localTrainingSkeleton(day){
   return `| Day | Exercise | Sets | Reps | Rest (sec) |\n|---|---|---|---|---|\n| ${day} | Squat | 4 | 6–8 | 120 |\n| ${day} | Bench Press | 4 | 6–8 | 120 |\n| ${day} | Row | 4 | 8–10 | 90 |\n| ${day} | Plank | 3 | 45–60s | 60 |`;
 }
 
-/* ---------- Timeline + Rendering ---------- */
+/* ===== Timeline & Rendering ===== */
 function buildTimeline(){ $('timeline').innerHTML=''; S.sectionList.forEach(k=>{ const el=document.createElement('div'); el.className='chip'; el.dataset.key=k; el.innerHTML=`<span class="status"></span> <span class="label">${secName(k)}</span>`; $('timeline').appendChild(el); }); }
 function setTL(k,st){ const el=[...$('timeline').children].find(x=>x.dataset.key===k); if(el) el.querySelector('.status').className='status '+st; }
-function mdSafe(s){ let html=hasMD?marked.parse(s):(s||'').replace(/\n/g,'<br>'); return purifier?DOMPurify.sanitize(html,{USE_PROFILES:{html:true}}):html; }
 function appendCard(key,html,status){
   const wrap=$('plan-content'); const card=document.createElement('article'); card.className='glass section'; card.style.marginBottom='12px'; card.id='sec-'+key;
   const head=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
@@ -458,42 +442,35 @@ function appendCard(key,html,status){
   wrap.appendChild(card);
 }
 
-/* ---------- Orchestrate generation (with strategies) ---------- */
+/* ===== Orchestrate generation ===== */
+function buildSections(){ const arr=['welcome','analysis','allowed']; const f=S.data.diet.fasting||'off'; if(f!=='off') arr.push('fasting'); for(let i=1;i<=7;i++) arr.push('nutrition-day-'+i); for(let i=1;i<=7;i++) arr.push('training-day-'+i); arr.push('supplements','progression','troubleshoot','safety','closing'); S.sectionList=arr; }
 async function generateAll(){
   saveStep();
-  const p=S.data.profile||{}; if(!(p.name&&p.age&&p.height&&p.weight)){ toast(t('need')); return; }
+  const p=S.data.profile; if(!(p.name&&p.age&&p.height&&p.weight)){ toast(t('need')); return; }
 
   $('plan-empty').style.display='none'; $('plan-content').innerHTML='';
   buildSections(); buildTimeline();
-
-  // إظهار شريط تقدم صغير فقط
   $('miniProgress').classList.add('show');
 
   const total=S.sectionList.length; let done=0;
   for(const key of S.sectionList){
     setTL(key,'run'); S.statuses[key]='run';
-    let sec=key, extra={}; if(key.startsWith('nutrition-day')){sec='nutrition-day'; extra.day=+key.split('-').pop();}
-    if(key.startsWith('training-day')){sec='training-day'; extra.day=+key.split('-').pop();}
+    let sec=key, extra={}; if(key.startsWith('nutrition-day')){sec='nutrition-day'; extra.day=+key.split('-').pop();} if(key.startsWith('training-day')){sec='training-day'; extra.day=+key.split('-').pop();}
 
-    // 1) prompt كامل
     let {ok,text}=await callAI(prompt(sec,extra,'full'),{tries:2,base:900,timeout:60000});
-    // 2) prompt جدول فقط
     if(!ok){ const r2=await callAI(prompt(sec,extra,'table'),{tries:1,base:1200,timeout:60000}); ok=r2.ok; text=r2.text; }
-    // 3) هيكل محلي كحل أخير
-    if(!ok){
-      if(sec==='nutrition-day') text=localNutritionSkeleton(extra.day);
-      else if(sec==='training-day') text=localTrainingSkeleton(extra.day);
-    }
+    if(!ok){ if(sec==='nutrition-day') text=localNutritionSkeleton(extra.day); else if(sec==='training-day') text=localTrainingSkeleton(extra.day); }
+
     S.results[key]=text||''; S.statuses[key]= ok? 'ok':'fail'; setTL(key,S.statuses[key]);
     appendCard(key, mdSafe(text||`<div style="color:var(--err)">${I[S.lang].fail}</div>`), S.statuses[key]);
 
-    done++; const pct=Math.round((done/total)*100)+'%'; $('mp-bar').style.width=pct;
+    done++; $('mp-bar').style.width=Math.round((done/total)*100)+'%';
     document.getElementById('sec-'+key).scrollIntoView({behavior:'smooth',block:'center'});
   }
   $('miniProgress').classList.remove('show');
 }
 
-/* ---------- Retry button ---------- */
+/* ===== Retry click (bug fixed) ===== */
 document.addEventListener('click', async (e)=>{
   const btn=e.target.closest('[data-retry]'); if(!btn) return;
   const key=btn.getAttribute('data-retry'); btn.disabled=true; btn.textContent='…'; setTL(key,'run');
@@ -501,11 +478,12 @@ document.addEventListener('click', async (e)=>{
   let {ok,text}=await callAI(prompt(sec,extra,'table'),{tries:2,base:1000,timeout:60000});
   if(!ok){ if(sec==='nutrition-day') text=localNutritionSkeleton(extra.day); else if(sec==='training-day') text=localTrainingSkeleton(extra.day); }
   S.results[key]=text||''; S.statuses[key]= ok? 'ok':'fail'; setTL(key,S.statuses[key]);
-  document.querySelector('#body-'+key').innerHTML = mdSafe(text||`<div style="color:var(--err)">${I[S.lang].fail}</div>`);
+  const bodyEl = document.querySelector('#body-' + key);  /* <-- FIXED QUOTE BUG */
+  if(bodyEl) bodyEl.innerHTML = mdSafe(text||`<div style="color:var(--err)">${I[S.lang].fail}</div>`);
   if(ok) btn.remove(); else { btn.disabled=false; btn.textContent='↻ '+I[S.lang].retry; }
 });
 
-/* ---------- Buttons ---------- */
+/* ===== Buttons / Toggles ===== */
 $('prev').onclick=()=>{ saveStep(); S.step=Math.max(0,S.step-1); renderStep(); };
 $('next').onclick=()=>{ saveStep(); S.step=Math.min(3,S.step+1); renderStep(); };
 $('generate').onclick=generateAll;
@@ -514,13 +492,14 @@ $('btn-top').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
 $('btn-print').onclick=()=>window.print();
 $('btn-print2').onclick=()=>window.print();
 $('btn-theme').onclick=()=>document.body.classList.toggle('light');
+$('btn-mock').onclick=()=>{ S.mock=!S.mock; $('btn-mock').textContent = 'Mock: ' + (S.mock?'ON':'OFF'); toast(S.mock?'تم تفعيل وضع المحاكاة':'تم إيقاف وضع المحاكاة'); };
 
 $('btn-ar').onclick=()=>{ if(S.lang!=='ar'){ S.lang='ar'; applyLang(); renderStep(); } };
 $('btn-en').onclick=()=>{ if(S.lang!=='en'){ S.lang='en'; applyLang(); renderStep(); } };
 
 ['change','keyup'].forEach(ev=>document.addEventListener(ev,()=>{ try{saveStep();}catch{} },{passive:true}));
 
-/* ---------- Init ---------- */
+/* ===== Init ===== */
 window.addEventListener('load', ()=>{
   try{ const v=JSON.parse(localStorage.getItem(saveKey)||'{}'); if(v && v.profile) S.data=v; }catch{}
   applyLang(); renderStep();
