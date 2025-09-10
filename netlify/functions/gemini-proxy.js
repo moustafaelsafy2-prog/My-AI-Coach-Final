@@ -1,38 +1,85 @@
-exports.handler = async function(event, context) {
+// netlify/functions/gemini-proxy.js
+// Proxy to Google Generative AI API (Gemini)
+// يعمل بدون أي مكتبات إضافية مثل node-fetch
+
+exports.handler = async (event) => {
+  const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS"
+  };
+
+  // ✅ رد سريع على CORS preflight
+  if (event.httpMethod === "OPTIONS") {
+    return { statusCode: 204, headers, body: "" };
+  }
+
+  // ✅ السماح فقط بالـ POST
   if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
+    return { statusCode: 405, headers, body: "Method Not Allowed" };
   }
 
   try {
-    const { prompt } = JSON.parse(event.body || "{}");
-    if (!prompt) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Missing prompt" }) };
+    // ✅ التأكد من وجود مفتاح الـ API
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({ error: "GEMINI_API_KEY is missing" })
+      };
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
+    // ✅ قراءة البيانات من الطلب
+    const body = JSON.parse(event.body || "{}");
+    const userPrompt = body.prompt;
+    if (!userPrompt) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: "Missing prompt" })
+      };
+    }
 
-    const r = await fetch(url, {
+    // ✅ إعداد الحمولة
+    const payload = {
+      contents: [{ parts: [{ text: userPrompt }] }]
+    };
+
+    // ✅ استدعاء API
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+    const resp = await fetch(apiUrl, {
       method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }]
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
     });
 
-    const data = await r.json();
-    const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text).join("\n") || "";
+    if (!resp.ok) {
+      const errorBody = await resp.text();
+      return {
+        statusCode: resp.status,
+        headers,
+        body: JSON.stringify({
+          error: "Upstream error",
+          details: errorBody.slice(0, 500)
+        })
+      };
+    }
+
+    const data = await resp.json();
+    const text =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
     return {
       statusCode: 200,
-      headers: { "content-type": "application/json", "Access-Control-Allow-Origin": "*" },
+      headers,
       body: JSON.stringify({ text })
     };
-  } catch (err) {
+  } catch (e) {
     return {
       statusCode: 500,
-      headers: { "content-type": "application/json", "Access-Control-Allow-Origin": "*" },
-      body: JSON.stringify({ error: String(err) })
+      headers,
+      body: JSON.stringify({ error: String(e) })
     };
   }
 };
