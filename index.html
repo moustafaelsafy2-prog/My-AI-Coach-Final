@@ -4,15 +4,22 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>المستشار الصحي الذكي | Intelligent Health Coach</title>
+
+  <!-- Fonts & libs -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
   <style>
-    :root{ --brand:#6c5ce7; --brand-2:#00c2ff; --ok:#16a34a; --warn:#f59e0b; --err:#dc2626; --muted:#93a2b8; }
-    html[dir="rtl"] body{ font-family:'Tajawal',system-ui,-apple-system,Segoe UI,Roboto,"Noto Naskh Arabic",sans-serif }
-    html[dir="ltr"] body{ font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif }
+    :root{
+      --brand:#6c5ce7; --brand-2:#00c2ff;
+      --ok:#16a34a; --warn:#f59e0b; --err:#dc2626;
+      --muted:#93a2b8;
+    }
+    html[dir="rtl"] body { font-family:'Tajawal',system-ui,-apple-system,Segoe UI,Roboto,"Noto Naskh Arabic",sans-serif }
+    html[dir="ltr"] body { font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif }
     body{ background:linear-gradient(180deg,#0a0f1c 0%,#0e1526 100%); color:#eaf0ff }
     .glass{ background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03)); border:1px solid rgba(255,255,255,.10); border-radius:16px }
     .title-grad{ background:linear-gradient(90deg,var(--brand),var(--brand-2)); -webkit-background-clip:text; background-clip:text; color:transparent }
@@ -73,13 +80,13 @@
       </div>
     </section>
 
-    <!-- Wizard container -->
+    <!-- Wizard -->
     <section id="wizard" class="glass p-4">
       <div class="section-title title-grad text-xl mb-3" id="step-title">الملف الشخصي</div>
       <div id="step-body"></div>
 
-      <!-- NAV BUTTONS AT THE BOTTOM -->
       <div class="divider my-4"></div>
+      <!-- NAV at bottom -->
       <div class="flex items-center justify-between">
         <div class="text-xs text-[color:var(--muted)]" id="live-hint">—</div>
         <div class="flex items-center gap-2">
@@ -90,7 +97,7 @@
       </div>
     </section>
 
-    <!-- Plan -->
+    <!-- Plan area -->
     <section class="glass p-5 mt-6">
       <div class="flex items-center justify-between">
         <div class="section-title text-lg" id="plan-title">الخطة</div>
@@ -117,6 +124,13 @@
   </main>
 
 <script>
+/* ============================ CONFIG ============================ */
+/* ✅ Endpoint: جذري في الإنتاج + محلي عند dev */
+const ENDPOINT =
+  (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost:8888/.netlify/functions/gemini-proxy'
+    : '/.netlify/functions/gemini-proxy';
+
 /* ============================ STATE ============================ */
 const state = {
   lang: (navigator.language || 'ar').startsWith('ar') ? 'ar' : 'en',
@@ -355,7 +369,8 @@ function renderStep(){
       <div class="glass p-4">
         <div class="section-title mb-2">${t('musclesFocus')}</div>
         ${['chest','back','shoulders','biceps','triceps','quads','hamstrings','glutes','calves','abs'].map(k=>{
-          const lab=(state.lang==='ar'?({chest:'الصدر',back:'الظهر',shoulders:'الأكتاف',biceps:'البايسبس',triceps:'الترايسبس',quads:'الأرجل الأمامية',hamstrings:'الأرجل الخلفية',glutes:'المؤخرة',calves:'السمانة',abs:'البطن'})[k]:'') || k[0].toUpperCase()+k.slice(1);
+          const arNames={chest:'الصدر',back:'الظهر',shoulders:'الأكتاف',biceps:'البايسبس',triceps:'الترايسبس',quads:'الأرجل الأمامية',hamstrings:'الأرجل الخلفية',glutes:'المؤخرة',calves:'السمانة',abs:'البطن'};
+          const lab=(state.lang==='ar'?arNames[k]:k[0].toUpperCase()+k.slice(1));
           const v=state.muscles[k];
           return `<div class="grid grid-cols-2 gap-2 items-center mb-2">
               <label class="flex items-center gap-2"><input type="checkbox" id="m-${k}" class="accent-[var(--brand-2)]" ${v.on?'checked':''}><span>${lab}</span></label>
@@ -396,7 +411,6 @@ function renderStep(){
   document.getElementById('next').disabled=(state.step===3);
 }
 
-/* Save current step */
 function saveStep(){
   const $=id=>document.getElementById(id);
   if(state.step===0){
@@ -492,42 +506,109 @@ Tone:${tone}. LANGUAGE:${state.lang}. FOOD in ${state.lang}. Exercises EN only.`
 }
 function promptFor(section){
   const H=headerBlock();
-  if(section==='welcome') return `${H}\n\nCreate a short ${state.lang} welcome. Crisp, one paragraph.`;
-  if(section==='analysis') return `${H}\n\nWrite concise ${state.lang} analysis (bullets) with plan logic and macros.`;
-  if(section==='allowed') return `${H}\n\nTwo lists in ${state.lang}: (1) Allowed/Recommended by cuisine. (2) Limits/Avoid (respect allergies/dislikes). Practical.`;
-  if(section==='fasting' && state.diet.fasting!=='off') return `${H}\n\nExplain in ${state.lang} Intermittent Fasting (${state.diet.fasting}) safely: timing, hydration, caffeine, training window.`;
-  if(section.startsWith('nutrition-day')){ const day=+section.split('-').pop();
-    return `${H}\n\n${state.lang} only. OUTPUT MUST BE A MARKDOWN TABLE ONLY.\nColumns: Meal | Ingredients (g) | kcal | Protein | Fat | Carbs.\n3–${state.diet.mealsPerDay} meals + one TOTAL row (±10% of targets). Day ${day} of 7.`; }
-  if(section.startsWith('training-day')){ const day=+section.split('-').pop();
-    return `${H}\n\nOUTPUT ONLY A MARKDOWN TABLE.\nColumns: Day | Exercise | Sets | Reps | Rest (sec).\nRespect injuries; mark [SWAP:EXERCISE:<exercise>]. Day ${day} of 7.`; }
-  if(section==='supplements') return `${H}\n\nEvidence-based supplements in ${state.lang}: essential, goal-specific, budget. Doses & timing. Bullets. Medical disclaimer.`;
-  if(section==='progression') return `${H}\n\n8–12 week progression in ${state.lang}: adjust weights/reps/rest, deloads, cardio, TDEE recalculation. Bullets.`;
-  if(section==='troubleshoot') return `${H}\n\nTroubleshooting in ${state.lang}: hunger, plateaus, poor sleep, stress, cravings, travel/eating out. 2–3 bullets each.`;
-  if(section==='safety') return `${H}\n\nSafety notes in ${state.lang}: technique, injury prevention, hydration, sleep, when to stop and seek medical help.`;
-  if(section==='closing') return `${H}\n\nShort motivating closing in ${state.lang} addressing user by name.`;
-  return H;
+  const noBrief = state.lang==='ar'
+    ? '\n\nلا تختصر. اكتب مخرجات تفصيلية شاملة مع قوائم/جداول واضحة كما هو مطلوب. تجنب الإيجاز.'
+    : '\n\nDo NOT summarize. Provide a comprehensive, fully detailed output with explicit lists/tables as instructed. Avoid brevity.';
+  if(section==='welcome') return `${H}\n\nCreate a short ${state.lang} welcome. Professional, one paragraph.${noBrief}`;
+  if(section==='analysis') return `${H}\n\nWrite a detailed ${state.lang} analysis (bullets) with plan logic and macros.${noBrief}`;
+  if(section==='allowed') return `${H}\n\nTwo lists in ${state.lang}: (1) Allowed/Recommended by cuisine. (2) Limits/Avoid (respect allergies/dislikes). Practical.${noBrief}`;
+  if(section==='fasting' && state.diet.fasting!=='off') return `${H}\n\nExplain in ${state.lang} Intermittent Fasting (${state.diet.fasting}) safely: timing, hydration, caffeine, training window.${noBrief}`;
+
+  if(section.startsWith('nutrition-day')){
+    const day=+section.split('-').pop();
+    return `${H}
+
+STRICT OUTPUT: Markdown table ONLY. No prose, no bullets, no explanations.
+Columns: | Meal | Ingredients (g) | kcal | Protein | Fat | Carbs |
+Rows: 3 main meals + TOTAL row only (4 rows total).
+Daily macros MUST be within ±10% of Targets at the end row.
+Language: ${state.lang}. Use local Arabic dish names if lang=ar.
+Day ${day} of 7.${noBrief}`; }
+
+  if(section.startsWith('training-day')){
+    const day=+section.split('-').pop();
+    return `${H}
+
+STRICT OUTPUT: Markdown table ONLY.
+Columns: | Day | Exercise | Sets | Reps | Rest (sec) |
+Include warm-up as first row if needed. Respect injuries and focus weak muscles.
+Day ${day} of 7.${noBrief}`; }
+
+  if(section==='supplements') return `${H}\n\nEvidence-based supplements in ${state.lang}: essential, goal-specific, budget. Doses & timing. Medical disclaimer.${noBrief}`;
+  if(section==='progression') return `${H}\n\n8–12 week progression in ${state.lang}: adjust weights/reps/rest, deloads, cardio, TDEE recalculation. Bullets.${noBrief}`;
+  if(section==='troubleshoot') return `${H}\n\nTroubleshooting in ${state.lang}: hunger, plateaus, poor sleep, stress, cravings, travel/eating out. 2–3 bullets each.${noBrief}`;
+  if(section==='safety') return `${H}\n\nSafety notes in ${state.lang}: technique, injury prevention, hydration, sleep, when to stop and seek medical help.${noBrief}`;
+  if(section==='closing') return `${H}\n\nShort motivating closing in ${state.lang} addressing user by name.${noBrief}`;
+  return H + noBrief;
 }
 
-/* ============================ API (robust) ============================ */
-async function callAI(prompt, { attempts = 2 } = {}) {
-  const endpoints = ['/api/generate', '/.netlify/functions/gemini-proxy'];
-  for (const ep of endpoints) {
-    for (let i = 0; i < attempts; i++) {
-      try {
-        const r = await fetch(ep, { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ prompt }) });
-        const raw = await r.text();
-        let data = null; try { data = JSON.parse(raw); } catch {}
-        if (!r.ok) throw new Error((data && (data.error || data.message)) || raw.slice(0, 200));
-        const text = (data && data.text) ? String(data.text).trim() : String(raw).trim();
-        if (!text || /^<!doctype/i.test(text)) throw new Error('Invalid response body');
-        return { ok:true, text };
-      } catch (e) {
-        if (i === attempts - 1) continue;
-        await new Promise(res => setTimeout(res, 800 * (i + 1)));
-      }
+/* ============================ API ============================ */
+async function callAI(prompt, params = {}, { attempts = 2, sectionId = "" } = {}) {
+  const body = JSON.stringify({ prompt, section: sectionId, ...params });
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const r = await fetch(ENDPOINT, { method:'POST', headers:{'content-type':'application/json'}, body });
+      const raw = await r.text();
+      let data = null; try { data = JSON.parse(raw); } catch {}
+      if (!r.ok) throw new Error((data && (data.error || data.details || data.message)) || raw.slice(0, 400));
+      const text = (data && data.text) ? String(data.text).trim() : "";
+      if (!text || /^<!doctype/i.test(text)) throw new Error('Invalid response body');
+      return { ok:true, text };
+    } catch (e) {
+      if (i < attempts - 1) await new Promise(res => setTimeout(res, 1200*(i+1)));
     }
   }
-  return { ok:false, error:'Both endpoints failed' };
+  return { ok:false, error:`Endpoint failed: ${ENDPOINT}` };
+}
+
+/* Params — LONG for ALL */
+function paramsFor(sectionId){
+  return {
+    response_mime_type: "text/markdown",
+    model: "gemini-1.5-pro",
+    temperature: 0.35,
+    top_p: 0.9,
+    max_output_tokens: 8192
+  };
+}
+
+/* Nutrition fallback (optional; still present for resilience) */
+async function generateNutritionFallback(sectionId){
+  const day = +sectionId.split('-').pop();
+  const base = headerBlock();
+  const params = paramsFor(sectionId);
+
+  const p1 = `${base}
+
+OUTPUT: Markdown table ONLY with 2 meals (Breakfast + Lunch).
+Columns: | Meal | Ingredients (g) | kcal | Protein | Fat | Carbs |
+Language: ${state.lang}. Day ${day} (part 1 of 2).`;
+
+  const p2 = `${base}
+
+OUTPUT: Markdown table ONLY with 1 meal (Dinner).
+Columns: | Meal | Ingredients (g) | kcal | Protein | Fat | Carbs |
+Language: ${state.lang}. Day ${day} (part 2 of 2).`;
+
+  const [r1, r2] = await Promise.all([
+    callAI(p1, params, { attempts: 2, sectionId }),
+    callAI(p2, params, { attempts: 2, sectionId })
+  ]);
+
+  if(!(r1.ok && r2.ok)) return { ok:false, error: (r1.error||'') + ' ' + (r2.error||'') };
+
+  const totalPrompt = `${base}
+
+You are given the rows below as Markdown rows (without header).
+Compute a TOTAL row (kcal, Protein, Fat, Carbs) and return ONLY the TOTAL row.
+Rows:
+${r1.text}\n${r2.text}`;
+
+  const rTotal = await callAI(totalPrompt, params, { attempts: 2, sectionId });
+  if(!rTotal.ok) return { ok:false, error:rTotal.error };
+
+  const merged = r1.text.trim() + "\n" + r2.text.trim() + "\n" + rTotal.text.trim();
+  return { ok:true, text: merged };
 }
 
 /* ============================ GENERATION ============================ */
@@ -576,8 +657,11 @@ async function generateOne(sectionId,startPct,endPct){
   const noteEl=document.getElementById('note-'+sectionId);
   const barEl=document.getElementById('bar-'+sectionId); noteEl.textContent=t('gen');
 
-  let r=await callAI(promptFor(sectionId),{attempts:2});
-  if(!r.ok) r=await callAI(promptFor(sectionId),{attempts:2}); // محاولة إضافية بنفس البرومبت (قابلة للتبديل)
+  let r = await callAI(promptFor(sectionId), paramsFor(sectionId), { attempts: 2, sectionId });
+
+  if(!r.ok && sectionId.startsWith('nutrition-day')){
+    r = await generateNutritionFallback(sectionId);
+  }
 
   if(!r.ok){
     setSectionStatus(sectionId,'fail',r.error);
