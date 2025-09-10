@@ -1,9 +1,2 @@
-[build]
-  publish = "."
-  functions = "netlify/functions"
-
-[[redirects]]
-  from = "/api/generate"
-  to   = "/.netlify/functions/gemini-proxy"
-  status = 200
-  force  = true
+[functions]
+  node_bundler = "esbuild"
