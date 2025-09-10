@@ -1,13 +1,9 @@
 [build]
-  command = ""
   publish = "."
-[functions]
-  node_bundler = "esbuild"
-[functions."gemini-proxy"]
-  timeout = 26
+  functions = "netlify/functions"
+
 [[redirects]]
   from = "/api/generate"
-  to = "/.netlify/functions/gemini-proxy.js"
+  to   = "/.netlify/functions/gemini-proxy"
   status = 200
-  force = true
-
+  force  = true
