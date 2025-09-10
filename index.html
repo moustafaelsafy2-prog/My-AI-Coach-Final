@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>المدرب الشخصي الخبير — خطة مخصصة بالذكاء الاصطناعي</title>
+  <title>المستشار الصحي الذكي — خطة مخصصة بالتغذية والتدريب</title>
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -20,633 +20,454 @@
 
   <style>
     :root{
-      --bg:#f6f7fb;
-      --card:#ffffff;
-      --ink:#0f172a;
-      --sub:#475569;
-      --line:#e5e7eb;
-      --brand:#645cff;
-      --accent:#22c55e;
-      --chip:#eef2ff;
+      --bg:#f6f7fb;--card:#ffffff;--ink:#0f172a;--sub:#475569;--line:#e5e7eb;
+      --brand:#6b6cff;--accent:#22c55e;--chip:#eef2ff;--warn:#f97316;
     }
-    html.dark{
-      --bg:#0b0f17;
-      --card:#0f1624;
-      --ink:#f1f5f9;
-      --sub:#9aa4b2;
-      --line:#1f2738;
-      --brand:#7d86ff;
-      --accent:#34d399;
-      --chip:#121a2b;
-    }
+    html.dark{ --bg:#0b0f17;--card:#0f1624;--ink:#f1f5f9;--sub:#9aa4b2;--line:#1f2738;--brand:#7c81ff;--accent:#34d399;--chip:#121a2b }
     *{ font-family:'Tajawal',system-ui,-apple-system,Segoe UI,Roboto,sans-serif }
     body{ background:var(--bg); color:var(--ink) }
     .card{ background:var(--card); border:1px solid var(--line) }
-    .btn{ @apply px-4 py-2 rounded-lg font-bold }
+    .btn{ padding:.6rem 1rem;border-radius:.75rem;font-weight:800 }
     .btn-primary{ background:var(--brand); color:#fff }
     .btn-ghost{ background:transparent; border:1px solid var(--line); color:var(--ink) }
-    .progress-bar{ height:8px; background:linear-gradient(90deg,var(--brand),var(--accent)); transition:width .25s }
-    .tag{ background:var(--chip); border:1px solid var(--line); color:var(--sub); @apply text-xs px-2 py-0.5 rounded }
-    .h-title{ @apply text-xl md:text-2xl font-extrabold; letter-spacing:.1px }
-    .h-sec{ @apply text-lg md:text-xl font-extrabold mt-6 mb-3; border-inline-start:6px solid var(--brand); padding-inline-start:.75rem }
-    .h-day{ @apply text-base md:text-lg font-extrabold mt-4 mb-2; color:var(--brand) }
-    .prose :where(h3){ @apply text-xl font-extrabold mt-6 mb-3; border-inline-start-8:var(--brand) }
-    .kbd{ @apply text-xs px-2 py-0.5 rounded border; border-color:var(--line); background:var(--chip); color:var(--sub) }
-    .print-ready *{ animation:none !important; transition:none !important }
-    @media print{
-      body{ background:#fff }
-      #topbar,#setup,#topActions{display:none !important}
-      #resultRoot{ box-shadow:none !important; border:none !important }
-    }
+    .btn-success{ background:var(--accent); color:#0b0f17 }
+    .tag{ background:var(--chip); border:1px solid var(--line); color:var(--sub); font-size:.75rem; padding:.2rem .5rem; border-radius:.5rem }
+    .h-xl{ font-size:1.35rem; font-weight:800 }
+    .section-title{ font-weight:800; font-size:1.15rem; margin:.5rem 0 1rem; padding-inline-start:.7rem; border-inline-start:6px solid var(--brand) }
+    .day-title{ color:var(--brand); font-weight:800; margin:.75rem 0 .35rem }
+    .progress{ height:8px; background:linear-gradient(90deg,var(--brand),var(--accent)); transition:width .25s }
+    .toast{ position:fixed; inset-inline:0; top:10px; margin:auto; width:min(720px,90%); background:#fff; border:1px solid var(--line); color:var(--ink); border-radius:.75rem; padding:.6rem .9rem; z-index:60 }
+    .toast.warn{ border-color:#fed7aa; background:#fffbeb; color:#713f12 }
+    .modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.5); z-index:50 }
+    .modal .box{ background:var(--card); color:var(--ink); width:min(680px,95%); border:1px solid var(--line); border-radius:1rem; padding:1rem 1.25rem }
+    @media print{ #topbar,#setup,#topActions,.modal,#langSwitch{display:none!important} body{background:#fff} }
   </style>
 </head>
+<body>
 
-<body class="min-h-screen">
-  <!-- Topbar -->
-  <header id="topbar" class="sticky top-0 z-40 backdrop-blur bg-[color:var(--card)]/90 border-b">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-      <div class="flex items-center gap-3">
-        <div class="size-9 rounded-lg grid place-items-center text-white font-extrabold" style="background:var(--brand)">AI</div>
-        <div>
-          <div class="font-extrabold">المدرب الشخصي الخبير</div>
-          <div class="text-[11px] text-[color:var(--sub)]">خطة دقيقة 100% للتغذية والتدريب والمكملات — مخصصة لك</div>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        <button id="lang-ar" class="btn btn-ghost text-sm">عربي</button>
-        <button id="lang-en" class="btn btn-ghost text-sm">EN</button>
-        <div class="w-px h-6 bg-[color:var(--line)]"></div>
-        <button id="btn-theme" class="btn btn-ghost text-sm" title="الوضع الليلي/النهاري">🌓</button>
+<!-- Topbar -->
+<header id="topbar" class="sticky top-0 z-40 backdrop-blur bg-[color:var(--card)]/90 border-b">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <div class="size-9 rounded-xl grid place-items-center text-white font-extrabold" style="background:var(--brand)">AI</div>
+      <div>
+        <div class="font-extrabold">المستشار الصحي الذكي</div>
+        <div class="text-[11px] text-[color:var(--sub)]">خطة دقيقة 100% للتغذية والتدريب والمكملات — مخصصة لك</div>
       </div>
     </div>
-  </header>
+    <div id="langSwitch" class="flex items-center gap-2">
+      <button id="lang-ar" class="btn btn-ghost text-sm">عربي</button>
+      <button id="lang-en" class="btn btn-ghost text-sm">EN</button>
+      <div class="w-px h-6 bg-[color:var(--line)]"></div>
+      <button id="btn-theme" class="btn btn-ghost text-sm">🌓</button>
+    </div>
+  </div>
+</header>
 
-  <main class="max-w-6xl mx-auto px-4 py-6">
-    <!-- Intro -->
-    <section class="card rounded-2xl p-5 md:p-7 mb-6">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <div>
-          <h1 class="h-title mb-1">لنُنشئ أفضل خطة ممكنة لهدفك</h1>
-          <p class="text-sm text-[color:var(--sub)]">
-            سنولّد الخطة **قسمًا بعد قسم** لضمان الدقّة والشمول. إدخالات دقيقة = خطة أشد تخصيصًا.
-          </p>
-        </div>
-        <div id="topActions" class="flex flex-wrap items-center gap-2">
-          <button id="start" class="btn btn-primary">ابدأ التوليد</button>
-          <button id="regen" class="btn btn-ghost hidden">إعادة توليد كامل</button>
-        </div>
+<main class="max-w-6xl mx-auto px-4 py-6">
+
+  <!-- Lead card -->
+  <section class="card rounded-2xl p-5 md:p-7 mb-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div>
+        <div class="h-xl mb-1" id="leadTitle">لنُنشئ أفضل خطة ممكنة لهدفك</div>
+        <p class="text-sm text-[color:var(--sub)]" id="leadDesc">
+          سنولّد الخطة **قسمًا بعد قسم** لضمان الدقّة: ترحيب — تحليل — المسموح/الممنوع — الصيام — التغذية **يومًا بيوم** — التدريب **يومًا بيوم** — مكملات — متابعة — حلول — سلامة — ختام.
+        </p>
       </div>
-
-      <!-- Progress -->
-      <div class="mt-4">
-        <div class="w-full h-2 rounded-full overflow-hidden bg-[color:var(--line)]">
-          <div id="progress" class="progress-bar w-0"></div>
-        </div>
-        <div id="ptext" class="text-[12px] text-[color:var(--sub)] mt-1">جاهز</div>
+      <div id="topActions" class="flex flex-wrap items-center gap-2">
+        <button id="startTop" class="btn btn-primary">ابدأ التوليد</button>
+        <button id="regen" class="btn btn-ghost hidden">إعادة توليد كامل</button>
       </div>
-    </section>
+    </div>
+    <div class="mt-4">
+      <div class="w-full h-2 rounded-full overflow-hidden bg-[color:var(--line)]"><div id="bar" class="progress w-0"></div></div>
+      <div id="barTxt" class="text-[12px] text-[color:var(--sub)] mt-1">جاهز</div>
+    </div>
+  </section>
 
-    <!-- Form -->
-    <section id="setup" class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-      <!-- Profile -->
-      <div class="card rounded-2xl p-5">
-        <div class="h-sec">الملف الشخصي</div>
-        <div class="grid grid-cols-2 gap-3">
-          <label class="col-span-2">
-            <div class="text-sm mb-1">الاسم</div>
-            <input id="name" class="w-full rounded-lg border px-3 py-2 bg-transparent" placeholder="الاسم"/>
-          </label>
-          <label>
-            <div class="text-sm mb-1">العمر</div>
-            <input id="age" type="number" min="12" max="100" class="w-full rounded-lg border px-3 py-2 bg-transparent"/>
-          </label>
-          <label>
-            <div class="text-sm mb-1">الطول (سم)</div>
-            <input id="height" type="number" min="120" max="230" class="w-full rounded-lg border px-3 py-2 bg-transparent"/>
-          </label>
-          <label>
-            <div class="text-sm mb-1">الوزن (كغ)</div>
-            <input id="weight" type="number" min="30" max="250" class="w-full rounded-lg border px-3 py-2 bg-transparent"/>
-          </label>
-          <label>
-            <div class="text-sm mb-1">نسبة الدهون %</div>
-            <input id="bodyfat" type="number" step="0.1" min="3" max="60" class="w-full rounded-lg border px-3 py-2 bg-transparent"/>
-          </label>
-          <label>
-            <div class="text-sm mb-1">محيط الخصر (سم)</div>
-            <input id="waist" type="number" min="40" max="160" class="w-full rounded-lg border px-3 py-2 bg-transparent"/>
-          </label>
-          <label>
-            <div class="text-sm mb-1">الجنس</div>
-            <select id="gender" class="w-full rounded-lg border px-3 py-2 bg-transparent">
-              <option value="Male">ذكر</option>
-              <option value="Female">أنثى</option>
-            </select>
-          </label>
-          <label class="col-span-2">
-            <div class="text-sm mb-1">هدف رقمي/موعد (اختياري)</div>
-            <input id="targetNote" class="w-full rounded-lg border px-3 py-2 bg-transparent" placeholder="مثال: -8كغ خلال 12 أسبوعاً…"/>
-          </label>
-        </div>
-      </div>
+  <!-- Form (3 columns) -->
+  <section id="setup" class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-      <!-- Diet & Preferences -->
-      <div class="card rounded-2xl p-5">
-        <div class="h-sec">النظام الغذائي والتفضيلات</div>
-        <div class="grid grid-cols-2 gap-3">
-          <label class="col-span-2">
-            <div class="text-sm mb-1">الأهداف (اختر عدة)</div>
-            <div class="grid grid-cols-2 gap-2">
-              <label class="flex items-center gap-2"><input type="checkbox" name="goals" value="خسارة الدهون" class="accent-[var(--brand)]"><span>خسارة الدهون</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="goals" value="بناء العضلات" class="accent-[var(--brand)]"><span>بناء العضلات</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="goals" value="زيادة القوة" class="accent-[var(--brand)]"><span>زيادة القوة</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="goals" value="تحسين التحمل" class="accent-[var(--brand)]"><span>تحسين التحمل</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="goals" value="صحة عامة" class="accent-[var(--brand)]"><span>صحة عامة</span></label>
-            </div>
-          </label>
-          <label>
-            <div class="text-sm mb-1">النظام المفضل</div>
-            <select id="diet" class="w-full rounded-lg border px-3 py-2 bg-transparent">
-              <option>نظام متوازن</option>
-              <option>قليل الكربوهيدرات</option>
-              <option>صيام متقطع</option>
-              <option>كيتو</option>
-              <option>نظام البحر المتوسط</option>
-              <option>نباتي</option>
-            </select>
-          </label>
-          <label>
-            <div class="text-sm mb-1">عدد الوجبات</div>
-            <select id="meals" class="w-full rounded-lg border px-3 py-2 bg-transparent"><option>3</option><option>4</option><option>5</option></select>
-          </label>
-          <label>
-            <div class="text-sm mb-1">صيام متقطع</div>
-            <select id="fasting" class="w-full rounded-lg border px-3 py-2 bg-transparent">
-              <option value="off">غير مفعل</option>
-              <option>16:8</option><option>18:6</option><option>20:4</option>
-            </select>
-          </label>
-          <label>
-            <div class="text-sm mb-1">مطبخ مفضل</div>
-            <select id="cuisine" class="w-full rounded-lg border px-3 py-2 bg-transparent">
-              <option>عربي/متوسطي</option><option>غربي</option><option>آسيوي</option><option>متنوع</option>
-            </select>
-          </label>
-          <label>
-            <div class="text-sm mb-1">زمن التحضير (د)</div>
-            <input id="cookTime" type="number" min="5" max="90" class="w-full rounded-lg border px-3 py-2 bg-transparent"/>
-          </label>
-          <label>
-            <div class="text-sm mb-1">ميزانية يومية تقريبية</div>
-            <input id="budget" type="number" min="0" step="1" class="w-full rounded-lg border px-3 py-2 bg-transparent" placeholder="عملة محلية"/>
-          </label>
-          <label class="col-span-2">
-            <div class="text-sm mb-1">أطعمة لا ترغب بها/حساسية</div>
-            <input id="dislikes" class="w-full rounded-lg border px-3 py-2 bg-transparent"/>
-          </label>
-        </div>
-      </div>
-
-      <!-- Lifestyle & Training -->
-      <div class="card rounded-2xl p-5">
-        <div class="h-sec">نمط الحياة والتدريب</div>
-        <div class="grid grid-cols-2 gap-3">
-          <label>
-            <div class="text-sm mb-1">العمل</div>
-            <select id="job" class="w-full rounded-lg border px-3 py-2 bg-transparent">
-              <option value="Sedentary">مكتبي</option><option value="Light">نشاط خفيف</option><option value="Moderate">نشاط متوسط</option>
-            </select>
-          </label>
-          <label>
-            <div class="text-sm mb-1">خطوات/اليوم</div>
-            <input id="steps" type="number" min="0" step="100" class="w-full rounded-lg border px-3 py-2 bg-transparent" placeholder="مثال: 6000"/>
-          </label>
-          <label>
-            <div class="text-sm mb-1">النوم (س)</div>
-            <input id="sleep" type="number" min="3" max="12" class="w-full rounded-lg border px-3 py-2 bg-transparent"/>
-          </label>
-          <label>
-            <div class="text-sm mb-1">التوتر</div>
-            <select id="stress" class="w-full rounded-lg border px-3 py-2 bg-transparent"><option>منخفض</option><option>متوسط</option><option>مرتفع</option></select>
-          </label>
-          <label>
-            <div class="text-sm mb-1">مكان التدريب</div>
-            <select id="place" class="w-full rounded-lg border px-3 py-2 bg-transparent"><option>نادي</option><option>منزل</option></select>
-          </label>
-          <label>
-            <div class="text-sm mb-1">مدة الجلسة (د)</div>
-            <input id="session" type="number" min="20" max="120" class="w-full rounded-lg border px-3 py-2 bg-transparent"/>
-          </label>
-          <label class="col-span-2">
-            <div class="text-sm mb-1">أيام متاحة للتدريب</div>
-            <div class="grid grid-cols-4 gap-2">
-              <label class="flex items-center gap-2"><input type="checkbox" name="days" value="Sat" class="accent-[var(--brand)]"><span>السبت</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="days" value="Sun" class="accent-[var(--brand)]"><span>الأحد</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="days" value="Mon" class="accent-[var(--brand)]"><span>الاثنين</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="days" value="Tue" class="accent-[var(--brand)]"><span>الثلاثاء</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="days" value="Wed" class="accent-[var(--brand)]"><span>الأربعاء</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="days" value="Thu" class="accent-[var(--brand)]"><span>الخميس</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="days" value="Fri" class="accent-[var(--brand)]"><span>الجمعة</span></label>
-            </div>
-          </label>
-          <label class="col-span-2">
-            <div class="text-sm mb-1">المعدات المتاحة</div>
-            <input id="equipment" class="w-full rounded-lg border px-3 py-2 bg-transparent" placeholder="دمبل، بار…"/>
-          </label>
-          <label>
-            <div class="text-sm mb-1">الخبرة (RPE)</div>
-            <select id="exp" class="w-full rounded-lg border px-3 py-2 bg-transparent">
-              <option>مبتدئ (0-6 أشهر)</option><option>متوسط (6-24 شهر)</option><option>متقدم (+24 شهر)</option>
-            </select>
-          </label>
-          <label>
-            <div class="text-sm mb-1">كافيين/يوم (أكواب)</div>
-            <input id="caffeine" type="number" min="0" max="10" class="w-full rounded-lg border px-3 py-2 bg-transparent"/>
-          </label>
-          <label class="col-span-2">
-            <div class="text-sm mb-1">إصابات/قيود</div>
-            <input id="injuries" class="w-full rounded-lg border px-3 py-2 bg-transparent"/>
-          </label>
-          <label class="col-span-2">
-            <div class="text-sm mb-1">أدوية/مكملات حالية</div>
-            <input id="meds" class="w-full rounded-lg border px-3 py-2 bg-transparent" placeholder="أسماء الأدوية/المكملات…"/>
-          </label>
-        </div>
-      </div>
-    </section>
-
-    <!-- Results -->
-    <section id="result" class="hidden mt-6">
-      <div id="resultRoot" class="card rounded-2xl p-5 md:p-8">
-        <div class="flex items-center justify-between gap-3 mb-3">
-          <div class="h-title">الخطة النهائية — مخصصة 100%</div>
-          <div class="flex items-center gap-2">
-            <span class="tag">سياق واحد • بدون تكرار</span>
-            <span class="tag">توليد يوم بيوم</span>
+    <!-- Column 1: Lifestyle & training -->
+    <div class="card rounded-2xl p-5">
+      <div class="section-title">نمط الحياة والتدريب</div>
+      <div class="grid grid-cols-2 gap-3">
+        <label><div class="text-sm mb-1">العمل/النشاط</div>
+          <select id="job" class="w-full rounded-lg border px-3 py-2 bg-transparent">
+            <option value="Sedentary">مكتبي</option><option value="Light">نشاط خفيف</option><option value="Moderate">نشاط متوسط</option>
+          </select></label>
+        <label><div class="text-sm mb-1">خطوات/اليوم</div><input id="steps" type="number" min="0" step="500" class="w-full rounded-lg border px-3 py-2 bg-transparent" placeholder="6000"/></label>
+        <label><div class="text-sm mb-1">النوم (س)</div><input id="sleep" type="number" min="3" max="12" class="w-full rounded-lg border px-3 py-2 bg-transparent"/></label>
+        <label><div class="text-sm mb-1">التوتر</div><select id="stress" class="w-full rounded-lg border px-3 py-2 bg-transparent"><option>منخفض</option><option>متوسط</option><option>مرتفع</option></select></label>
+        <label><div class="text-sm mb-1">مكان التدريب</div><select id="place" class="w-full rounded-lg border px-3 py-2 bg-transparent"><option>نادي</option><option>منزل</option></select></label>
+        <label><div class="text-sm mb-1">مدة الجلسة (د)</div><input id="session" type="number" min="20" max="120" class="w-full rounded-lg border px-3 py-2 bg-transparent"/></label>
+        <label class="col-span-2"><div class="text-sm mb-1">أيام التدريب المتاحة</div>
+          <div class="grid grid-cols-4 gap-2">
+            <label class="flex items-center gap-2"><input type="checkbox" name="days" value="Sat" class="accent-[var(--brand)]"><span>السبت</span></label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="days" value="Sun" class="accent-[var(--brand)]"><span>الأحد</span></label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="days" value="Mon" class="accent-[var(--brand)]"><span>الاثنين</span></label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="days" value="Tue" class="accent-[var(--brand)]"><span>الثلاثاء</span></label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="days" value="Wed" class="accent-[var(--brand)]"><span>الأربعاء</span></label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="days" value="Thu" class="accent-[var(--brand)]"><span>الخميس</span></label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="days" value="Fri" class="accent-[var(--brand)]"><span>الجمعة</span></label>
           </div>
-        </div>
-        <article id="ai" class="prose max-w-none prose-p:leading-7 prose-ul:leading-7 prose-ol:leading-7"></article>
-
-        <!-- Bottom actions (as requested) -->
-        <div class="mt-6 flex flex-wrap items-center justify-center gap-2">
-          <button id="print2" class="btn btn-ghost">طباعة</button>
-          <button id="pdf2" class="btn btn-ghost">PDF</button>
-        </div>
+        </label>
+        <label class="col-span-2"><div class="text-sm mb-1">المعدات المتاحة</div><input id="equipment" class="w-full rounded-lg border px-3 py-2 bg-transparent" placeholder="دمبل، بار…"/></label>
+        <label><div class="text-sm mb-1">الخبرة</div><select id="exp" class="w-full rounded-lg border px-3 py-2 bg-transparent"><option>مبتدئ (0-6 أشهر)</option><option>متوسط (6-24 شهر)</option><option>متقدم (+24 شهر)</option></select></label>
+        <label><div class="text-sm mb-1">RPE</div><select id="rpe" class="w-full rounded-lg border px-3 py-2 bg-transparent"><option>6</option><option>7</option><option selected>8</option><option>9</option></select></label>
+        <label><div class="text-sm mb-1">كافيين/يوم (أكواب)</div><input id="caffeine" type="number" min="0" max="10" class="w-full rounded-lg border px-3 py-2 bg-transparent"/></label>
+        <label class="col-span-2"><div class="text-sm mb-1">إصابات/قيود</div><input id="injuries" class="w-full rounded-lg border px-3 py-2 bg-transparent"/></label>
+        <label class="col-span-2"><div class="text-sm mb-1">أدوية/مكملات حالية</div><input id="meds" class="w-full rounded-lg border px-3 py-2 bg-transparent"/></label>
       </div>
-    </section>
+    </div>
 
-    <footer class="text-center text-[11px] text-[color:var(--sub)] mt-6">
-      Powered by Mustafa Elsafy 2025 — جميع الحقوق محفوظة
-    </footer>
-  </main>
+    <!-- Column 2: Diet -->
+    <div class="card rounded-2xl p-5">
+      <div class="section-title">النظام الغذائي والتفضيلات</div>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="col-span-2"><div class="text-sm mb-1">الأهداف (متعدد)</div>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex items-center gap-2"><input type="checkbox" name="goals" value="خسارة الدهون" class="accent-[var(--brand)]"><span>خسارة الدهون</span></label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="goals" value="بناء العضلات" class="accent-[var(--brand)]"><span>بناء العضلات</span></label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="goals" value="زيادة القوة" class="accent-[var(--brand)]"><span>زيادة القوة</span></label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="goals" value="تحسين التحمل" class="accent-[var(--brand)]"><span>تحسين التحمل</span></label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="goals" value="صحة عامة" class="accent-[var(--brand)]"><span>صحة عامة</span></label>
+          </div>
+        </label>
+        <label><div class="text-sm mb-1">عدد الوجبات</div><select id="meals" class="w-full rounded-lg border px-3 py-2 bg-transparent"><option>3</option><option>4</option><option>5</option></select></label>
+        <label><div class="text-sm mb-1">النظام المفضل</div><select id="diet" class="w-full rounded-lg border px-3 py-2 bg-transparent"><option>نظام متوازن</option><option>قليل الكربوهيدرات</option><option>صيام متقطع</option><option>كيتو</option><option>نظام البحر المتوسط</option><option>نباتي</option></select></label>
+        <label><div class="text-sm mb-1">الصيام المتقطع</div><select id="fasting" class="w-full rounded-lg border px-3 py-2 bg-transparent"><option value="off">غير مفعل</option><option>16:8</option><option>18:6</option><option>20:4</option></select></label>
+        <label><div class="text-sm mb-1">مطبخ مفضل</div><select id="cuisine" class="w-full rounded-lg border px-3 py-2 bg-transparent"><option>عربي/متوسطي</option><option>غربي</option><option>آسيوي</option><option>متنوع</option></select></label>
+        <label><div class="text-sm mb-1">زمن التحضير (د)</div><input id="cookTime" type="number" min="5" max="90" class="w-full rounded-lg border px-3 py-2 bg-transparent"/></label>
+        <label><div class="text-sm mb-1">ميزانية يومية تقريبية</div><input id="budget" type="number" min="0" step="1" class="w-full rounded-lg border px-3 py-2 bg-transparent" placeholder="عملة محلية"/></label>
+        <label class="col-span-2"><div class="text-sm mb-1">أطعمة لا ترغب بها/حساسية</div><input id="dislikes" class="w-full rounded-lg border px-3 py-2 bg-transparent"/></label>
+      </div>
+    </div>
 
-  <script>
-    /*********** Helpers ***********/
-    const $ = (id)=>document.getElementById(id);
-    const PROXY_URL = '/.netlify/functions/gemini-proxy';
+    <!-- Column 3: Profile -->
+    <div class="card rounded-2xl p-5">
+      <div class="section-title">الملف الشخصي</div>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="col-span-2"><div class="text-sm mb-1">الاسم</div><input id="name" class="w-full rounded-lg border px-3 py-2 bg-transparent" placeholder="الاسم"/></label>
+        <label><div class="text-sm mb-1">العمر</div><input id="age" type="number" min="12" max="100" class="w-full rounded-lg border px-3 py-2 bg-transparent"/></label>
+        <label><div class="text-sm mb-1">الطول (سم)</div><input id="height" type="number" min="120" max="230" class="w-full rounded-lg border px-3 py-2 bg-transparent"/></label>
+        <label><div class="text-sm mb-1">الوزن (كغ)</div><input id="weight" type="number" min="30" max="250" class="w-full rounded-lg border px-3 py-2 bg-transparent"/></label>
+        <label><div class="text-sm mb-1">نسبة الدهون %</div><input id="bodyfat" type="number" step="0.1" min="3" max="60" class="w-full rounded-lg border px-3 py-2 bg-transparent"/></label>
+        <label><div class="text-sm mb-1">محيط الخصر (سم)</div><input id="waist" type="number" min="40" max="160" class="w-full rounded-lg border px-3 py-2 bg-transparent"/></label>
+        <label><div class="text-sm mb-1">الجنس</div><select id="gender" class="w-full rounded-lg border px-3 py-2 bg-transparent"><option value="Male">ذكر</option><option value="Female">أنثى</option></select></label>
+        <label class="col-span-2"><div class="text-sm mb-1">هدف رقمي/موعد (اختياري)</div><input id="targetNote" class="w-full rounded-lg border px-3 py-2 bg-transparent" placeholder="مثال: -8كغ خلال 12 أسبوعاً…"/></label>
+      </div>
+    </div>
+  </section>
 
-    const st = { lang:'ar' };
-    const tr = (ar,en)=> st.lang==='ar'? ar : en;
+  <!-- Bottom sticky actions -->
+  <section class="mt-5">
+    <div class="flex items-center justify-center gap-2">
+      <button id="startBottom" class="btn btn-success">ابدأ التوليد</button>
+      <button id="printTop" class="btn btn-ghost">طباعة</button>
+      <button id="pdfTop" class="btn btn-ghost">PDF</button>
+    </div>
+  </section>
 
-    function setLang(l){
-      st.lang=l;
-      document.documentElement.lang = l==='ar'?'ar':'en';
-      document.documentElement.dir  = l==='ar'?'rtl':'ltr';
-      $('lang-ar').classList.toggle('btn-primary', l==='ar');
-      $('lang-en').classList.toggle('btn-primary', l==='en');
-      $('ptext').textContent = tr('جاهز','Ready');
-    }
-    function toggleTheme(){ document.documentElement.classList.toggle('dark') }
+  <!-- Results -->
+  <section id="result" class="hidden mt-6">
+    <div id="resultRoot" class="card rounded-2xl p-5 md:p-8">
+      <div class="flex items-center justify-between gap-3 mb-3">
+        <div class="h-xl" id="resTitle">الخطة النهائية — مخصصة 100%</div>
+        <div class="flex items-center gap-2"><span class="tag">توليد مُنظّم</span><span class="tag">يومًا بيوم</span></div>
+      </div>
+      <article id="ai" class="prose max-w-none prose-p:leading-7 prose-ul:leading-7 prose-ol:leading-7"></article>
 
-    function setProgress(step,total,label){
-      $('progress').style.width = Math.round((step/total)*100)+'%';
-      $('ptext').textContent = `${Math.round((step/total)*100)}% — ${label}`;
-    }
+      <!-- bottom export -->
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-2">
+        <button id="print2" class="btn btn-ghost">طباعة</button>
+        <button id="pdf2" class="btn btn-ghost">PDF</button>
+      </div>
+    </div>
+  </section>
 
-    function spinner(label){
-      const d = document.createElement('div');
-      d.id = 'spin';
-      d.className = "tag block w-full text-center my-2 py-2";
-      d.textContent = tr('نقوم بإعداد هذا القسم بعناية، الرجاء الانتظار…','Preparing this section carefully, please wait…')+' — '+label;
-      $('ai').appendChild(d);
-    }
-    function endSpin(html){
-      const s = $('spin'); if(s) s.remove();
-      const box = document.createElement('section');
-      box.innerHTML = marked.parse(html);
-      $('ai').appendChild(box);
-    }
+  <footer class="text-center text-[11px] text-[color:var(--sub)] mt-6">Powered by Mustafa Elsafy 2025 — جميع الحقوق محفوظة</footer>
+</main>
 
-    /*********** Collect ***********/
-    function getChecks(name){ return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(e=>e.value) }
-    function collect(){
-      return {
-        name:$('name').value?.trim(),
-        age:+$('age').value||0,
-        height:+$('height').value||0,
-        weight:+$('weight').value||0,
-        bodyfat:+$('bodyfat').value||0,
-        waist:+$('waist').value||0,
-        gender:$('gender').value,
-        targetNote:$('targetNote').value?.trim(),
-        goals:getChecks('goals'),
-        diet:$('diet').value,
-        meals:+$('meals').value,
-        fasting:$('fasting').value,
-        cuisine:$('cuisine').value,
-        cookTime:+$('cookTime').value||0,
-        budget:+$('budget').value||0,
-        dislikes:$('dislikes').value?.trim(),
-        job:$('job').value,
-        steps:+$('steps').value||0,
-        sleep:+$('sleep').value||0,
-        stress:$('stress').value,
-        place:$('place').value,
-        session:+$('session').value||0,
-        days:getChecks('days'),
-        equipment:$('equipment').value?.trim(),
-        exp:$('exp').value,
-        caffeine:+$('caffeine').value||0,
-        injuries:$('injuries').value?.trim(),
-        meds:$('meds').value?.trim()
-      }
-    }
+<!-- Modal (pre-generation explainer) -->
+<div id="modal" class="modal">
+  <div class="box">
+    <div class="h-xl mb-1" id="mTitle">سنقوم بتوليد الخطة كاملة</div>
+    <p class="text-sm text-[color:var(--sub)]" id="mDesc">
+      سنولّد الأقسام بتسلسل تلقائي ونقوم بالتأكد من صحة الجداول. العملية قد تستغرق بضع دقائق حسب سرعة الشبكة. الرجاء الانتظار حتى اكتمال التقدم 100% قبل الطباعة أو تنزيل PDF.
+    </p>
+    <div class="mt-3 flex gap-2 justify-end">
+      <button id="mCancel" class="btn btn-ghost">إلغاء</button>
+      <button id="mGo" class="btn btn-primary">ابدأ الآن</button>
+    </div>
+  </div>
+</div>
 
-    function targets(){
-      const u=collect();
-      const male=u.gender==='Male';
-      const BMR = male? (10*u.weight + 6.25*u.height - 5*u.age + 5)
-                       : (10*u.weight + 6.25*u.height - 5*u.age - 161);
-      const factor=(u.job==='Sedentary'?1.2: u.job==='Moderate'?1.5:1.35);
-      let TDEE=Math.round(BMR*factor);
-      if(u.goals.includes('خسارة الدهون')) TDEE=Math.round(TDEE*0.88);
-      if(u.goals.includes('بناء العضلات'))  TDEE=Math.round(TDEE*1.10);
-      const P=Math.round(2.0*(u.weight||1));
-      const F=Math.round(0.8*(u.weight||1));
-      let C=Math.max(0,Math.round((TDEE-(P*4+F*9))/4));
-      if(['السكري','مقاومة الانسولين'].some(h=>u.goals.includes(h)||u.meds.toLowerCase().includes('metformin'))) C=Math.min(C,140);
-      return {TDEE,P,F,C};
-    }
+<!-- Toast -->
+<div id="toast" class="toast hidden"></div>
 
-    /*********** AI call ***********/
-    async function callAI(prompt){
-      const r = await fetch(PROXY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
-      if(!r.ok){ const t = await r.text().catch(()=> ''); throw new Error('Proxy '+r.status+': '+t.slice(0,250)) }
-      const j = await r.json();
-      if(!j?.text) throw new Error('Empty AI response');
-      return j.text;
-    }
+<script>
+/* ======== UTIL ======== */
+const $ = id=>document.getElementById(id);
+const PROXY = '/.netlify/functions/gemini-proxy';
+const st = { lang:'ar' };
 
-    /*********** Prompts ***********/
-    function headerStrict(){
-      const u=collect(), t=targets(), locale = st.lang==='ar'?'Arabic':'English';
-      return `
-GLOBAL RULES
-- OUTPUT LANGUAGE: ${locale} ONLY. Do NOT mix languages.
-- Greet the client **only once** in the WELCOME section. In all other sections, write content directly with no greeting and do NOT repeat profile fields.
-- Use clear Markdown headings and tables. No placeholders or "etc.".
-- Keep accuracy: calories/macros within ±2% of targets; exercises safe for injuries.
+function showToast(msg, warn=false){
+  const t=$('toast'); t.textContent=msg; t.classList.remove('hidden'); t.classList.toggle('warn',warn);
+  setTimeout(()=>t.classList.add('hidden'), 3200);
+}
+function setTheme(){ document.documentElement.classList.toggle('dark'); }
+function setProgress(i,total,label){ $('bar').style.width=Math.round(i/total*100)+'%'; $('barTxt').textContent=`${Math.round(i/total*100)}% — ${label}`; }
+function checks(name){ return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(e=>e.value) }
 
-CLIENT PROFILE (internal reference; never restate inside sections)
-- Name: ${u.name}; Sex: ${u.gender}
-- Age/Height/Weight: ${u.age}y / ${u.height}cm / ${u.weight}kg; Bodyfat: ${u.bodyfat||'n/a'}%; Waist: ${u.waist||'n/a'}cm
-- Goals: ${(u.goals||[]).join(', ')}; Target note: ${u.targetNote||'—'}
-- Diet: ${u.diet}; Meals/day: ${u.meals}; Fasting: ${u.fasting}; Cuisine: ${u.cuisine}; Cook time <= ${u.cookTime||'n/a'} min; Budget ~ ${u.budget||'n/a'}
-- Dislikes/allergies to avoid: ${u.dislikes||'None'}
-- Activity: ${u.job} (+~${u.steps||'n/a'} steps/day); Sleep: ${u.sleep}h; Stress: ${u.stress}; Caffeine: ${u.caffeine} cups
-- Training: ${u.place}; Days available: ${(u.days||[]).join(', ')||'n/a'}; Session ~${u.session||'n/a'} min; Equipment: ${u.equipment||'—'}; Experience: ${u.exp}; Injuries: ${u.injuries||'None'}
-- Medications/supps: ${u.meds||'None'}
+/* ======== LANGUAGE ======== */
+function setLang(l){
+  st.lang=l;
+  document.documentElement.lang=(l==='ar'?'ar':'en');
+  document.documentElement.dir =(l==='ar'?'rtl':'ltr');
+  $('lang-ar').classList.toggle('btn-primary', l==='ar');
+  $('lang-en').classList.toggle('btn-primary', l==='en');
+  // UI text
+  if(l==='ar'){
+    $('leadTitle').textContent='لنُنشئ أفضل خطة ممكنة لهدفك';
+    $('leadDesc').textContent='سنولّد الخطة قسمًا بعد قسم لضمان الدقّة: ترحيب — تحليل — المسموح/الممنوع — الصيام — التغذية يومًا بيوم — التدريب يومًا بيوم — مكملات — متابعة — حلول — سلامة — ختام.';
+    $('startTop').textContent='ابدأ التوليد'; $('startBottom').textContent='ابدأ التوليد';
+    $('mTitle').textContent='سنقوم بتوليد الخطة كاملة';
+    $('mDesc').textContent='سنولّد الأقسام بتسلسل تلقائي ونقوم بالتأكد من صحة الجداول. الرجاء الانتظار حتى اكتمال التقدم 100%.';
+    $('resTitle').textContent='الخطة النهائية — مخصصة 100%';
+  }else{
+    $('leadTitle').textContent='Let’s build the best plan for your goal';
+    $('leadDesc').textContent='We will generate the plan section-by-section: Welcome → Analysis → Allowed/Limits → Intermittent Fasting → Nutrition day-by-day → Training day-by-day → Supplements → Progression → Troubleshooting → Safety → Closing.';
+    $('startTop').textContent='Generate Plan'; $('startBottom').textContent='Generate Plan';
+    $('mTitle').textContent='We will generate your full plan';
+    $('mDesc').textContent='Sections will be generated in order with validation. Please wait until progress hits 100% before printing or downloading.';
+    $('resTitle').textContent='Final Plan — 100% Personalized';
+  }
+  $('barTxt').textContent=(l==='ar'?'جاهز':'Ready');
+}
+// auto-detect from browser + inputs (Arabic letters)
+(function autoLang(){
+  const nav = (navigator.language||'ar').toLowerCase();
+  setLang(nav.startsWith('ar')?'ar':'en');
+  // detect from first text input
+  ['name','dislikes','injuries','meds'].forEach(id=>{
+    const el=$(id);
+    el.addEventListener('input', ()=>{
+      const v=el.value;
+      if(/[ء-ي]/.test(v)) setLang('ar');
+      else if(/[A-Za-z]/.test(v) && st.lang==='ar') setLang('en');
+    });
+  });
+})();
 
-DAILY TARGETS (reference only; do not restate as profile)
-- Calories ≈ ${t.TDEE} kcal; Protein ≈ ${t.P} g; Fat ≈ ${t.F} g; Carbs ≈ ${t.C} g`.trim();
-    }
+/* ======== COLLECT & TARGETS ======== */
+function collect(){
+  return {
+    name: $('name').value.trim(), age:+$('age').value||0, height:+$('height').value||0, weight:+$('weight').value||0,
+    bodyfat:+$('bodyfat').value||0, waist:+$('waist').value||0, gender:$('gender').value, targetNote:$('targetNote').value.trim(),
+    goals: checks('goals'), meals:+$('meals').value, diet:$('diet').value, fasting:$('fasting').value, cuisine:$('cuisine').value,
+    cookTime:+$('cookTime').value||0, budget:+$('budget').value||0, dislikes:$('dislikes').value.trim(),
+    job:$('job').value, steps:+$('steps').value||0, sleep:+$('sleep').value||0, stress:$('stress').value,
+    place:$('place').value, session:+$('session').value||0, days:checks('days'), equipment:$('equipment').value.trim(),
+    exp:$('exp').value, rpe:+$('rpe').value||8, caffeine:+$('caffeine').value||0, injuries:$('injuries').value.trim(), meds:$('meds').value.trim()
+  };
+}
+function targets(){
+  const u=collect();
+  const male=u.gender==='Male';
+  const BMR = male? (10*u.weight + 6.25*u.height - 5*u.age + 5)
+                   : (10*u.weight + 6.25*u.height - 5*u.age - 161);
+  const factor = (u.job==='Sedentary'?1.2: u.job==='Moderate'?1.5:1.35);
+  let TDEE=Math.round(BMR*factor);
+  if(u.goals.includes('خسارة الدهون')||u.goals.includes('Fat Loss')) TDEE=Math.round(TDEE*0.88);
+  if(u.goals.includes('بناء العضلات')||u.goals.includes('Build Muscle')) TDEE=Math.round(TDEE*1.10);
+  const P=Math.round(2.0*(u.weight||1));
+  const F=Math.round(0.8*(u.weight||1));
+  let C=Math.max(0,Math.round((TDEE-(P*4+F*9))/4));
+  if((u.meds||'').toLowerCase().includes('metformin')) C=Math.min(C,140);
+  return {TDEE,P,F,C};
+}
 
-    // sections short (no greeting except welcome)
-    function pWelcome(){
-      const u=collect();
-      return `${headerStrict()}
+/* ======== AI CALL ======== */
+async function callAI(prompt){
+  const r = await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+  if(!r.ok){ const tx=await r.text().catch(()=> ''); throw new Error('Proxy '+r.status+': '+tx.slice(0,200)); }
+  const j = await r.json(); if(!j?.text) throw new Error('Empty response'); return j.text;
+}
+
+/* ======== PROMPTS (no greeting except Welcome) ======== */
+function baseHeader(){
+  const u=collect(), t=targets(), locale=(st.lang==='ar'?'Arabic':'English');
+  return `
+LANGUAGE: ${locale} ONLY. Do not mix languages.
+Do not repeat the profile fields inside sections (except Welcome).
+Use clear Markdown headings and tables. No placeholders.
+
+PROFILE (internal only):
+Name ${u.name}; Sex ${u.gender}; ${u.age}y; ${u.height}cm; ${u.weight}kg; BF ${u.bodyfat||'n/a'}%; Waist ${u.waist||'n/a'}cm
+Goals: ${(u.goals||[]).join(', ')}; Target: ${u.targetNote||'—'}
+Diet ${u.diet}; Meals ${u.meals}; Fasting ${u.fasting}; Cuisine ${u.cuisine}; Cook <= ${u.cookTime||'n/a'} min; Budget ${u.budget||'n/a'}; Dislikes ${u.dislikes||'None'}
+Activity ${u.job} ~${u.steps||'n/a'} steps; Sleep ${u.sleep}h; Stress ${u.stress}; Caffeine ${u.caffeine}
+Training: ${u.place}, days ${(u.days||[]).join(', ')||'n/a'}, session ~${u.session||'n/a'} min, equipment "${u.equipment||'—'}", exp ${u.exp}, RPE ${u.rpe}, injuries ${u.injuries||'None'}
+Meds/supps: ${u.meds||'None'}
+
+TARGETS (reference):
+Calories ≈ ${t.TDEE} kcal; Protein ≈ ${t.P} g; Fat ≈ ${t.F} g; Carbs ≈ ${t.C} g`.trim();
+}
+function pWelcome(){ const u=collect(); return `${baseHeader()}
 
 SECTION: WELCOME
-Write a single short welcome paragraph addressing **${u.name||tr('العميل','the client')}** by name, congratulating them on starting, and clarifying that the plan will be delivered in ordered sections. Keep it 5–7 lines.`;
-    }
+Write a single welcome paragraph addressing **${u.name|| (st.lang==='ar'?'العميل':'client')}**, congratulating them and outlining the generation steps briefly. 5–7 lines.`; }
+function pAnalysis(){ return `${baseHeader()}
 
-    function pAnalysis(){
-      return `${headerStrict()}
-
-SECTION: PROFILE ANALYSIS & GOAL
-Provide a concise expert analysis: why these calories/macros fit the goal and constraints; how steps, sleep, stress and schedule impact progress; how to use RPE and session duration. No greeting.`;
-    }
-
-    function pAllowed(){
-      const u=collect();
-      return `${headerStrict()}
+SECTION: ANALYSIS & RATIONALE
+Explain why the targets fit the goals and constraints, and how sleep/steps/stress influence progress. Practical notes on RPE and session duration. No greeting.`; }
+function pAllowed(){ const u=collect(); return `${baseHeader()}
 
 SECTION: ALLOWED & LIMIT LIST
 Two bullet lists only:
-- Allowed & preferred foods (consider ${u.diet}, ${u.cuisine}, cook time <= ${u.cookTime||'n/a'} min, budget ~ ${u.budget||'n/a'})
-- Limit/avoid (consider dislikes/allergies: ${u.dislikes||'None'})`;
-    }
-
-    function pIF(){
-      const u=collect();
-      return `${headerStrict()}
+- Preferred/allowed foods (respect ${u.diet}, ${u.cuisine}, prep <= ${u.cookTime||'n/a'}, budget ≈ ${u.budget||'n/a'})
+- Limit/avoid (respect allergies/dislikes: ${u.dislikes||'None'})`; }
+function pIF(){ const u=collect(); return `${baseHeader()}
 
 SECTION: INTERMITTENT FASTING
-If fasting is "${u.fasting}", explain schedule (window, hydration, electrolytes), first/last meal structure, caffeine timing and sleep hygiene. If "off", say "Not applicable". No greeting.`;
-    }
-
-    // nutrition day-by-day
-    function pNutritionDay(d){
-      const u=collect(), t=targets(), day=st.lang==='ar'?`اليوم ${d}`:`Day ${d}`;
-      return `${headerStrict()}
+If "${u.fasting}" describe window, hydration/electrolytes, first/last meals, caffeine timing, and sleep. If "off", state not applicable.`; }
+function pNutritionDay(d){
+  const day = st.lang==='ar'?`اليوم ${d}`:`Day ${d}`;
+  const u=collect(), t=targets();
+  return `${baseHeader()}
 
 SECTION: NUTRITION — ${day}
-- Provide a MARKDOWN TABLE with EXACTLY ${u.meals} meals and columns:
-| ${tr('اليوم','Day')} | ${tr('الوجبة','Meal')} | ${tr('المكونات (جرامات/مل)','Ingredients (g/ml)')} | Protein (g) | Fat (g) | Carbs (g) | kcal |
-- Meals must reflect ${u.diet}, ${u.cuisine}, cook time <= ${u.cookTime||'n/a'} min, budget ~ ${u.budget||'n/a'}, avoid: ${u.dislikes||'None'}.
-- Add a final "Totals" row close to: ${t.P}P / ${t.F}F / ${t.C}C / ${t.TDEE} kcal (±2%).
-- After the table add one short compliance tip line.
-- No greeting; no profile repetition.`;
-    }
-
-    // training day-by-day
-    function pTrainingDay(d){
-      const u=collect();
-      const day=st.lang==='ar'?`اليوم ${d}`:`Day ${d}`;
-      return `${headerStrict()}
+Provide a Markdown table with EXACTLY ${u.meals} meals:
+| ${st.lang==='ar'?'اليوم':'Day'} | ${st.lang==='ar'?'الوجبة':'Meal'} | ${st.lang==='ar'?'المكونات (جم/مل)':'Ingredients (g/ml)'} | Protein (g) | Fat (g) | Carbs (g) | kcal |
+Totals row ≈ ${t.P}P / ${t.F}F / ${t.C}C / ${t.TDEE} kcal (±2%).
+Short compliance tip after the table. No greeting.`; }
+function pTrainingDay(d){
+  const day = st.lang==='ar'?`اليوم ${d}`:`Day ${d}`;
+  const u=collect();
+  return `${baseHeader()}
 
 SECTION: TRAINING — ${day}
-- Tailor to: experience ${u.exp}, place ${u.place}, equipment "${u.equipment||'—'}", session ~${u.session||'n/a'} min; days available ${(u.days||[]).join(', ')||'n/a'}.
-- STRICTLY avoid aggravating injuries: ${u.injuries||'None'}.
-- Provide a MARKDOWN TABLE:
-| ${tr('اليوم','Day')} | Exercise (English) | Sets | Reps | Tempo | Rest (s) | Notes (form cue or RPE) |
-- Include warm-up/mobility and cool-down notes beneath the table.
-- No greeting; no profile repetition.`;
-    }
-
-    function pSupps(){
-      const u=collect();
-      return `${headerStrict()}
+Tailor to: ${u.exp}, ${u.place}, equipment "${u.equipment||'—'}", session ~${u.session||'n/a'} min; days ${(u.days||[]).join(', ')||'n/a'}. Avoid injuries: ${u.injuries||'None'}.
+Markdown table:
+| ${st.lang==='ar'?'اليوم':'Day'} | Exercise (English) | Sets | Reps | Tempo | Rest (s) | Notes |
+Include warm-up & cool-down notes after the table. No greeting.`; }
+function pSupps(){ const u=collect(); return `${baseHeader()}
 
 SECTION: SUPPLEMENTS
-Two sublists only:
 1) Core stack — item, dose, timing, duration.
-2) Condition-linked — only if clinically relevant to: ${u.meds||'None'} / injuries: ${u.injuries||'None'}; otherwise "Not indicated".
-Respect allergies/dislikes: ${u.dislikes||'None'}. Add a short safety note.`;
-    }
-
-    function pProgress(){
-      return `${headerStrict()}
+2) Condition-linked — only if relevant to ${u.meds||'None'} / injuries ${u.injuries||'None'} else state not indicated.
+One short safety note.`; }
+const pProgress = ()=> `${baseHeader()}
 
 SECTION: PROGRESSION & TRACKING
-How to add load/reps weekly, when to deload, adjust calories if weekly average deviates from target, weekly checklist.`;
-    }
-
-    function pTroubleshoot(){
-      return `${headerStrict()}
+How to progress loads/reps weekly, when to deload, caloric adjustments by weekly average, and a weekly checklist.`;
+const pTrouble = ()=> `${baseHeader()}
 
 SECTION: TROUBLESHOOTING
-List common issues (hunger, plateau, fatigue, poor sleep/time) with precise fixes.`;
-    }
-
-    function pSafety(){
-      return `${headerStrict()}
+Common issues (hunger/plateau/fatigue/sleep/time) with concrete fixes.`;
+const pSafety  = ()=> `${baseHeader()}
 
 SECTION: SAFETY & HEALTH
-Hydration, sleep, technique, warm-up, red flags to stop and seek medical care.`;
-    }
-
-    function pClosing(){
-      return `${headerStrict()}
+Hydration, sleep, technique, warm-up, stop signs (red flags).`;
+const pClosing = ()=> `${baseHeader()}
 
 SECTION: CLOSING
-Positive, motivating paragraph (no greeting) encouraging adherence and celebrating progress.`;
+Positive motivating paragraph (no greeting).`;
+
+/* ======== VALIDATION ======== */
+const hasTable = md => md.split('\n').filter(l=>l.includes('|')).length>=5;
+function vNutrition(md,d){ const tag = st.lang==='ar'?`اليوم\\s*${d}`:`\\bDay\\s*${d}\\b`; return new RegExp(tag).test(md) && hasTable(md); }
+function vTraining(md,d){ const tag = st.lang==='ar'?`اليوم\\s*${d}`:`\\bDay\\s*${d}\\b`; return new RegExp(tag).test(md) && hasTable(md); }
+
+/* ======== PIPELINE ======== */
+async function pipeline(){
+  const u=collect();
+  if(!u.name||!u.age||!u.height||!u.weight||!u.sleep){
+    showToast(st.lang==='ar'?'أكمل الحقول الأساسية: الاسم/العمر/الطول/الوزن/النوم.':'Fill required fields: name/age/height/weight/sleep.', true); return;
+  }
+  $('result').classList.remove('hidden'); $('ai').innerHTML='';
+  const steps = 4 + 7 + 7 + 4; let i=0;
+
+  async function step(label, fn){
+    setProgress(++i,steps,label); addSpin(label); const md = await fn(); endSpin(md);
+  }
+  function addSpin(label){
+    const d=document.createElement('div');
+    d.id='spin'; d.className='tag block w-full text-center my-2 py-2';
+    d.textContent=(st.lang==='ar'?'نقوم بإعداد هذا القسم بعناية، الرجاء الانتظار…':'Preparing this section carefully, please wait…')+' — '+label;
+    $('ai').appendChild(d);
+  }
+  function endSpin(md){ const s=$('spin'); if(s) s.remove(); const box=document.createElement('section'); box.innerHTML=marked.parse(md); $('ai').appendChild(box); }
+
+  await step(st.lang==='ar'?'ترحيب':'Welcome', ()=>callAI(pWelcome()));
+  await step(st.lang==='ar'?'تحليل':'Analysis', ()=>callAI(pAnalysis()));
+  await step(st.lang==='ar'?'مسموح/ممنوع':'Allowed/Limits', ()=>callAI(pAllowed()));
+  await step(st.lang==='ar'?'الصيام المتقطع':'Intermittent Fasting', ()=>callAI(pIF()));
+
+  for(let d=1; d<=7; d++){
+    const label= st.lang==='ar'?`التغذية — اليوم ${d}`:`Nutrition — Day ${d}`;
+    setProgress(++i,steps,label); addSpin(label);
+    let md = await callAI(pNutritionDay(d));
+    if(!vNutrition(md,d)){
+      md = await callAI(`${baseHeader()}
+
+The previous nutrition for ${st.lang==='ar'?`اليوم ${d}`:`Day ${d}`} failed validation. Regenerate exactly per rules with proper table and totals.`);
     }
+    endSpin(md);
+  }
 
-    /*********** Validators ***********/
-    const hasTable = md => md.split('\n').filter(l=>l.includes('|')).length>=5;
-    function vNutrition(md,d){
-      const dayOk = st.lang==='ar'? new RegExp(`اليوم\\s*${d}\\b`).test(md) : new RegExp(`\\bDay\\s*${d}\\b`).test(md);
-      return dayOk && hasTable(md);
+  for(let d=1; d<=7; d++){
+    const label= st.lang==='ar'?`التدريب — اليوم ${d}`:`Training — Day ${d}`;
+    setProgress(++i,steps,label); addSpin(label);
+    let md = await callAI(pTrainingDay(d));
+    if(!vTraining(md,d)){
+      md = await callAI(`${baseHeader()}
+
+The previous training for ${st.lang==='ar'?`اليوم ${d}`:`Day ${d}`} failed validation. Regenerate with correct table/fields.`);
     }
-    function vTraining(md,d){
-      const dayOk = st.lang==='ar'? new RegExp(`اليوم\\s*${d}\\b`).test(md) : new RegExp(`\\bDay\\s*${d}\\b`).test(md);
-      return dayOk && hasTable(md);
-    }
+    endSpin(md);
+  }
 
-    /*********** Pipeline (section-by-section + day-by-day) ***********/
-    async function generate(){
-      const u=collect();
-      if(!u.name||!u.age||!u.height||!u.weight||!u.sleep){
-        alert(tr('أكمل الحقول الأساسية: الاسم/العمر/الطول/الوزن/النوم.','Fill required fields: name/age/height/weight/sleep.'));
-        return;
-      }
-      $('result').classList.remove('hidden');
-      $('ai').innerHTML = '';
+  await step(st.lang==='ar'?'المكملات':'Supplements', ()=>callAI(pSupps()));
+  await step(st.lang==='ar'?'التقدم والمتابعة':'Progress & Tracking', ()=>callAI(pProgress()));
+  await step(st.lang==='ar'?'حلول المشكلات':'Troubleshooting', ()=>callAI(pTrouble()));
+  await step(st.lang==='ar'?'السلامة':'Safety', ()=>callAI(pSafety()));
+  await step(st.lang==='ar'?'الختام':'Closing', ()=>callAI(pClosing()));
 
-      const steps = 4 /*core*/ + 7 /*nutrition*/ + 7 /*training*/ + 4 /*rest*/;
-      let i = 0;
+  setProgress(steps,steps, st.lang==='ar'?'اكتمل التوليد':'Generation complete');
+  $('regen').classList.remove('hidden');
+  $('resultRoot').scrollIntoView({behavior:'smooth'});
+}
 
-      // Welcome
-      setProgress(++i,steps,tr('ترحيب','Welcome')); spinner(tr('ترحيب','Welcome'));
-      endSpin(await callAI(pWelcome()));
+/* ======== EXPORT ======== */
+function exportPDF(){
+  const node=$('resultRoot'); if(!node){ window.print(); return; }
+  const fn=(st.lang==='ar'?'خطة-':'plan-')+(collect().name||'client')+'.pdf';
+  const opt={ filename:fn, margin:[8,8,8,8], image:{type:'jpeg',quality:0.98},
+    html2canvas:{scale:2,useCORS:true}, pagebreak:{mode:['css','legacy']}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'} };
+  try{ html2pdf().from(node).set(opt).save(); }catch(e){ window.print(); }
+}
 
-      // Analysis
-      setProgress(++i,steps,tr('تحليل','Analysis')); spinner(tr('تحليل','Analysis'));
-      endSpin(await callAI(pAnalysis()));
+/* ======== EVENTS ======== */
+$('btn-theme').onclick=setTheme;
+$('lang-ar').onclick=()=>setLang('ar');
+$('lang-en').onclick=()=>setLang('en');
 
-      // Allowed/Limits
-      setProgress(++i,steps,tr('مسموح/ممنوع','Allowed/Limits')); spinner(tr('مسموح/ممنوع','Allowed/Limits'));
-      endSpin(await callAI(pAllowed()));
+function openModal(){ $('modal').style.display='flex'; }
+function closeModal(){ $('modal').style.display='none'; }
+$('mCancel').onclick=closeModal;
+$('mGo').onclick=()=>{ closeModal(); pipeline(); };
 
-      // IF
-      setProgress(++i,steps,tr('الصيام المتقطع','Intermittent Fasting')); spinner(tr('الصيام المتقطع','Intermittent Fasting'));
-      endSpin(await callAI(pIF()));
+$('startTop').onclick=openModal;
+$('startBottom').onclick=openModal;
+$('regen').onclick=openModal;
 
-      // Nutrition Days 1..7
-      for(let d=1; d<=7; d++){
-        const label = tr(`التغذية — اليوم ${d}`,`Nutrition — Day ${d}`);
-        setProgress(++i,steps,label); spinner(label);
-        let ok=false,md='',attempts=0;
-        while(!ok && attempts<2){
-          attempts++;
-          md = await callAI(pNutritionDay(d));
-          ok = vNutrition(md,d);
-          if(!ok){
-            md = await callAI(`${headerStrict()}
-
-The previous nutrition for ${st.lang==='ar'?`اليوم ${d}`:`Day ${d}`} failed validation (missing proper table or wrong day marker). Regenerate exactly per rules.`);
-            ok = vNutrition(md,d);
-          }
-        }
-        endSpin(md);
-      }
-
-      // Training Days 1..7
-      for(let d=1; d<=7; d++){
-        const label = tr(`التدريب — اليوم ${d}`,`Training — Day ${d}`);
-        setProgress(++i,steps,label); spinner(label);
-        let ok=false,md='',attempts=0;
-        while(!ok && attempts<2){
-          attempts++;
-          md = await callAI(pTrainingDay(d));
-          ok = vTraining(md,d);
-          if(!ok){
-            md = await callAI(`${headerStrict()}
-
-The previous training for ${st.lang==='ar'?`اليوم ${d}`:`Day ${d}`} failed validation (missing proper table or wrong day marker). Regenerate exactly per rules.`);
-            ok = vTraining(md,d);
-          }
-        }
-        endSpin(md);
-      }
-
-      // Supplements
-      setProgress(++i,steps,tr('المكملات','Supplements')); spinner(tr('المكملات','Supplements'));
-      endSpin(await callAI(pSupps()));
-
-      // Progression
-      setProgress(++i,steps,tr('التقدم والتتبّع','Progress & Tracking')); spinner(tr('التقدم والتتبّع','Progress & Tracking'));
-      endSpin(await callAI(pProgress()));
-
-      // Troubleshooting
-      setProgress(++i,steps,tr('المشكلات الشائعة','Troubleshooting')); spinner(tr('المشكلات الشائعة','Troubleshooting'));
-      endSpin(await callAI(pTroubleshoot()));
-
-      // Safety
-      setProgress(++i,steps,tr('السلامة','Safety')); spinner(tr('السلامة','Safety'));
-      endSpin(await callAI(pSafety()));
-
-      // Closing
-      setProgress(++i,steps,tr('الختام','Closing')); spinner(tr('الختام','Closing'));
-      endSpin(await callAI(pClosing()));
-
-      setProgress(steps,steps,tr('اكتمل التوليد','Generation complete'));
-      $('resultRoot').scrollIntoView({behavior:'smooth',block:'start'});
-      $('regen').classList.remove('hidden');
-    }
-
-    /*********** Export / Print ***********/
-    function exportPDF(){
-      const node=$('resultRoot'); if(!node){ window.print(); return; }
-      const fn = (st.lang==='ar'?'خطة-':'plan-') + (collect().name||'client') + '.pdf';
-      const opt = { filename:fn, margin:[10,10,10,10], image:{type:'jpeg',quality:0.98},
-        html2canvas:{scale:2,useCORS:true}, pagebreak:{mode:['css','legacy']}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'} };
-      document.documentElement.classList.add('print-ready');
-      setTimeout(()=>{ try{ html2pdf().from(node).set(opt).save().finally(()=>document.documentElement.classList.remove('print-ready')); }
-                       catch{ document.documentElement.classList.remove('print-ready'); window.print(); } },80);
-    }
-
-    /*********** Events ***********/
-    $('lang-ar').onclick=()=>setLang('ar');
-    $('lang-en').onclick=()=>setLang('en');
-    $('btn-theme').onclick=toggleTheme;
-    $('start').onclick=generate;
-    $('regen').onclick=generate;
-    $('print2').onclick=()=>window.print();
-    $('pdf2').onclick=exportPDF;
-
-    setLang('ar');
-  </script>
+$('printTop').onclick=()=>window.print();
+$('pdfTop').onclick=exportPDF;
+$('print2').onclick=()=>window.print();
+$('pdf2').onclick=exportPDF;
+</script>
 </body>
 </html>
