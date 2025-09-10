@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>المدرب الشخصي — خطة ذكية دقيقة</title>
+  <title>المدرب الشخصي — خطة نهائية دقيقة</title>
 
-  <!-- Tailwind (إن تعذّر التحميل، الصفحة لا تتعطل) -->
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com" defer></script>
 
-  <!-- أدوات اختيارية لعرض النتيجة كـ Markdown و PDF -->
+  <!-- Markdown + Sanitize + PDF -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer onerror="window.__NO_MARKED__=true"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js" defer onerror="window.__NO_PURIFY__=true"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js" defer onerror="window.__NO_PDF__=true"></script>
@@ -50,16 +50,6 @@
       .panel,.glass{background:#fff;border:none}
       table{page-break-inside:avoid}
     }
-    /* صورة المدرب (مضمنة ضمن الهيرو) */
-    .coachCard{
-      position:relative; border-radius:18px; overflow:hidden; border:1px solid var(--line);
-      background: radial-gradient(120% 120% at 100% 0%, rgba(124,58,237,.18), transparent 50%) , radial-gradient(120% 120% at 0% 100%, rgba(6,182,212,.18), transparent 50%), var(--panel);
-      min-height: 240px;
-    }
-    .coachPic{
-      position:absolute; inset:0; display:grid; place-items:center; pointer-events:none; opacity:.9;
-    }
-    .coachPic svg{ max-width: 80%; height: auto; filter: drop-shadow(0 10px 25px rgba(0,0,0,.25)); }
   </style>
 </head>
 <body class="font-ar">
@@ -89,52 +79,25 @@
     <div class="glass rounded-2xl p-6 relative overflow-hidden">
       <div class="absolute -top-10 -left-10 w-56 h-56 rounded-full bg-gradient-to-br from-violet-600/25 to-cyan-500/25 blur-2xl"></div>
       <div class="absolute -bottom-10 -right-10 w-56 h-56 rounded-full bg-gradient-to-br from-cyan-500/18 to-violet-600/18 blur-2xl"></div>
-      <div class="relative grid lg:grid-cols-[1.15fr,.85fr] gap-6 items-stretch">
-        <!-- النص والمؤشرات -->
-        <div class="flex flex-col">
+      <div class="relative grid lg:grid-cols-[1.1fr,.9fr] gap-6 items-center">
+        <div>
           <h1 id="hero-title" class="text-3xl sm:text-4xl font-extrabold">المدرب الشخصي — خطة نهائية دقيقة</h1>
           <p id="hero-sub" class="muted mt-1">
-            خطة مخصصة كاملة: ٧ أيام تغذية، ٧ أيام تدريب مطابق لمستواك، مكملات مرتبطة بالحالة الصحية، ودليل تطبيق واضح.
+            خطة مخصصة كاملة: ٧ أيام تغذية، ٧ أيام تدريب مطابق لمستواك، مكملات مرتبطة بالحالة الصحية، وإرشادات تطبيق واضحة — بدون اختصار.
           </p>
-          <div class="panel rounded-2xl p-4 mt-4">
-            <div class="text-xs muted mb-2" id="kpi-title">مؤشرات سريعة</div>
-            <div class="grid grid-cols-3 gap-3 text-center">
-              <div class="kpi"><div class="text-[11px] muted">TDEE</div><div id="kpi-tdee" class="font-extrabold">—</div></div>
-              <div class="kpi"><div class="text-[11px] muted">Protein</div><div id="kpi-P" class="font-extrabold">—</div></div>
-              <div class="kpi"><div class="text-[11px] muted">Carbs</div><div id="kpi-C" class="font-extrabold">—</div></div>
-            </div>
-            <div class="mt-3">
-              <div class="h-2 bg-[color:var(--chip)] rounded-full overflow-hidden">
-                <div id="bar" class="h-full bg-gradient-to-r from-violet-600 to-cyan-500 w-0 transition-all duration-300"></div>
-              </div>
-              <div class="text-[11px] muted mt-1">Step <span id="step">1</span> / <span id="stepsTotal">5</span></div>
-            </div>
-          </div>
         </div>
-        <!-- بطاقة صورة المدرب (مُدمَجة في التصميم) -->
-        <div class="coachCard rounded-2xl">
-          <div class="coachPic">
-            <!-- SVG مدرب بسيط (يمكن استبداله بصورة coach.jpg بوضع <img src="coach.jpg" alt="" />) -->
-            <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <defs>
-                <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#7c3aed"/>
-                  <stop offset="100%" stop-color="#06b6d4"/>
-                </linearGradient>
-              </defs>
-              <circle cx="150" cy="150" r="120" fill="url(#g1)" opacity="0.18"/>
-              <circle cx="150" cy="105" r="45" fill="#e8edf4"/>
-              <rect x="85" y="150" width="130" height="95" rx="24" fill="#e8edf4"/>
-              <path d="M90,190 Q150,230 210,190 L210,245 L90,245 Z" fill="#cbd5e1" opacity=".7"/>
-              <path d="M110,155 L190,155 L210,190 L90,190 Z" fill="#94a3b8" opacity=".55"/>
-            </svg>
+        <div class="panel rounded-2xl p-4">
+          <div class="text-xs muted mb-2" id="kpi-title">مؤشرات سريعة</div>
+          <div class="grid grid-cols-3 gap-3 text-center">
+            <div class="kpi"><div class="text-[11px] muted">TDEE</div><div id="kpi-tdee" class="font-extrabold">—</div></div>
+            <div class="kpi"><div class="text-[11px] muted">Protein</div><div id="kpi-P" class="font-extrabold">—</div></div>
+            <div class="kpi"><div class="text-[11px] muted">Carbs</div><div id="kpi-C" class="font-extrabold">—</div></div>
           </div>
-          <div class="absolute inset-0 p-5 flex items-end">
-            <div class="bg-black/25 backdrop-blur-md rounded-xl p-3 border border-white/10">
-              <div class="text-[12px] uppercase tracking-wider">Coach</div>
-              <div class="text-lg font-extrabold">Professional Guidance</div>
-              <div class="text-[12px] opacity-80">Nutrition • Training • Compliance</div>
+          <div class="mt-3">
+            <div class="h-2 bg-[color:var(--chip)] rounded-full overflow-hidden">
+              <div id="bar" class="h-full bg-gradient-to-r from-violet-600 to-cyan-500 w-0 transition-all duration-300"></div>
             </div>
+            <div class="text-[11px] muted mt-1">Step <span id="step">1</span> / <span id="stepsTotal">5</span></div>
           </div>
         </div>
       </div>
@@ -163,7 +126,7 @@
         <span id="lang-badge" class="chip">AR</span>
       </div>
       <div id="live" class="mt-3 space-y-2 text-sm"></div>
-      <div class="mt-3 text-[11px] muted">* ٧ أيام كاملة، تطابق الماكروز يوميًا (±5%).</div>
+      <div class="mt-3 text-[11px] muted">* توليد كامل عبر الذكاء الاصطناعي — ٧ أيام بتفاصيل كاملة.</div>
     </aside>
   </main>
 
@@ -177,14 +140,14 @@
         <div class="kpi">
           <b id="welcome-title">تم إعداد خطة تنفيذية دقيقة وفق بياناتك.</b>
           <div id="welcome-sub" class="muted mt-1">
-            تشمل: تشخيص الحالة، مسموح/ممنوع، الصيام المتقطع (اختياري)، تغذية وتدريب ٧ أيام، مكملات مرتبطة بالحالة، وإرشادات تطبيق واضحة.
+            تشمل: تشخيص الحالة، الأهداف، المسموح/الممنوع، الصيام المتقطع (اختياري)، تغذية وتدريب ٧ أيام بجداول كاملة، مكملات، قواعد التقدّم، معالجة التعثر، قائمة تنفيذ، أسئلة شائعة، وسلامة الاستخدام.
           </div>
         </div>
       </div>
       <div id="status" class="mt-3 hidden"></div>
       <div id="ai-html" class="prose prose-invert rtl:text-right ltr:text-left mt-4"></div>
 
-      <!-- شريط إجراءات سهل الوصول -->
+      <!-- إجراءات سريعة -->
       <div class="fixed-actions no-print">
         <div class="flex-1"></div>
         <button id="act-new" class="btn btn-ghost" title="خطة جديدة / New">↻</button>
@@ -237,17 +200,15 @@
         injuries:'إصابات (اذكر المكان والوصف)',
         exp:'خبرة المقاومة', expVals:['مبتدئ','متوسط','متقدم'],
         weak:'نقاط التركيز (عضلة: هدف)', weakPH:'صدر: إبراز الأعلى؛ ظهر: كثافة…',
-        days:'أيام التدريب/أسبوع', detail:'مستوى التفصيل',
-        building:'نجهّز خطة مخصصة شاملة — الرجاء الانتظار.',
-        apiFail:'تعذّر الاتصال — يُرجى المحاولة مجددًا.',
+        building:'نجهّز خطة مخصصة كاملة — الرجاء الانتظار.',
+        apiFail:'تعذّر الاتصال — تأكد من وظيفة Netlify والمفتاح.',
         err:'أكمل الحقول المطلوبة',
         print:'طباعة', pdf:'حفظ PDF',
-        hello:'أدخل بياناتك بدقة لننتج خطة قابلة للتنفيذ.',
+        hello:'أدخل بياناتك بدقة — سنولّد خطة تنفيذية كاملة.',
         good:'تم الحفظ — تابع.',
         back:'تم الرجوع خطوة.',
         ready:'الخطة جاهزة.',
         rights:'Powered by Mustafa Elsafy 2025',
-        kpi:'مؤشرات سريعة',
         resultTitle:'الخطة الشاملة'
       }},
       en:{ ui:{
@@ -272,17 +233,15 @@
         injuries:'Injuries (location & description)',
         exp:'Resistance experience', expVals:['Beginner','Intermediate','Advanced'],
         weak:'Focus points (muscle: goal)', weakPH:'Chest: upper; Back: density…',
-        days:'Training days/week', detail:'Detail level',
         building:'Preparing a fully customized plan — please wait.',
-        apiFail:'Couldn’t reach the model — please try again.',
+        apiFail:'Couldn’t reach the model — verify Netlify function and key.',
         err:'Please complete required fields',
         print:'Print', pdf:'Save PDF',
-        hello:'Provide accurate inputs; we’ll produce an actionable plan.',
+        hello:'Provide accurate inputs — we’ll generate a full executive plan.',
         good:'Saved — continue.',
         back:'Stepped back.',
         ready:'Plan ready.',
         rights:'Powered by Mustafa Elsafy 2025',
-        kpi:'Quick KPIs',
         resultTitle:'The Comprehensive Plan'
       }}
     };
@@ -308,7 +267,6 @@
     };
 
     // ===== Helpers
-    function speakCoach(msg){ /* تم الاستبدال بصورة؛ نعرض توضيحات في شريط الحالة فقط */ text('status', msg); $('status').classList.remove('hidden'); }
     function T(k){ return L[lang].ui[k]; }
     function parsePAL(label){ const m=String(label).match(/PAL\s*([0-9.]+)/); return m? parseFloat(m[1]) : 1.25; }
     function calc(){
@@ -470,15 +428,16 @@
       const fasting = user.fasting.enabled ? `${user.fasting.protocol} (${user.fasting.start}-${user.fasting.end})` : 'disabled';
       const goals = (user.goals||[]).join(', ') || (lang==='ar'?'غير محدد':'unspecified');
 
+      // موجه مُحكّم يُلزم الكتابة التفصيلية الكاملة (بدون تكرار/اختصار)
       return `
-Act as a certified elite nutrition & training coach.
-Return ${locale} **Markdown only** (no code fences, no JSON). Write with professional structure and executive clarity.
+Act as a certified elite nutrition & strength coach.
+Return ${locale} **Markdown only** (no code fences, no JSON). Use executive structure, complete details, and clear tables.
 
 CLIENT PROFILE
 - Name: ${user.name}
 - Sex: ${user.gender}
 - Age/Height/Weight: ${user.age}y / ${user.height}cm / ${user.weight}kg
-- Daily Activity (PAL inferred from job): ${user.jobLabel}
+- Daily Activity (PAL): ${user.jobLabel}
 - Sleep: ${user.sleep}h, Stress: ${user.stress}
 - Goals: ${goals}
 - Diet style: ${diet}
@@ -495,38 +454,42 @@ TARGETS (daily):
 - Protein: ~${c.P} g
 - Fat: ~${c.F} g
 - Carbs: ~${c.C} g
-Tolerance: ±5% per day
+Tolerance: ±2% per day. **You must keep each day's totals within ±2%.**
 
-REQUIRED OUTPUT — STRICT ORDER & DEPTH
-1) Executive Welcome (2 lines) + concise commitment message.
-2) Case Analysis & Goal Rationale (bullets): what matters & why (nutrition + training + constraints).
-3) Allowed vs. Avoid (clear bullets).
-4) Intermittent Fasting (if enabled): precise window, pre/fast hydration, breaking-fast rules, meds safety note.
+STRICT OUTPUT — FULL DEPTH, NO SHORTCUTS, NO "repeat day", NO "etc":
+1) Welcome & Commitment (2 concise lines).
+2) Case Analysis & Goal Rationale (nutrition + training + constraints). Bullet points.
+3) Allowed vs Avoid (bullet lists tailored to ${diet}, allergies, dislikes).
+4) Intermittent Fasting (if enabled): exact protocol, hydration, pre-fast & breaking-fast rules, meds note.
 5) 7-Day Nutrition Plan:
-   - For each day, list ${user.meals} named meals.
-   - Each meal: ingredients with quantities in grams/ml, and per-meal macros (P/F/C/kcal).
-   - End each day with totals and a short compliance tip.
-   - Respect allergies & dislikes, stick to ${diet}.
-6) 7-Day Training Plan (exercises in English ONLY):
-   - Tailored to ${user.exp} and ${user.training_place}; avoid aggravating: ${user.injuries||'None'}.
-   - Table per day: Exercise • Sets • Reps • Tempo • Rest (s) • Notes (progression/cues).
+   - Write **7 different full days**. For each day, list exactly ${user.meals} meals.
+   - Each meal: name, ingredients with **quantities (g/ml)**, and per-meal macros (P/F/C/kcal).
+   - End each day with a **Totals** row (must match targets within ±2%) and a short compliance tip.
+6) 7-Day Training Plan (exercises in **English ONLY**):
+   - Tailored to ${user.exp} at ${user.training_place}; avoid aggravating: ${user.injuries||'None'}.
+   - For **each of 7 days**, provide a table: Exercise • Sets • Reps • Tempo • Rest (s) • Notes (progression/cues).
 7) Supplements:
    - Core stack (dose & timing).
-   - Condition-linked items aligned to health (with safety note to consult physician where relevant).
+   - Condition-linked supplements based on health conditions (with safety note to consult physician).
 8) Progression & Check-ins:
-   - Load/reps progression rules (week over week).
-   - How to adjust macros if weight loss/gain stalls.
-9) Implementation Checklist (bulleted, actionable).
-10) Professional Closing, short and focused.
+   - Weekly progression rules (load/reps/RPE), when to deload.
+   - Macro adjustment rules if weight loss/gain stalls (with numeric thresholds).
+9) Troubleshooting & Implementation Checklist:
+   - Common pitfalls and quick fixes.
+   - A clear, actionable checklist for daily execution.
+10) Safety & FAQs:
+   - Safety notes considering injuries and conditions.
+   - 4–6 FAQs with brief, precise answers.
+11) Professional Closing (1 short paragraph).
 
 FORMATTING
-- Use clear headings, tables for meals & training, and short, direct sentences.
-- Food names in ${locale}; exercise names in English only.
-- No placeholders; fully specify 7 different days (no “repeat day X”).
+- Use clear headings (###), tables for meals/training, and concise sentences.
+- Food items in ${locale}; exercise names in English only.
+- **Do not** output code blocks or JSON. **Do not** say "repeat" or "similarly". Write all details explicitly for 7 unique days.
 `.trim();
     }
 
-    async function callAI(prompt, timeoutMs=30000){
+    async function callAI(prompt, timeoutMs=45000){
       const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(), timeoutMs);
       try{
         const r=await fetch('/.netlify/functions/gemini-proxy',{
@@ -564,7 +527,6 @@ FORMATTING
           <div class="w-12 h-12 rounded-full border-4 border-violet-600 border-t-transparent animate-spin mx-auto"></div>
           <div class="mt-2 text-sm muted">${T('building')}</div>
         </div>`;
-      speakCoach(lang==='ar'?'نُنسّق الجداول والتنفيذ — الرجاء الانتظار.':'Building your full plan — please wait.');
 
       const prompt = buildPrompt();
       const md = await callAI(prompt);
@@ -577,7 +539,9 @@ FORMATTING
         return;
       }
       renderMarkdown(md);
-      speakCoach(lang==='ar'?'تم إنشاء الخطة. يمكنك الطباعة أو الحفظ.':'Plan generated. You can print or save.');
+      text('status', T('ready'));
+      $('status').classList.remove('hidden');
+      $('result').scrollIntoView({behavior:'smooth',block:'start'});
     }
 
     // ===== Buttons & Navigation
@@ -598,11 +562,12 @@ FORMATTING
       renderStep(); updateLive(); updateKPIs(); updateButtons();
     }
 
-    $('btn-prev').onclick=()=>{ if(step>0){ step--; renderStep(); updateKPIs(); updateLive(); text('status', T('back')); $('status').classList.remove('hidden'); } };
+    const contentEl=$('stage');
+    $('btn-prev').onclick=()=>{ if(step>0){ step--; renderStep(); updateKPIs(); updateLive(); } };
     $('btn-next').onclick=async ()=>{
       if(step<total-1){
         if(!saveStep()) return;
-        step++; renderStep(); updateKPIs(); updateLive(); text('status', T('good')); $('status').classList.remove('hidden');
+        step++; renderStep(); updateKPIs(); updateLive();
         if(step===total-1){ if(!saveStep()) return; await generatePlanAI(); }
       }
     };
