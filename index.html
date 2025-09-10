@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>المدرب الشخصي الخبير — Mustafa Elsafy</title>
+  <title>المدرب الشخصي — خطة ذكية دقيقة</title>
 
-  <!-- Tailwind -->
+  <!-- Tailwind (إن تعذّر التحميل، الصفحة لا تتعطل) -->
   <script src="https://cdn.tailwindcss.com" defer></script>
 
-  <!-- اختياري: إن تعذّر التحميل لن يوقف الصفحة -->
+  <!-- أدوات اختيارية لعرض النتيجة كـ Markdown و PDF -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer onerror="window.__NO_MARKED__=true"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js" defer onerror="window.__NO_PURIFY__=true"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js" defer onerror="window.__NO_PDF__=true"></script>
@@ -32,167 +32,192 @@
     body{background:linear-gradient(180deg,var(--bg) 0%, color-mix(in oklab, var(--bg) 75%, white 25%) 100%);color:var(--ink);-webkit-font-smoothing:antialiased}
     .font-ar{font-family:"Tajawal",sans-serif}
     .font-en{font-family:"Poppins",sans-serif}
-    .glass{background:color-mix(in oklab, var(--panel) 88%, transparent 12%);border:1px solid color-mix(in oklab, var(--line) 90%, transparent 10%);backdrop-filter:blur(10px)}
+    .glass{background:color-mix(in oklab, var(--panel) 90%, transparent 10%);border:1px solid color-mix(in oklab, var(--line) 85%, transparent 15%);backdrop-filter:blur(10px)}
     .panel{background:var(--panel);border:1px solid var(--line)}
-    .btn{border:1px solid color-mix(in oklab, var(--line) 70%, transparent 30%);border-radius:1rem;padding:.85rem 1rem;font-weight:700}
+    .btn{border:1px solid color-mix(in oklab, var(--line) 70%, transparent 30%);border-radius:12px;padding:.8rem 1rem;font-weight:700}
     .btn-primary{background:linear-gradient(90deg,var(--brand),var(--brand2));border-color:transparent;color:#fff}
-    .btn-ghost{background:var(--chip)}
-    .chip{padding:.32rem .6rem;border-radius:.6rem;font-size:.75rem;background:var(--chip);border:1px dashed color-mix(in oklab, var(--line) 70%, transparent 30%);color:color-mix(in oklab, var(--brand2) 65%, var(--ink) 35%)}
+    .btn-ghost{background:var(--chip);color:var(--ink)}
+    .btn-soft{background:color-mix(in oklab, var(--panel) 95%, white 5%);border:1px solid color-mix(in oklab, var(--line) 80%, transparent 20%)}
+    .chip{padding:.28rem .55rem;border-radius:.6rem;font-size:.74rem;background:var(--chip);border:1px dashed color-mix(in oklab, var(--line) 70%, transparent 30%);color:color-mix(in oklab, var(--brand2) 65%, var(--ink) 35%)}
     .kpi{background:color-mix(in oklab, var(--panel) 95%, white 5%);border:1px solid color-mix(in oklab, var(--line) 80%, transparent 20%);border-radius:.8rem;padding:.6rem}
     .muted{color:var(--muted)}
     .prose :where(table){width:100%;border-collapse:collapse}
     .prose :where(th,td){border:1px solid color-mix(in oklab, var(--line) 80%, transparent 20%);padding:.6rem;vertical-align:top}
     .prose :where(th){background:var(--th)}
-    .avatar{position:fixed; bottom:16px; inset-inline-start:16px; z-index:9999; display:flex; align-items:flex-end; gap:10px; pointer-events:none}
-    .avatar .bubble{max-width:340px;background:var(--panel);border:1px solid var(--line);padding:.75rem .95rem;border-radius:1rem;box-shadow:0 6px 20px rgba(0,0,0,.18)}
-    .avatar .face{pointer-events:auto}
-    .avatar .face{
-      width:56px;height:56px;border-radius:50%;background:
-        radial-gradient(45% 55% at 40% 35%, #fff, #e9edf2) padding-box,
-        radial-gradient(60% 80% at 65% 65%, color-mix(in oklab, var(--brand) 40%, #fff 60%), color-mix(in oklab, var(--brand2) 40%, #fff 60%)) border-box;
-      border:2px solid color-mix(in oklab, var(--brand) 40%, var(--brand2) 60%);
-      display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,.2);
-      position:relative; overflow:hidden;
-    }
-    .avatar .eyes{width:28px;height:10px;border-radius:10px;background:linear-gradient(90deg,#222,#000,#222); position:absolute; top:22px; left:50%; transform:translateX(-50%)}
-    .typing{display:inline-flex;gap:4px}
-    .typing span{width:6px;height:6px;border-radius:50%;background:color-mix(in oklab, var(--ink) 70%, var(--muted) 30%);animation:blink 1s infinite}
-    .typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
-    @keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
-    @media (max-width:520px){.avatar .bubble{max-width:72vw}}
-    @media print{ .no-print, header, #controls, .avatar, #themeToggle {display:none!important}
+    .fixed-actions{position:sticky; bottom:0; z-index:50; display:flex; gap:8px; padding:.75rem; background:color-mix(in oklab, var(--panel) 85%, transparent 15%); border-top:1px solid var(--line)}
+    @media print{ .no-print, header, #themeToggle {display:none!important}
       body{background:#fff;color:#000}
       .panel,.glass{background:#fff;border:none}
       table{page-break-inside:avoid}
     }
+    /* صورة المدرب (مضمنة ضمن الهيرو) */
+    .coachCard{
+      position:relative; border-radius:18px; overflow:hidden; border:1px solid var(--line);
+      background: radial-gradient(120% 120% at 100% 0%, rgba(124,58,237,.18), transparent 50%) , radial-gradient(120% 120% at 0% 100%, rgba(6,182,212,.18), transparent 50%), var(--panel);
+      min-height: 240px;
+    }
+    .coachPic{
+      position:absolute; inset:0; display:grid; place-items:center; pointer-events:none; opacity:.9;
+    }
+    .coachPic svg{ max-width: 80%; height: auto; filter: drop-shadow(0 10px 25px rgba(0,0,0,.25)); }
   </style>
 </head>
 <body class="font-ar">
-  <!-- ثابت علوي -->
-  <header class="glass sticky top-0 z-40">
+  <!-- Header -->
+  <header class="glass sticky top-0 z-30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-cyan-500 text-white grid place-items-center font-extrabold">AI</div>
         <div class="leading-tight">
-          <div class="text-xs muted">COACH</div>
-          <div class="font-extrabold">Mustafa Elsafy</div>
-          <div class="text-[11px] muted">Certified International Coach</div>
+          <div class="text-xs muted">Personal Coaching</div>
+          <div class="font-extrabold">Smart Plan</div>
+          <div class="text-[11px] muted">Nutrition • Training • Compliance</div>
         </div>
       </div>
       <div class="flex items-center gap-2 no-print">
-        <button id="btn-lang-ar" class="btn btn-ghost">AR</button>
-        <button id="btn-lang-en" class="btn btn-ghost">EN</button>
+        <div class="inline-flex bg-[color:var(--chip)] border border-[color:var(--line)] rounded-xl overflow-hidden">
+          <button id="btn-lang-ar" class="px-3 py-2 text-sm font-bold">AR</button>
+          <button id="btn-lang-en" class="px-3 py-2 text-sm font-bold">EN</button>
+        </div>
         <button id="themeToggle" class="btn btn-ghost" title="Theme">☀️/🌙</button>
-        <button id="btn-print" class="btn btn-primary">طباعة / Print</button>
       </div>
     </div>
   </header>
 
-  <!-- بطل -->
+  <!-- Hero -->
   <section class="max-w-7xl mx-auto px-4 sm:px-6 mt-6">
     <div class="glass rounded-2xl p-6 relative overflow-hidden">
       <div class="absolute -top-10 -left-10 w-56 h-56 rounded-full bg-gradient-to-br from-violet-600/25 to-cyan-500/25 blur-2xl"></div>
       <div class="absolute -bottom-10 -right-10 w-56 h-56 rounded-full bg-gradient-to-br from-cyan-500/18 to-violet-600/18 blur-2xl"></div>
-      <div class="relative grid lg:grid-cols-[1.15fr,.85fr] gap-6 items-center">
-        <div>
-          <h1 id="hero-title" class="text-3xl sm:text-4xl font-extrabold">المدرب الشخصي الخبير</h1>
+      <div class="relative grid lg:grid-cols-[1.15fr,.85fr] gap-6 items-stretch">
+        <!-- النص والمؤشرات -->
+        <div class="flex flex-col">
+          <h1 id="hero-title" class="text-3xl sm:text-4xl font-extrabold">المدرب الشخصي — خطة نهائية دقيقة</h1>
           <p id="hero-sub" class="muted mt-1">
-            خطة نهائية دقيقة: ٧ أيام تغذية مفصلة، ٧ أيام تدريب وفق خبرتك، مكملات حسب حالتك،
-            وصيام متقطع اختياري — بتوقيع <b>Mustafa Elsafy</b> │ Powered by Mustafa Elsafy 2025
+            خطة مخصصة كاملة: ٧ أيام تغذية، ٧ أيام تدريب مطابق لمستواك، مكملات مرتبطة بالحالة الصحية، ودليل تطبيق واضح.
           </p>
-        </div>
-        <div class="panel rounded-2xl p-4">
-          <div class="text-xs muted mb-2" id="kpi-title">مؤشرات سريعة</div>
-          <div class="grid grid-cols-3 gap-3 text-center">
-            <div class="kpi"><div class="text-[11px] muted">TDEE</div><div id="kpi-tdee" class="font-extrabold">—</div></div>
-            <div class="kpi"><div class="text-[11px] muted">Protein</div><div id="kpi-P" class="font-extrabold">—</div></div>
-            <div class="kpi"><div class="text-[11px] muted">Carbs</div><div id="kpi-C" class="font-extrabold">—</div></div>
-          </div>
-          <div class="mt-3">
-            <div class="h-2 bg-[color:var(--chip)] rounded-full overflow-hidden">
-              <div id="bar" class="h-full bg-gradient-to-r from-violet-600 to-cyan-500 w-0 transition-all duration-300"></div>
+          <div class="panel rounded-2xl p-4 mt-4">
+            <div class="text-xs muted mb-2" id="kpi-title">مؤشرات سريعة</div>
+            <div class="grid grid-cols-3 gap-3 text-center">
+              <div class="kpi"><div class="text-[11px] muted">TDEE</div><div id="kpi-tdee" class="font-extrabold">—</div></div>
+              <div class="kpi"><div class="text-[11px] muted">Protein</div><div id="kpi-P" class="font-extrabold">—</div></div>
+              <div class="kpi"><div class="text-[11px] muted">Carbs</div><div id="kpi-C" class="font-extrabold">—</div></div>
             </div>
-            <div class="text-[11px] muted mt-1">Step <span id="step">1</span> / <span id="stepsTotal">5</span></div>
+            <div class="mt-3">
+              <div class="h-2 bg-[color:var(--chip)] rounded-full overflow-hidden">
+                <div id="bar" class="h-full bg-gradient-to-r from-violet-600 to-cyan-500 w-0 transition-all duration-300"></div>
+              </div>
+              <div class="text-[11px] muted mt-1">Step <span id="step">1</span> / <span id="stepsTotal">5</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- بطاقة صورة المدرب (مُدمَجة في التصميم) -->
+        <div class="coachCard rounded-2xl">
+          <div class="coachPic">
+            <!-- SVG مدرب بسيط (يمكن استبداله بصورة coach.jpg بوضع <img src="coach.jpg" alt="" />) -->
+            <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#7c3aed"/>
+                  <stop offset="100%" stop-color="#06b6d4"/>
+                </linearGradient>
+              </defs>
+              <circle cx="150" cy="150" r="120" fill="url(#g1)" opacity="0.18"/>
+              <circle cx="150" cy="105" r="45" fill="#e8edf4"/>
+              <rect x="85" y="150" width="130" height="95" rx="24" fill="#e8edf4"/>
+              <path d="M90,190 Q150,230 210,190 L210,245 L90,245 Z" fill="#cbd5e1" opacity=".7"/>
+              <path d="M110,155 L190,155 L210,190 L90,190 Z" fill="#94a3b8" opacity=".55"/>
+            </svg>
+          </div>
+          <div class="absolute inset-0 p-5 flex items-end">
+            <div class="bg-black/25 backdrop-blur-md rounded-xl p-3 border border-white/10">
+              <div class="text-[12px] uppercase tracking-wider">Coach</div>
+              <div class="text-lg font-extrabold">Professional Guidance</div>
+              <div class="text-[12px] opacity-80">Nutrition • Training • Compliance</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- رئيسي -->
+  <!-- Main -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 mt-6 grid xl:grid-cols-[minmax(0,1fr),420px] gap-6">
+    <!-- Form Panel -->
     <section class="panel rounded-2xl p-6">
       <div class="flex items-center justify-between mb-4">
-        <div class="text-sm chip muted">Accessible • AR/EN • PDF/Print</div>
-        <div class="text-xs chip">© Mustafa Elsafy • Powered by Mustafa Elsafy 2025</div>
+        <div class="text-sm chip muted">AR/EN • PDF/Print • Responsive</div>
+        <div class="text-xs chip">Powered by Mustafa Elsafy 2025</div>
       </div>
       <div id="stage"></div>
       <div id="controls" class="mt-6 flex gap-2">
-        <button id="btn-prev" class="btn btn-ghost flex-1">السابق</button>
+        <button id="btn-prev" class="btn btn-soft flex-1">السابق</button>
         <button id="btn-next" class="btn btn-primary flex-1">التالي</button>
       </div>
     </section>
 
+    <!-- Live Summary -->
     <aside class="panel rounded-2xl p-6">
       <div class="flex items-center justify-between">
         <div id="live-title" class="text-sm font-bold">ملخص فوري</div>
         <span id="lang-badge" class="chip">AR</span>
       </div>
       <div id="live" class="mt-3 space-y-2 text-sm"></div>
-      <div class="mt-3 text-[11px] muted">* 7 أيام كاملة، تطابق الماكروز يوميًا (±1%).</div>
+      <div class="mt-3 text-[11px] muted">* ٧ أيام كاملة، تطابق الماكروز يوميًا (±5%).</div>
     </aside>
   </main>
 
-  <!-- نتيجة -->
-  <section id="result" class="max-w-7xl mx-auto px-4 sm:px-6 mt-6 mb-16 hidden">
+  <!-- Result -->
+  <section id="result" class="max-w-7xl mx-auto px-4 sm:px-6 mt-6 mb-14 hidden">
     <article class="glass rounded-2xl p-6" id="resultRoot">
       <div class="flex items-center justify-between">
         <h2 id="plan-title" class="text-2xl font-extrabold">الخطة الشاملة</h2>
-        <div class="no-print flex gap-2">
-          <button id="btn-again" class="btn btn-ghost">إنشاء جديد</button>
-          <button id="btn-pdf" class="btn btn-ghost">Save PDF</button>
-          <button id="btn-print-2" class="btn btn-primary">طباعة</button>
-        </div>
       </div>
       <div id="welcome" class="mt-3 text-sm">
         <div class="kpi">
-          <b id="welcome-title">أهلاً بك! قرارك اليوم نقطة تحوّل، وأنا معك خطوة بخطوة.</b>
+          <b id="welcome-title">تم إعداد خطة تنفيذية دقيقة وفق بياناتك.</b>
           <div id="welcome-sub" class="muted mt-1">
-            خطة شاملة: تشخيص، مسموح/ممنوع، صيام متقطع، تغذية ٧ أيام، تدريب ٧ أيام، مكملات دقيقة، ونصائح نجاح.
+            تشمل: تشخيص الحالة، مسموح/ممنوع، الصيام المتقطع (اختياري)، تغذية وتدريب ٧ أيام، مكملات مرتبطة بالحالة، وإرشادات تطبيق واضحة.
           </div>
         </div>
       </div>
-      <div id="audit-banner" class="hidden mt-3"></div>
+      <div id="status" class="mt-3 hidden"></div>
       <div id="ai-html" class="prose prose-invert rtl:text-right ltr:text-left mt-4"></div>
-      <div class="border-t border-slate-700 mt-6 pt-2 text-[11px] muted">
-        <b>Mustafa Elsafy — خبير التغذية واللياقة البدنية │ مدرب دولي معتمد</b> • <b>Powered by Mustafa Elsafy 2025</b>
+
+      <!-- شريط إجراءات سهل الوصول -->
+      <div class="fixed-actions no-print">
+        <div class="flex-1"></div>
+        <button id="act-new" class="btn btn-ghost" title="خطة جديدة / New">↻</button>
+        <button id="act-pdf" class="btn btn-ghost" title="PDF">PDF</button>
+        <button id="act-print" class="btn btn-primary" title="Print">Print</button>
       </div>
+
+      <footer class="border-t border-slate-700 mt-6 pt-2 text-[12px] muted flex items-center justify-between">
+        <span id="rights">Powered by Mustafa Elsafy 2025</span>
+        <span id="foot-note"></span>
+      </footer>
     </article>
   </section>
 
-  <!-- أفاتار (ظاهر دائمًا) -->
-  <div class="avatar" id="avatar" aria-live="polite">
-    <div class="face"><div class="eyes"></div></div>
-    <div class="bubble" id="avatarBubble">مرحباً! املأ التفاصيل بدقة — سنقدّم لك خطة نهائية بلا اختصار. 👋</div>
-  </div>
-
   <script>
   (function(){
-    /* ======= حماية من انهيار أي سكربت ======= */
-    const safe = (fn, fallback=()=>{}) => (...a)=>{ try{ return fn(...a);}catch(e){ console.error(e); return fallback(); } };
-    const $ = id => document.getElementById(id);
+    // ===== Utilities
+    const $ = (id)=>document.getElementById(id);
+    const text = (id,val)=>{ const el=$(id); if(el) el.textContent=val; };
+    const html = (id,val)=>{ const el=$(id); if(el) el.innerHTML=val; };
+    const safe = (fn, fb=()=>{}) => (...a)=>{ try{ return fn(...a);}catch(e){ console.error(e); return fb(); } };
 
-    /* ======= ثيم ======= */
-    const themeBtn = $('themeToggle');
-    function applyTheme(t){ document.documentElement.setAttribute('data-theme', t); localStorage.setItem('theme', t); themeBtn.textContent = (t==='dark'?'☀️':'🌙'); }
-    applyTheme(localStorage.getItem('theme') || 'dark');
-    themeBtn && (themeBtn.onclick = ()=> applyTheme( document.documentElement.getAttribute('data-theme')==='dark' ? 'light' : 'dark'));
+    // ===== Theme
+    const themeBtn=$('themeToggle');
+    function applyTheme(t){ document.documentElement.setAttribute('data-theme',t); localStorage.setItem('theme',t); themeBtn.textContent=(t==='dark'?'☀️':'🌙'); }
+    applyTheme(localStorage.getItem('theme')||'dark');
+    themeBtn && (themeBtn.onclick=()=>applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'));
 
-    /* ======= لغة ======= */
-    const L = {
+    // ===== i18n
+    const L={
       ar:{ ui:{
-        title:'المدرب الشخصي الخبير', live:'ملخص فوري',
-        steps:['الأساسيات المتقدمة','الأهداف & النظام & الصيام','الصحة & الحساسية & الأدوية','الخبرة & الإصابات & التركيز','إنشاء الخطة'],
+        title:'المدرب الشخصي — خطة نهائية دقيقة', live:'ملخص فوري',
+        steps:['الأساسيات المتقدمة','الأهداف • النظام • الصيام','الصحة • الحساسية • الأدوية','الخبرة • الإصابات • التركيز','إنشاء الخطة'],
         next:'التالي', prev:'السابق', submit:'إنشاء الخطة الآن',
         name:'الاسم', age:'العمر', height:'الطول (سم)', weight:'الوزن (كغ)', gender:'الجنس', male:'ذكر', female:'أنثى',
         job:'النشاط اليومي (PAL)', jobVals:['مكتبي جدًا (PAL 1.15)','مكتبي/خفيف (PAL 1.25)','نشاط متوسط (PAL 1.4)','نشاط عالٍ (PAL 1.6)'],
@@ -201,11 +226,11 @@
         fasting:'الصيام المتقطع', enable:'تفعيل', protocol:'البروتوكول',
         window:'نافذة الأكل', from:'من', to:'إلى',
         training_place:'مكان التدريب', placeVals:['نادي كامل','منزل + دامبلز','منزل وزن الجسم'],
-        equipment:'معدات متوفرة', equipPH:'أذكر المعدات',
+        equipment:'معدات متوفرة', equipPH:'اكتب المعدات المتاحة (اختياري)',
         sleep:'ساعات النوم', stress:'مستوى التوتر', stressVals:['منخفض','متوسط','مرتفع'],
         cuisine:'المطبخ المفضل', cuisineVals:['عربي','متوسطي','آسيوي','غربي','هندي','متنوع'],
         budget:'ميزانية الطعام', budgetVals:['اقتصادي','قياسي','مرن'],
-        dislikes:'أطعمة غير مفضلة',
+        dislikes:'أطعمة غير مفضلة (اختياري)',
         health:'حالات صحية', healthVals:['ضغط الدم','السكري','مقاومة الأنسولين','الغدة الدرقية','الكبد الدهني','مشاكل هرمونية','الجهاز الهضمي'],
         meds:'أدوية (إن وجدت)',
         allergies:'حساسيات', allergyVals:['الجلوتين','اللاكتوز','المكسرات','المأكولات البحرية','البقوليات','السكريات المضافة','الزيوت النباتية'],
@@ -213,22 +238,22 @@
         exp:'خبرة المقاومة', expVals:['مبتدئ','متوسط','متقدم'],
         weak:'نقاط التركيز (عضلة: هدف)', weakPH:'صدر: إبراز الأعلى؛ ظهر: كثافة…',
         days:'أيام التدريب/أسبوع', detail:'مستوى التفصيل',
-        building:'نُحضّر لك خطة شاملة بكل التفاصيل — الرجاء الانتظار…',
-        apiFail:'تعذر الاتصال — تم توليد الخطة محليًا بدقة.',
+        building:'نجهّز خطة مخصصة شاملة — الرجاء الانتظار.',
+        apiFail:'تعذّر الاتصال — يُرجى المحاولة مجددًا.',
         err:'أكمل الحقول المطلوبة',
-        print:'طباعة / Print',
-        auditOK:'تمّ التحقق: الأيام مطابقة للأهداف (±1%) وعدد الوجبات صحيح.',
-        auditWarn:'تم تصحيح بعض الأيام تلقائياً.',
-        auditErr:'هناك أيام تحتاج ضبطاً.',
-        hello:'مرحباً! املأ التفاصيل بدقة — سأتولّى الباقي.',
-        good:'ممتاز — تابع.',
+        print:'طباعة', pdf:'حفظ PDF',
+        hello:'أدخل بياناتك بدقة لننتج خطة قابلة للتنفيذ.',
+        good:'تم الحفظ — تابع.',
         back:'تم الرجوع خطوة.',
-        ready:'خطة جاهزة — يمكنك الطباعة أو حفظ PDF.'
+        ready:'الخطة جاهزة.',
+        rights:'Powered by Mustafa Elsafy 2025',
+        kpi:'مؤشرات سريعة',
+        resultTitle:'الخطة الشاملة'
       }},
       en:{ ui:{
-        title:'Expert Personal Coach', live:'Live Summary',
-        steps:['Advanced Basics','Goals & Diet & IF','Health & Allergies & Meds','Experience & Injuries & Focus','Create Plan'],
-        next:'Next', prev:'Back', submit:'Generate Now',
+        title:'Personal Coach — Precise Final Plan', live:'Live Summary',
+        steps:['Advanced Basics','Goals • Diet • IF','Health • Allergies • Meds','Experience • Injuries • Focus','Generate Plan'],
+        next:'Next', prev:'Back', submit:'Generate Plan Now',
         name:'Name', age:'Age', height:'Height (cm)', weight:'Weight (kg)', gender:'Gender', male:'Male', female:'Female',
         job:'Daily activity (PAL)', jobVals:['Very desk (PAL 1.15)','Desk/Light (PAL 1.25)','Moderate (PAL 1.4)','High (PAL 1.6)'],
         goals:['Fat loss','Muscle gain','Strength','Endurance','General health'],
@@ -236,11 +261,11 @@
         fasting:'Intermittent Fasting', enable:'Enable', protocol:'Protocol',
         window:'Feeding window', from:'from', to:'to',
         training_place:'Training place', placeVals:['Full gym','Home + dumbbells','Home bodyweight'],
-        equipment:'Available equipment', equipPH:'List equipment',
+        equipment:'Available equipment', equipPH:'List available equipment (optional)',
         sleep:'Sleep hours', stress:'Stress level', stressVals:['Low','Moderate','High'],
         cuisine:'Preferred cuisine', cuisineVals:['Arabic','Mediterranean','Asian','Western','Indian','Mixed'],
         budget:'Food budget', budgetVals:['Budget','Standard','Flexible'],
-        dislikes:'Disliked foods',
+        dislikes:'Disliked foods (optional)',
         health:'Health conditions', healthVals:['Hypertension','Diabetes','Insulin Resistance','Thyroid','Fatty Liver','Hormonal issues','GI issues'],
         meds:'Medications (if any)',
         allergies:'Allergies', allergyVals:['Gluten','Lactose','Nuts','Seafood','Legumes','Added sugars','Vegetable oils'],
@@ -248,29 +273,28 @@
         exp:'Resistance experience', expVals:['Beginner','Intermediate','Advanced'],
         weak:'Focus points (muscle: goal)', weakPH:'Chest: upper; Back: density…',
         days:'Training days/week', detail:'Detail level',
-        building:'Preparing your comprehensive plan — please wait…',
-        apiFail:'Model unreachable — generated a precise local plan.',
+        building:'Preparing a fully customized plan — please wait.',
+        apiFail:'Couldn’t reach the model — please try again.',
         err:'Please complete required fields',
-        print:'Print / Save',
-        auditOK:'Validated: all days match targets (±1%) & meal count is correct.',
-        auditWarn:'Some days were auto-repaired.',
-        auditErr:'Some days require adjustment.',
-        hello:'Hi! Provide precise inputs — I’ll handle the rest.',
-        good:'Great — continue.',
+        print:'Print', pdf:'Save PDF',
+        hello:'Provide accurate inputs; we’ll produce an actionable plan.',
+        good:'Saved — continue.',
         back:'Stepped back.',
-        ready:'Plan ready — print or save as PDF.'
+        ready:'Plan ready.',
+        rights:'Powered by Mustafa Elsafy 2025',
+        kpi:'Quick KPIs',
+        resultTitle:'The Comprehensive Plan'
       }}
     };
 
+    // ===== State
     const content=$('stage'), live=$('live'), bar=$('bar'), stepSpan=$('step'), stepsTotal=$('stepsTotal');
     const kTDEE=$('kpi-tdee'), kP=$('kpi-P'), kC=$('kpi-C');
-    const avatarBubble = $('avatarBubble');
-    let lang='ar', step=0, total=5;
-    stepsTotal.textContent = String(total);
+    let lang='ar', step=0, total=5; stepsTotal.textContent=String(total);
 
     const user={
       name:'', age:'', height:'', weight:'', gender:'Male',
-      pal:'1.25', jobLabel:'Desk/Light (PAL 1.25)',
+      jobLabel:'Desk/Light (PAL 1.25)',
       goals:[], meals:4, diet:(lang==='ar'?'متوازن':'Balanced'),
       fasting:{enabled:false, protocol:'16:8', start:'12:00', end:'20:00'},
       training_place:'Full gym', equipment:'',
@@ -280,22 +304,12 @@
       health:[], meds:'',
       allergies:[], injuries:'',
       exp:(lang==='ar'?'مبتدئ':'Beginner'), weak_points:{},
-      detail:'max', train_days:7
+      train_days:7
     };
 
-    function speak(text){ if(!avatarBubble) return; avatarBubble.innerHTML = text; }
+    // ===== Helpers
+    function speakCoach(msg){ /* تم الاستبدال بصورة؛ نعرض توضيحات في شريط الحالة فقط */ text('status', msg); $('status').classList.remove('hidden'); }
     function T(k){ return L[lang].ui[k]; }
-    function setLang(l){
-      lang=l; document.documentElement.lang=l; document.documentElement.dir=(l==='ar'?'rtl':'ltr');
-      document.body.classList.toggle('font-ar',l==='ar'); document.body.classList.toggle('font-en',l!=='ar');
-      $('lang-badge').textContent=l.toUpperCase();
-      $('hero-title').textContent=T('title');
-      $('live-title').textContent=T('live');
-      $('btn-print').textContent=T('print'); $('btn-print-2').textContent=T('print');
-      $('plan-title').textContent=(l==='ar'?'الخطة الشاملة':'The Comprehensive Plan');
-      draw(); updateLive(); updateCTA(); speak(L[lang].ui.hello);
-    }
-
     function parsePAL(label){ const m=String(label).match(/PAL\s*([0-9.]+)/); return m? parseFloat(m[1]) : 1.25; }
     function calc(){
       const W=+user.weight||0, H=+user.height||0, A=+user.age||0, male=(user.gender==='Male');
@@ -313,11 +327,11 @@
     }
     function updateKPIs(){ const c=calc(); kTDEE.textContent=c.TDEE; kP.textContent=c.P+' g'; kC.textContent=c.C+' g'; }
     function updateProgress(){ bar.style.width=(((step+1)/total)*100)+'%'; stepSpan.textContent=String(step+1); }
-    function updateCTA(){ $('btn-prev').textContent=T('prev'); $('btn-next').textContent = step===total-1?T('submit'):T('next'); $('btn-prev').disabled=(step===0); }
+    function updateButtons(){ $('btn-prev').disabled=(step===0); $('btn-next').textContent=(step===total-1?T('submit'):T('next')); }
     function updateLive(){
-      updateKPIs(); const c=calc();
-      const g = (user.goals||[]).join(lang==='ar'?'، ':', ')||'—';
-      live.innerHTML = `
+      const c=calc();
+      const g=(user.goals||[]).join(lang==='ar'?'، ':', ')||'—';
+      live.innerHTML=`
         <div class="text-xs muted">${T('name')}: <b>${user.name||'—'}</b></div>
         <div class="grid grid-cols-3 gap-2 text-xs">
           <div class="kpi"><div class="muted">${T('age')}</div><b>${user.age||'—'}</b></div>
@@ -333,7 +347,8 @@
         </div>`;
     }
 
-    function f(label,id,opt={}){ const {type='text',value='',select=null,rows=3,placeholder=''}=opt;
+    // ===== Fields
+    function field(label,id,opt={}){ const {type='text',value='',select=null,rows=3,placeholder=''}=opt;
       if(select){ return `<label class="block"><span class="text-sm">${label}</span>
         <select id="${id}" class="mt-1 w-full p-3 rounded-xl bg-[color:var(--chip)] border border-[color:var(--line)]">
           ${select.map(o=>`<option value="${o.value}" ${String(value)===String(o.value)?'selected':''}>${o.label}</option>`).join('')}
@@ -350,68 +365,67 @@
           <span class="text-sm">${v}</span></label>`).join('')}</div>`;
     }
 
-    function draw(){
-      updateProgress();
+    // ===== Steps
+    function renderStep(){
+      updateProgress(); updateButtons();
       const U=L[lang].ui;
       if(step===0){
         content.innerHTML=`
           <h3 class="text-xl font-extrabold mb-3">${U.steps[0]}</h3>
           <div class="grid md:grid-cols-3 gap-4">
-            ${f(U.name,'name',{value:user.name})}
-            ${f(U.gender,'gender',{select:[{value:'Male',label:U.male},{value:'Female',label:U.female}],value:user.gender})}
-            ${f(U.age,'age',{type:'number',value:user.age})}
-            ${f(U.height,'height',{type:'number',value:user.height})}
-            ${f(U.weight,'weight',{type:'number',value:user.weight})}
+            ${field(U.name,'name',{value:user.name})}
+            ${field(U.gender,'gender',{select:[{value:'Male',label:U.male},{value:'Female',label:U.female}],value:user.gender})}
+            ${field(U.age,'age',{type:'number',value:user.age})}
+            ${field(U.height,'height',{type:'number',value:user.height})}
+            ${field(U.weight,'weight',{type:'number',value:user.weight})}
             <label class="block md:col-span-2"><span class="text-sm">${U.job}</span>
               <select id="job" class="mt-1 w-full p-3 rounded-xl bg-[color:var(--chip)] border border-[color:var(--line)]">
                 ${U.jobVals.map((lbl,i)=>`<option ${i===1?'selected':''}>${lbl}</option>`).join('')}
               </select>
             </label>
-            ${f(U.sleep,'sleep',{type:'number',value:user.sleep})}
-            ${f(U.stress,'stress',{select:U.stressVals.map(v=>({value:v,label:v})),value:user.stress})}
-            ${f(U.training_place,'training_place',{select:U.placeVals.map(v=>({value:v,label:v})),value:user.training_place})}
+            ${field(U.sleep,'sleep',{type:'number',value:user.sleep})}
+            ${field(U.stress,'stress',{select:U.stressVals.map(v=>({value:v,label:v})),value:user.stress})}
+            ${field(U.training_place,'training_place',{select:U.placeVals.map(v=>({value:v,label:v})),value:user.training_place})}
+            ${field(U.equipment,'equipment',{placeholder:U.equipPH,value:user.equipment})}
           </div>`;
-        speak(L[lang].ui.hello);
       } else if(step===1){
         content.innerHTML=`
           <h3 class="text-xl font-extrabold mb-3">${U.steps[1]}</h3>
           <div class="space-y-4">
             <div><div class="text-sm mb-1">${lang==='ar'?'الأهداف':'Goals'}</div>${chips('goal',U.goals,user.goals)}</div>
             <div class="grid md:grid-cols-3 gap-4">
-              ${f(U.meals,'meals',{select:[{value:3,label:'3'},{value:4,label:'4'},{value:5,label:'5'}],value:user.meals})}
-              ${f(U.diet,'diet',{select:U.diets.map(d=>({value:d,label:d})),value:user.diet})}
+              ${field(U.meals,'meals',{select:[{value:3,label:'3'},{value:4,label:'4'},{value:5,label:'5'}],value:user.meals})}
+              ${field(U.diet,'diet',{select:U.diets.map(d=>({value:d,label:d})),value:user.diet})}
               <label class="block">
                 <span class="text-sm">${U.fasting} — ${U.enable}</span>
                 <input id="fasting_enabled" type="checkbox" class="accent-violet-600 ml-2" ${user.fasting.enabled?'checked':''}/>
               </label>
             </div>
             <div id="ifWrap" class="grid md:grid-cols-3 gap-4">
-              ${f(U.protocol,'fasting_protocol',{select:['14:10','16:8','18:6','20:4'].map(x=>({value:x,label:x})),value:user.fasting.protocol})}
+              ${field(U.protocol,'fasting_protocol',{select:['14:10','16:8','18:6','20:4'].map(x=>({value:x,label:x})),value:user.fasting.protocol})}
               <label><span class="text-sm">${U.window} ${U.from}</span><input id="fasting_start" type="time" class="mt-1 w-full p-3 rounded-xl bg-[color:var(--chip)] border border-[color:var(--line)]" value="${user.fasting.start}"/></label>
               <label><span class="text-sm">${U.window} ${U.to}</span><input id="fasting_end" type="time" class="mt-1 w-full p-3 rounded-xl bg-[color:var(--chip)] border border-[color:var(--line)]" value="${user.fasting.end}"/></label>
             </div>
+            ${field(U.dislikes,'dislikes',{placeholder:(lang==='ar'?'مثال: الكبدة، القرنبيط':'e.g., liver, cauliflower'),value:user.dislikes})}
           </div>`;
-        speak(L[lang].ui.good);
       } else if(step===2){
         content.innerHTML=`
           <h3 class="text-xl font-extrabold mb-3">${U.steps[2]}</h3>
           <div class="space-y-4">
             <div><div class="text-sm mb-1">${U.health}</div>${chips('health',U.healthVals,user.health)}</div>
-            ${f(U.meds,'meds',{type:'textarea',rows:2,placeholder:'Metformin, Thyroxine…',value:user.meds})}
+            ${field(U.meds,'meds',{type:'textarea',rows:2,placeholder:'Metformin, Thyroxine…',value:user.meds})}
             <div><div class="text-sm mb-1">${U.allergies}</div>${chips('all',U.allergyVals,user.allergies)}</div>
           </div>`;
-        speak(L[lang].ui.good);
       } else if(step===3){
         content.innerHTML=`
-          <h3 class="text-xl font-extrabولد mb-3">${U.steps[3]}</h3>
+          <h3 class="text-xl font-extrabold mb-3">${U.steps[3]}</h3>
           <div class="grid md:grid-cols-3 gap-4">
-            ${f(U.exp,'exp',{select:U.expVals.map(x=>({value:x,label:x})),value:user.exp})}
-            ${f(U.injuries,'injuries',{type:'textarea',rows:2,placeholder: lang==='ar'?'مثال: ألم أسفل الظهر':'e.g., Lower-back pain',value:user.injuries})}
+            ${field(U.exp,'exp',{select:U.expVals.map(x=>({value:x,label:x})),value:user.exp})}
+            ${field(U.injuries,'injuries',{type:'textarea',rows:2,placeholder: lang==='ar'?'مثال: ألم أسفل الظهر':'e.g., Lower-back pain',value:user.injuries})}
             <label class="md:col-span-2"><span class="text-sm">${U.weak}</span>
               <input id="weak_raw" class="mt-1 w-full p-3 rounded-xl bg-[color:var(--chip)] border border-[color:var(--line)]" placeholder="${U.weakPH}">
             </label>
           </div>`;
-        speak(L[lang].ui.good);
       } else {
         content.innerHTML=`
           <div class="text-center py-8">
@@ -419,7 +433,6 @@
             <div class="w-12 h-12 rounded-full border-4 border-violet-600 border-t-transparent animate-spin mx-auto"></div>
             <div class="mt-2 text-xs muted" id="buildTimer">…</div>
           </div>`;
-        speak(lang==='ar'?'ننسّق الجداول والشرح الآن… الرجاء الانتظار':'Assembling detailed tables now… please wait');
       }
     }
 
@@ -428,11 +441,12 @@
         if(step===0){
           user.name=$('name').value.trim(); user.gender=$('gender').value;
           user.age=+$('age').value; user.height=+$('height').value; user.weight=+$('weight').value;
-          user.jobLabel=$('job').value; user.pal=String(parsePAL(user.jobLabel));
+          user.jobLabel=$('job').value; user.sleep=+$('sleep').value; user.stress=$('stress').value;
+          user.training_place=$('training_place').value; user.equipment=$('equipment').value;
           if(!user.name||!user.age||!user.height||!user.weight) throw 0;
         } else if(step===1){
           user.goals=[...document.querySelectorAll('input[name="goal"]:checked')].map(e=>e.value);
-          user.meals=+$('meals').value; user.diet=$('diet').value;
+          user.meals=+$('meals').value; user.diet=$('diet').value; user.dislikes=$('dislikes').value||'';
           user.fasting.enabled=$('fasting_enabled').checked;
           user.fasting.protocol=$('fasting_protocol').value; user.fasting.start=$('fasting_start').value; user.fasting.end=$('fasting_end').value;
           if(!user.goals.length) throw 0;
@@ -448,174 +462,173 @@
       }catch{ toast(L[lang].ui.err,'err'); return false; }
     }
 
-    function targetMacros(){ const c=calc(); return {kcal:c.TDEE, protein_g:c.P, fat_g:c.F, carb_g:c.C}; }
+    // ===== PLAN (AI-ONLY)
+    function buildPrompt(){
+      const c=calc();
+      const locale = (lang==='ar'?'Arabic':'English');
+      const diet = user.diet;
+      const fasting = user.fasting.enabled ? `${user.fasting.protocol} (${user.fasting.start}-${user.fasting.end})` : 'disabled';
+      const goals = (user.goals||[]).join(', ') || (lang==='ar'?'غير محدد':'unspecified');
 
-    function localNutrition(target, meals, day){
-      const P=target.protein_g, F=target.fat_g, C=target.carb_g;
-      const pShare=[0.25,0.2,0.2,0.2,0.15].slice(0,meals);
-      const fShare=[0.25,0.2,0.2,0.2,0.15].slice(0,meals);
-      const cShare=[0.25,0.2,0.25,0.2,0.1].slice(0,meals);
-      const prot=['صدور دجاج','لحم خالي','سلمون','تونة','بيض','Greek yogurt','Turkey'];
-      const carb=['أرز','بطاطس','كينوا','شوفان','خبز كامل','برغل','فواكه'];
-      const fat =['زيت زيتون','أفوكادو','مكسرات','طحينة','زيت جوز الهند'];
-      const list=[]; for(let i=0;i<meals;i++){
-        const p=Math.round(P*pShare[i]); const f=Math.round(F*fShare[i]); const c=Math.round(C*cShare[i]);
-        list.push({index:i+1,name:(lang==='ar'?'وجبة ':'Meal ')+(i+1),items:[
-          {name:prot[(day+i)%prot.length],qty:p*7,unit:'g'},
-          {name:carb[(day*2+i)%carb.length],qty:c*8,unit:'g'},
-          {name:fat[i%fat.length],qty:Math.max(5,Math.round(f*3)),unit:'g'}
-        ],protein_g:p,fat_g:f,carb_g:c,kcal:p*4+f*9+c*4});
-      }
-      const tot=list.reduce((t,m)=>({P:t.P+m.protein_g,F:t.F+m.fat_g,C:t.C+m.carb_g,K:t.K+m.kcal}),{P:0,F:0,C:0,K:0});
-      return {day, meals:list, total:{protein_g:tot.P,fat_g:tot.F,carb_g:tot.C,kcal:tot.K}};
-    }
-    function localTraining(day){
-      const level=user.exp;
-      const base={
-        'Beginner':[
-          {exercise:'Goblet Squat',sets:4,reps:'10-12',tempo:'3010',rest_s:90,rir:2,notes:'تقنية أولاً'},
-          {exercise:'Push-Up',sets:4,reps:'8-12',tempo:'2110',rest_s:90,rir:2},
-          {exercise:'DB Row',sets:4,reps:'10-12',tempo:'3011',rest_s:90,rir:2},
-          {exercise:'DB RDL',sets:3,reps:'10',tempo:'3010',rest_s:90,rir:2},
-          {exercise:'Plank',sets:3,reps:'45-60s',tempo:'—',rest_s:60,rir:1}
-        ],
-        'Intermediate':[
-          {exercise:'Back Squat',sets:5,reps:'5-8',tempo:'3010',rest_s:120,rir:2},
-          {exercise:'Bench Press',sets:5,reps:'6-8',tempo:'2110',rest_s:120,rir:2},
-          {exercise:'Bent Over Row',sets:4,reps:'8-10',tempo:'3011',rest_s:90,rir:2},
-          {exercise:'RDL',sets:4,reps:'8-10',tempo:'3110',rest_s:120,rir:2},
-          {exercise:'Hanging Leg Raise',sets:3,reps:'10-12',tempo:'2010',rest_s:60,rir:1}
-        ],
-        'Advanced':[
-          {exercise:'Back Squat (heavy)',sets:5,reps:'3-5',tempo:'30X0',rest_s:180,rir:2},
-          {exercise:'Bench Press (pause)',sets:5,reps:'4-6',tempo:'21X0',rest_s:180,rir:2},
-          {exercise:'Weighted Pull-Up',sets:5,reps:'5-8',tempo:'30X0',rest_s:150,rir:2},
-          {exercise:'RDL (heavy)',sets:4,reps:'5-6',tempo:'31X0',rest_s:180,rir:2},
-          {exercise:'Pallof Press',sets:3,reps:'12-15',tempo:'2010',rest_s:60,rir:1}
-        ]
-      }[level] || [];
-      return {day, blocks:base};
-    }
-    function buildLocalJSON(){
-      const target=targetMacros(); const nutrition=[],training=[];
-      for(let d=1; d<=7; d++){ nutrition.push(localNutrition(target, user.meals, d)); training.push(localTraining(d)); }
-      return {
-        client:{name:user.name,lang:(lang==='ar'?'AR':'EN'),goals:user.goals,diet:user.diet,meals_per_day:user.meals,fasting:user.fasting,health:user.health,allergies:user.allergies,injuries:user.injuries,experience:user.exp,focus_points:user.weak_points,training_place:user.training_place},
-        targets:target, nutrition, training,
-        supplements:{core:[{name:'Whey',dose:'20–40 g'},{name:'Creatine',dose:'5 g'},{name:'Omega-3',dose:'1–2 g EPA/DHA'},{name:'Vitamin D3',dose:'2000 IU'},{name:'Magnesium',dose:'200–400 mg'}], condition:[]}
-      };
-    }
-    function within1pct(a,t){ const p=(x,y)=>Math.abs(x-y)/Math.max(1,y); return p(a.kcal,t.kcal)<=0.01 && p(a.protein_g,t.protein_g)<=0.01 && p(a.fat_g,t.fat_g)<=0.01 && p(a.carb_g,t.carb_g)<=0.01; }
+      return `
+Act as a certified elite nutrition & training coach.
+Return ${locale} **Markdown only** (no code fences, no JSON). Write with professional structure and executive clarity.
 
-    function renderTables(json){
-      const out=[];
-      out.push(`<h2>${lang==='ar'?'التشخيص والهدف':'Assessment & Goal'}</h2>`);
-      out.push(`<p>${lang==='ar'?'الهدف: ':'Goal: '}${(json.client.goals||[]).join(lang==='ar'?'، ':', ')} • ${lang==='ar'?'النظام: ':'Diet: '}${json.client.diet} • ${lang==='ar'?'الوجبات: ':'Meals: '}${json.client.meals_per_day}</p>`);
-      out.push(`<h2>${lang==='ar'?'خطة التغذية (7 أيام)':'Nutrition Plan (7 Days)'}</h2>`);
-      for(const d of json.nutrition){
-        const ok = within1pct(d.total,json.targets) && (d.meals||[]).length===json.client.meals_per_day;
-        out.push(`<h3>${lang==='ar'?'اليوم':'Day'} ${d.day} ${ok?'✅':''}</h3>`);
-        out.push(`<table><thead><tr><th>#</th><th>${lang==='ar'?'الوجبة':'Meal'}</th><th>${lang==='ar'?'المكونات':'Ingredients'}</th><th>P</th><th>F</th><th>C</th><th>Kcal</th></tr></thead><tbody>${
-          d.meals.map(m=>{
-            const items=(m.items||[]).map(it=>`${it.name} ${it.qty}${it.unit||''}`).join(' • ');
-            return `<tr><td>${m.index}</td><td>${m.name}</td><td>${items}</td><td>${m.protein_g}</td><td>${m.fat_g}</td><td>${m.carb_g}</td><td>${m.kcal}</td></tr>`;
-          }).join('')
-        }</tbody></table>
-        <div><b>${lang==='ar'?'الإجمالي':'Total'} → P:${d.total.protein_g} F:${d.total.fat_g} C:${d.total.carb_g} Kcal:${d.total.kcal}</b></div>`);
-      }
-      out.push(`<h2>${lang==='ar'?'خطة التدريب (7 أيام)':'Training Plan (7 Days)'}</h2>`);
-      for(const d of json.training){
-        out.push(`<h3>${lang==='ar'?'اليوم':'Day'} ${d.day}</h3><table><thead><tr><th>${lang==='ar'?'اليوم':'Day'}</th><th>Exercise</th><th>Sets</th><th>Reps</th><th>Tempo</th><th>Rest (s)</th></tr></thead><tbody>${
-          d.blocks.map(b=>`<tr><td>${d.day}</td><td>${b.exercise}</td><td>${b.sets}</td><td>${b.reps}</td><td>${b.tempo}</td><td>${b.rest_s}</td></tr>`).join('')
-        }</tbody></table>`);
-      }
-      return out.join('\n');
+CLIENT PROFILE
+- Name: ${user.name}
+- Sex: ${user.gender}
+- Age/Height/Weight: ${user.age}y / ${user.height}cm / ${user.weight}kg
+- Daily Activity (PAL inferred from job): ${user.jobLabel}
+- Sleep: ${user.sleep}h, Stress: ${user.stress}
+- Goals: ${goals}
+- Diet style: ${diet}
+- Meals/day: ${user.meals}
+- Intermittent fasting: ${fasting}
+- Training place: ${user.training_place}; Equipment: ${user.equipment||'—'}
+- Experience: ${user.exp}; Injuries: ${user.injuries||'None'}
+- Allergies: ${(user.allergies||[]).join(', ')||'None'}
+- Health conditions: ${(user.health||[]).join(', ')||'None'}
+- Dislikes: ${user.dislikes||'None'}
+
+TARGETS (daily):
+- Calories: ~${c.TDEE} kcal
+- Protein: ~${c.P} g
+- Fat: ~${c.F} g
+- Carbs: ~${c.C} g
+Tolerance: ±5% per day
+
+REQUIRED OUTPUT — STRICT ORDER & DEPTH
+1) Executive Welcome (2 lines) + concise commitment message.
+2) Case Analysis & Goal Rationale (bullets): what matters & why (nutrition + training + constraints).
+3) Allowed vs. Avoid (clear bullets).
+4) Intermittent Fasting (if enabled): precise window, pre/fast hydration, breaking-fast rules, meds safety note.
+5) 7-Day Nutrition Plan:
+   - For each day, list ${user.meals} named meals.
+   - Each meal: ingredients with quantities in grams/ml, and per-meal macros (P/F/C/kcal).
+   - End each day with totals and a short compliance tip.
+   - Respect allergies & dislikes, stick to ${diet}.
+6) 7-Day Training Plan (exercises in English ONLY):
+   - Tailored to ${user.exp} and ${user.training_place}; avoid aggravating: ${user.injuries||'None'}.
+   - Table per day: Exercise • Sets • Reps • Tempo • Rest (s) • Notes (progression/cues).
+7) Supplements:
+   - Core stack (dose & timing).
+   - Condition-linked items aligned to health (with safety note to consult physician where relevant).
+8) Progression & Check-ins:
+   - Load/reps progression rules (week over week).
+   - How to adjust macros if weight loss/gain stalls.
+9) Implementation Checklist (bulleted, actionable).
+10) Professional Closing, short and focused.
+
+FORMATTING
+- Use clear headings, tables for meals & training, and short, direct sentences.
+- Food names in ${locale}; exercise names in English only.
+- No placeholders; fully specify 7 different days (no “repeat day X”).
+`.trim();
     }
 
-    async function callProxy(prompt, timeoutMs=10000){
+    async function callAI(prompt, timeoutMs=30000){
       const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(), timeoutMs);
       try{
-        const r=await fetch('/.netlify/functions/gemini-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt}),signal:ctrl.signal});
+        const r=await fetch('/.netlify/functions/gemini-proxy',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({prompt}),
+          signal:ctrl.signal
+        });
         clearTimeout(t);
-        if(!r.ok) throw new Error(await r.text());
+        if(!r.ok){ throw new Error(await r.text()); }
         const data=await r.json();
         return data && data.text ? data.text : '';
-      }catch(e){ clearTimeout(t); return ''; }
+      }catch(e){
+        console.error('AI error', e);
+        return '';
+      }
     }
 
-    function toSafeHTML(mdOrHtml){
-      // إن توفّر marked + DOMPurify نستخدمهما، وإلا نعرض النص كما هو
+    function renderMarkdown(md){
+      if(!md){ html('ai-html',''); return; }
       if(window.marked && !window.__NO_MARKED__){
-        const html = window.marked.parse(mdOrHtml);
-        if(window.DOMPurify && !window.__NO_PURIFY__) return window.DOMPurify.sanitize(html);
-        return html;
+        const raw=window.marked.parse(md);
+        if(window.DOMPurify && !window.__NO_PURIFY__){
+          $('ai-html').innerHTML = window.DOMPurify.sanitize(raw);
+        } else { $('ai-html').innerHTML = raw; }
+      } else {
+        $('ai-html').textContent = md;
       }
-      return `<div>${mdOrHtml}</div>`;
     }
 
-    async function generatePlan(){
+    async function generatePlanAI(){
       $('result').classList.remove('hidden');
-      const ai = $('ai-html');
-      ai.innerHTML = `<div class="text-center py-8"><div class="w-12 h-12 rounded-full border-4 border-violet-600 border-t-transparent animate-spin mx-auto"></div><div class="mt-2 text-sm muted">${L[lang].ui.building}</div></div>`;
+      $('ai-html').innerHTML = `
+        <div class="text-center py-8">
+          <div class="w-12 h-12 rounded-full border-4 border-violet-600 border-t-transparent animate-spin mx-auto"></div>
+          <div class="mt-2 text-sm muted">${T('building')}</div>
+        </div>`;
+      speakCoach(lang==='ar'?'نُنسّق الجداول والتنفيذ — الرجاء الانتظار.':'Building your full plan — please wait.');
 
-      const targets = targetMacros();
-      const prompt = `Return STRICT JSON only (no code fences). Build 7 nutrition days & 7 training days meeting targets ±1% and meals/day=${user.meals}.`;
-      let raw = await callProxy(prompt);
-      let planJSON=null;
-      if(raw){
-        try{ raw=raw.trim().replace(/^```json|```$/g,''); planJSON=JSON.parse(raw);}catch{ planJSON=null; }
+      const prompt = buildPrompt();
+      const md = await callAI(prompt);
+
+      if(!md){
+        $('ai-html').innerHTML = `
+          <div class="p-4 rounded-xl border border-[color:var(--line)] bg-[color:var(--chip)] text-sm">
+            ${T('apiFail')}
+          </div>`;
+        return;
       }
-      if(!planJSON){
-        toast(L[lang].ui.apiFail,'warn');
-        planJSON = buildLocalJSON();
-      }
-
-      const html = renderTables(planJSON);
-      ai.innerHTML = toSafeHTML(`## ${lang==='ar'?'مقدمة':'Intro'}\n${lang==='ar'?'خطة شاملة مهيأة لك':'A comprehensive plan tailored for you'}.\n\n---\n\n${html}\n\n---\n\n**Mustafa Elsafy — ${lang==='ar'?'خبير التغذية واللياقة │ مدرب دولي معتمد':'Certified International Coach'}**  \n**Powered by Mustafa Elsafy 2025**`);
-
-      // تحسين جداول
-      ai.querySelectorAll('table').forEach(t=>t.classList.add('w-full','text-sm'));
-
-      speak(L[lang].ui.ready);
-      $('result').scrollIntoView({behavior:'smooth',block:'start'});
+      renderMarkdown(md);
+      speakCoach(lang==='ar'?'تم إنشاء الخطة. يمكنك الطباعة أو الحفظ.':'Plan generated. You can print or save.');
     }
 
+    // ===== Buttons & Navigation
     function toast(msg,kind='ok'){
       const box=document.createElement('div');
-      const side = (document.documentElement.dir==='rtl'?'right':'left');
-      box.className=`fixed top-5 ${side}-5 z-50 px-3 py-2 rounded-xl text-sm text-white ${kind==='err'?'bg-red-600': kind==='warn'?'bg-amber-600':'bg-emerald-600'}`;
-      box.textContent=msg; document.body.appendChild(box); setTimeout(()=>box.remove(),2500);
+      const side=(document.documentElement.dir==='rtl'?'right':'left');
+      box.className=`fixed top-5 ${side}-5 z-50 px-3 py-2 rounded-xl text-sm text-white ${kind==='err'?'bg-red-600':kind==='warn'?'bg-amber-600':'bg-emerald-600'}`;
+      box.textContent=msg; document.body.appendChild(box); setTimeout(()=>box.remove(),2600);
+    }
+    function applyLang(l){
+      lang=l; document.documentElement.lang=l; document.documentElement.dir=(l==='ar'?'rtl':'ltr');
+      document.body.classList.toggle('font-ar',l==='ar'); document.body.classList.toggle('font-en',l!=='ar');
+      $('lang-badge').textContent=l.toUpperCase();
+      $('hero-title').textContent=T('title');
+      $('live-title').textContent=T('live');
+      $('plan-title').textContent=(l==='ar'?L.ar.ui.resultTitle:L.en.ui.resultTitle);
+      text('rights', T('rights'));
+      renderStep(); updateLive(); updateKPIs(); updateButtons();
     }
 
-    // تنقّل
-    $('btn-prev').onclick=()=>{ if(step>0){ step--; draw(); updateCTA(); speak(L[lang].ui.back);} };
+    $('btn-prev').onclick=()=>{ if(step>0){ step--; renderStep(); updateKPIs(); updateLive(); text('status', T('back')); $('status').classList.remove('hidden'); } };
     $('btn-next').onclick=async ()=>{
       if(step<total-1){
         if(!saveStep()) return;
-        step++; draw(); updateCTA();
-        if(step===total-1){ if(!saveStep()) return; await generatePlan(); }
+        step++; renderStep(); updateKPIs(); updateLive(); text('status', T('good')); $('status').classList.remove('hidden');
+        if(step===total-1){ if(!saveStep()) return; await generatePlanAI(); }
       }
     };
-    $('btn-again').onclick=()=>location.reload();
-    $('btn-print').onclick=()=>window.print();
-    $('btn-print-2').onclick=()=>window.print();
-    $('btn-pdf').onclick=()=> {
+
+    // Result actions
+    $('act-new').onclick=()=>location.reload();
+    $('act-print').onclick=()=>window.print();
+    $('act-pdf').onclick=()=>{
       if(window.html2pdf && !window.__NO_PDF__){
-        const opt = { margin: 10, filename: (lang==='ar'?'خطة-':'plan-') + (user.name||'client') + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS:true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+        const opt={ margin:10, filename:(lang==='ar'?'خطة-':'plan-')+(user.name||'client')+'.pdf', image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2,useCORS:true}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'} };
         window.html2pdf().from($('resultRoot')).set(opt).save();
-      } else {
-        toast(lang==='ar'?'تعذر حفظ PDF — استخدم الطباعة':'PDF unavailable — use print','warn');
-        window.print();
-      }
+      } else { toast(lang==='ar'?'تعذر حفظ PDF — استخدم الطباعة':'PDF unavailable — use print','warn'); window.print(); }
     };
 
-    $('btn-lang-ar').onclick=()=>{ lang='ar'; setLang('ar'); };
-    $('btn-lang-en').onclick=()=>{ lang='en'; setLang('en'); };
+    // Header language buttons
+    $('btn-lang-ar').onclick=()=>applyLang('ar');
+    $('btn-lang-en').onclick=()=>applyLang('en');
 
-    // تشغيل أوّلي
-    setLang('ar'); updateCTA(); updateLive();
-
+    // ===== Init
+    applyLang('ar'); renderStep(); updateKPIs(); updateLive();
   })();
   </script>
+
+  <!-- Footer -->
+  <footer class="max-w-7xl mx-auto px-4 sm:px-6 mt-8 mb-10 text-center text-[12px] muted no-print">
+    Powered by Mustafa Elsafy 2025
+  </footer>
 </body>
 </html>
