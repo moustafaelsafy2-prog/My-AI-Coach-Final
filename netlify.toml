@@ -1,15 +1,13 @@
-# netlify.toml — build & functions config
-
 [build]
   command = ""
-  publish = "dist"     # change to your site folder (e.g. "." or "public")
+  publish = "."
 
 [functions]
   node_bundler = "esbuild"
   included_files = []
 
 [functions."gemini-proxy"]
-  timeout = 26         # Free plan ≈ 10s actual, Pro allows higher
+  timeout = 26
 
 [[redirects]]
   from = "/api/generate"
@@ -21,10 +19,3 @@
   from = "/*"
   to = "/index.html"
   status = 200
-
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
