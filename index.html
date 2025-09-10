@@ -7,7 +7,6 @@
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com" defer></script>
-
   <!-- Markdown + Sanitize + PDF -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer onerror="window.__NO_MARKED__=true"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js" defer onerror="window.__NO_PURIFY__=true"></script>
@@ -135,7 +134,12 @@
     <article class="glass rounded-2xl p-6" id="resultRoot">
       <div class="flex items-center justify-between">
         <h2 id="plan-title" class="text-2xl font-extrabold">الخطة الشاملة</h2>
+        <div class="no-print flex gap-2">
+          <button id="btn-regen-day" class="btn btn-soft" title="إعادة توليد يوم محدد">🔁 يوم</button>
+          <button id="btn-regen-sec" class="btn btn-soft" title="إعادة توليد قسم (تغذية/تدريب)">🔁 قسم</button>
+        </div>
       </div>
+
       <div id="welcome" class="mt-3 text-sm">
         <div class="kpi">
           <b id="welcome-title">تم إعداد خطة تنفيذية دقيقة وفق بياناتك.</b>
@@ -144,8 +148,11 @@
           </div>
         </div>
       </div>
+
       <div id="status" class="mt-3 hidden"></div>
-      <div id="ai-html" class="prose prose-invert rtl:text-right ltr:text-left mt-4"></div>
+      <div id="ai-nutrition" class="prose prose-invert rtl:text-right ltr:text-left mt-4"></div>
+      <hr class="my-6 border-[color:var(--line)]"/>
+      <div id="ai-training" class="prose prose-invert rtl:text-right ltr:text-left mt-2"></div>
 
       <!-- إجراءات سريعة -->
       <div class="fixed-actions no-print">
@@ -168,7 +175,8 @@
     const $ = (id)=>document.getElementById(id);
     const text = (id,val)=>{ const el=$(id); if(el) el.textContent=val; };
     const html = (id,val)=>{ const el=$(id); if(el) el.innerHTML=val; };
-    const safe = (fn, fb=()=>{}) => (...a)=>{ try{ return fn(...a);}catch(e){ console.error(e); return fb(); } };
+    const addClass=(id,c)=>{ const el=$(id); if(el) el.classList.add(c); };
+    const rmClass=(id,c)=>{ const el=$(id); if(el) el.classList.remove(c); };
 
     // ===== Theme
     const themeBtn=$('themeToggle');
@@ -191,25 +199,21 @@
         training_place:'مكان التدريب', placeVals:['نادي كامل','منزل + دامبلز','منزل وزن الجسم'],
         equipment:'معدات متوفرة', equipPH:'اكتب المعدات المتاحة (اختياري)',
         sleep:'ساعات النوم', stress:'مستوى التوتر', stressVals:['منخفض','متوسط','مرتفع'],
-        cuisine:'المطبخ المفضل', cuisineVals:['عربي','متوسطي','آسيوي','غربي','هندي','متنوع'],
-        budget:'ميزانية الطعام', budgetVals:['اقتصادي','قياسي','مرن'],
         dislikes:'أطعمة غير مفضلة (اختياري)',
         health:'حالات صحية', healthVals:['ضغط الدم','السكري','مقاومة الأنسولين','الغدة الدرقية','الكبد الدهني','مشاكل هرمونية','الجهاز الهضمي'],
         meds:'أدوية (إن وجدت)',
         allergies:'حساسيات', allergyVals:['الجلوتين','اللاكتوز','المكسرات','المأكولات البحرية','البقوليات','السكريات المضافة','الزيوت النباتية'],
         injuries:'إصابات (اذكر المكان والوصف)',
         exp:'خبرة المقاومة', expVals:['مبتدئ','متوسط','متقدم'],
-        weak:'نقاط التركيز (عضلة: هدف)', weakPH:'صدر: إبراز الأعلى؛ ظهر: كثافة…',
-        building:'نجهّز خطة مخصصة كاملة — الرجاء الانتظار.',
-        apiFail:'تعذّر الاتصال — تأكد من وظيفة Netlify والمفتاح.',
+        buildingN:'نُنشئ خطة التغذية (٧ أيام) — الرجاء الانتظار.',
+        buildingT:'نُنشئ خطة التدريب (٧ أيام) — الرجاء الانتظار.',
+        apiFail:'تعذّر الاتصال — تحقّق من وظيفة Netlify والمفتاح.',
         err:'أكمل الحقول المطلوبة',
         print:'طباعة', pdf:'حفظ PDF',
-        hello:'أدخل بياناتك بدقة — سنولّد خطة تنفيذية كاملة.',
-        good:'تم الحفظ — تابع.',
-        back:'تم الرجوع خطوة.',
-        ready:'الخطة جاهزة.',
         rights:'Powered by Mustafa Elsafy 2025',
-        resultTitle:'الخطة الشاملة'
+        resultTitle:'الخطة الشاملة',
+        regenDay:'أعد توليد يوم (1-7):',
+        regenSec:'اختر القسم لإعادة توليده: التغذية أو التدريب'
       }},
       en:{ ui:{
         title:'Personal Coach — Precise Final Plan', live:'Live Summary',
@@ -224,25 +228,21 @@
         training_place:'Training place', placeVals:['Full gym','Home + dumbbells','Home bodyweight'],
         equipment:'Available equipment', equipPH:'List available equipment (optional)',
         sleep:'Sleep hours', stress:'Stress level', stressVals:['Low','Moderate','High'],
-        cuisine:'Preferred cuisine', cuisineVals:['Arabic','Mediterranean','Asian','Western','Indian','Mixed'],
-        budget:'Food budget', budgetVals:['Budget','Standard','Flexible'],
         dislikes:'Disliked foods (optional)',
         health:'Health conditions', healthVals:['Hypertension','Diabetes','Insulin Resistance','Thyroid','Fatty Liver','Hormonal issues','GI issues'],
         meds:'Medications (if any)',
         allergies:'Allergies', allergyVals:['Gluten','Lactose','Nuts','Seafood','Legumes','Added sugars','Vegetable oils'],
         injuries:'Injuries (location & description)',
         exp:'Resistance experience', expVals:['Beginner','Intermediate','Advanced'],
-        weak:'Focus points (muscle: goal)', weakPH:'Chest: upper; Back: density…',
-        building:'Preparing a fully customized plan — please wait.',
+        buildingN:'Generating Nutrition Plan (7 days) — please wait.',
+        buildingT:'Generating Training Plan (7 days) — please wait.',
         apiFail:'Couldn’t reach the model — verify Netlify function and key.',
         err:'Please complete required fields',
         print:'Print', pdf:'Save PDF',
-        hello:'Provide accurate inputs — we’ll generate a full executive plan.',
-        good:'Saved — continue.',
-        back:'Stepped back.',
-        ready:'Plan ready.',
         rights:'Powered by Mustafa Elsafy 2025',
-        resultTitle:'The Comprehensive Plan'
+        resultTitle:'The Comprehensive Plan',
+        regenDay:'Regenerate day (1-7):',
+        regenSec:'Choose section to regenerate: nutrition or training'
       }}
     };
 
@@ -258,16 +258,20 @@
       fasting:{enabled:false, protocol:'16:8', start:'12:00', end:'20:00'},
       training_place:'Full gym', equipment:'',
       sleep:7, stress:(lang==='ar'?'متوسط':'Moderate'),
-      cuisine:(lang==='ar'?'متنوع':'Mixed'), budget:(lang==='ar'?'قياسي':'Standard'),
       dislikes:'',
       health:[], meds:'',
       allergies:[], injuries:'',
       exp:(lang==='ar'?'مبتدئ':'Beginner'), weak_points:{},
-      train_days:7
     };
 
     // ===== Helpers
     function T(k){ return L[lang].ui[k]; }
+    function toast(msg,kind='ok'){
+      const box=document.createElement('div');
+      const side=(document.documentElement.dir==='rtl'?'right':'left');
+      box.className=`fixed top-5 ${side}-5 z-50 px-3 py-2 rounded-xl text-sm text-white ${kind==='err'?'bg-red-600':kind==='warn'?'bg-amber-600':'bg-emerald-600'}`;
+      box.textContent=msg; document.body.appendChild(box); setTimeout(()=>box.remove(),2600);
+    }
     function parsePAL(label){ const m=String(label).match(/PAL\s*([0-9.]+)/); return m? parseFloat(m[1]) : 1.25; }
     function calc(){
       const W=+user.weight||0, H=+user.height||0, A=+user.age||0, male=(user.gender==='Male');
@@ -297,12 +301,7 @@
           <div class="kpi"><div class="muted">${T('weight')}</div><b>${user.weight||'—'}</b></div>
         </div>
         <div class="text-xs muted">${lang==='ar'?'الأهداف':'Goals'}: <b>${g}</b></div>
-        <div class="text-xs muted">${T('diet')}: <b>${user.diet}</b> — ${T('meals')}: <b>${user.meals}</b></div>
-        <div class="grid grid-cols-3 gap-2 text-xs mt-2">
-          <div class="kpi"><div>${lang==='ar'?'السعرات':'Calories'}</div><b>${c.TDEE} kcal</b></div>
-          <div class="kpi"><div>${lang==='ar'?'البروتين':'Protein'}</div><b>${c.P} g</b></div>
-          <div class="kpi"><div>${lang==='ar'?'الكارب':'Carbs'}</div><b>${c.C} g</b></div>
-        </div>`;
+        <div class="text-xs muted">${T('diet')}: <b>${user.diet}</b> — ${T('meals')}: <b>${user.meals}</b></div>`;
     }
 
     // ===== Fields
@@ -323,7 +322,7 @@
           <span class="text-sm">${v}</span></label>`).join('')}</div>`;
     }
 
-    // ===== Steps
+    // ===== Steps (نفس الخطوات السابقة باختصار)
     function renderStep(){
       updateProgress(); updateButtons();
       const U=L[lang].ui;
@@ -350,7 +349,7 @@
         content.innerHTML=`
           <h3 class="text-xl font-extrabold mb-3">${U.steps[1]}</h3>
           <div class="space-y-4">
-            <div><div class="text-sm mb-1">${lang==='ar'?'الأهداف':'Goals'}</div>${chips('goal',U.goals,user.goals)}</div>
+            <div><div class="text-sm mb-1">${lang==='ar'?'الأهداف':'Goals'}</div>${chips('goal',['Fat loss','Muscle gain','Strength','Endurance','General health','خسارة الدهون','بناء العضلات','زيادة القوة','تحسين التحمل','صحة عامة'],user.goals)}</div>
             <div class="grid md:grid-cols-3 gap-4">
               ${field(U.meals,'meals',{select:[{value:3,label:'3'},{value:4,label:'4'},{value:5,label:'5'}],value:user.meals})}
               ${field(U.diet,'diet',{select:U.diets.map(d=>({value:d,label:d})),value:user.diet})}
@@ -367,16 +366,18 @@
             ${field(U.dislikes,'dislikes',{placeholder:(lang==='ar'?'مثال: الكبدة، القرنبيط':'e.g., liver, cauliflower'),value:user.dislikes})}
           </div>`;
       } else if(step===2){
+        const U=L[lang].ui;
         content.innerHTML=`
           <h3 class="text-xl font-extrabold mb-3">${U.steps[2]}</h3>
           <div class="space-y-4">
             <div><div class="text-sm mb-1">${U.health}</div>${chips('health',U.healthVals,user.health)}</div>
             ${field(U.meds,'meds',{type:'textarea',rows:2,placeholder:'Metformin, Thyroxine…',value:user.meds})}
-            <div><div class="text-sm mb-1">${U.allergies}</div>${chips('all',U.allergyVals,user.allergies)}</div>
+            <div><div class="text-sm mb-1">${U.allergies}</div>${chips('all',['Gluten','Lactose','Nuts','Seafood','Legumes','Added sugars','Vegetable oils','الجلوتين','اللاكتوز','المكسرات','المأكولات البحرية','البقوليات','السكريات المضافة','الزيوت النباتية'],user.allergies)}</div>
           </div>`;
       } else if(step===3){
+        const U=L[lang].ui;
         content.innerHTML=`
-          <h3 class="text-xl font-extrabold mb-3">${U.steps[3]}</h3>
+          <h3 class="text-xl font-extrabول mb-3">${U.steps[3]}</h3>
           <div class="grid md:grid-cols-3 gap-4">
             ${field(U.exp,'exp',{select:U.expVals.map(x=>({value:x,label:x})),value:user.exp})}
             ${field(U.injuries,'injuries',{type:'textarea',rows:2,placeholder: lang==='ar'?'مثال: ألم أسفل الظهر':'e.g., Lower-back pain',value:user.injuries})}
@@ -385,11 +386,20 @@
             </label>
           </div>`;
       } else {
+        const msgN = L[lang].ui.buildingN;
+        const msgT = L[lang].ui.buildingT;
         content.innerHTML=`
-          <div class="text-center py-8">
-            <div class="text-sm muted mb-2">${U.building}</div>
-            <div class="w-12 h-12 rounded-full border-4 border-violet-600 border-t-transparent animate-spin mx-auto"></div>
-            <div class="mt-2 text-xs muted" id="buildTimer">…</div>
+          <div class="space-y-6">
+            <div class="text-center py-6 panel rounded-2xl">
+              <div class="text-sm muted mb-2">${msgN}</div>
+              <div class="w-10 h-10 rounded-full border-4 border-violet-600 border-t-transparent animate-spin mx-auto"></div>
+              <div class="mt-2 text-xs muted">Nutrition…</div>
+            </div>
+            <div class="text-center py-6 panel rounded-2xl">
+              <div class="text-sm muted mb-2">${msgT}</div>
+              <div class="w-10 h-10 rounded-full border-4 border-cyan-500 border-t-transparent animate-spin mx-auto"></div>
+              <div class="mt-2 text-xs muted">Training…</div>
+            </div>
           </div>`;
       }
     }
@@ -420,19 +430,15 @@
       }catch{ toast(L[lang].ui.err,'err'); return false; }
     }
 
-    // ===== PLAN (AI-ONLY)
-    function buildPrompt(){
+    // ===== Prompt Builders (Nutrition / Training / Single Day)
+    function baseHeader(){
       const c=calc();
-      const locale = (lang==='ar'?'Arabic':'English');
-      const diet = user.diet;
-      const fasting = user.fasting.enabled ? `${user.fasting.protocol} (${user.fasting.start}-${user.fasting.end})` : 'disabled';
-      const goals = (user.goals||[]).join(', ') || (lang==='ar'?'غير محدد':'unspecified');
-
-      // موجه مُحكّم يُلزم الكتابة التفصيلية الكاملة (بدون تكرار/اختصار)
+      const locale=(lang==='ar'?'Arabic':'English');
+      const diet=user.diet;
+      const fasting=user.fasting.enabled? `${user.fasting.protocol} (${user.fasting.start}-${user.fasting.end})` : 'disabled';
+      const goals=(user.goals||[]).join(', ') || (lang==='ar'?'غير محدد':'unspecified');
       return `
-Act as a certified elite nutrition & strength coach.
-Return ${locale} **Markdown only** (no code fences, no JSON). Use executive structure, complete details, and clear tables.
-
+Return ${locale} **Markdown only**. Use executive structure, clear headings/tables, full details.
 CLIENT PROFILE
 - Name: ${user.name}
 - Sex: ${user.gender}
@@ -440,135 +446,189 @@ CLIENT PROFILE
 - Daily Activity (PAL): ${user.jobLabel}
 - Sleep: ${user.sleep}h, Stress: ${user.stress}
 - Goals: ${goals}
-- Diet style: ${diet}
-- Meals/day: ${user.meals}
-- Intermittent fasting: ${fasting}
+- Diet style: ${diet}; Meals/day: ${user.meals}; IF: ${fasting}
 - Training place: ${user.training_place}; Equipment: ${user.equipment||'—'}
 - Experience: ${user.exp}; Injuries: ${user.injuries||'None'}
-- Allergies: ${(user.allergies||[]).join(', ')||'None'}
-- Health conditions: ${(user.health||[]).join(', ')||'None'}
+- Allergies: ${(user.allergies||[]).join(', ')||'None'}; Health: ${(user.health||[]).join(', ')||'None'}
 - Dislikes: ${user.dislikes||'None'}
-
-TARGETS (daily):
-- Calories: ~${c.TDEE} kcal
-- Protein: ~${c.P} g
-- Fat: ~${c.F} g
-- Carbs: ~${c.C} g
-Tolerance: ±2% per day. **You must keep each day's totals within ±2%.**
-
-STRICT OUTPUT — FULL DEPTH, NO SHORTCUTS, NO "repeat day", NO "etc":
-1) Welcome & Commitment (2 concise lines).
-2) Case Analysis & Goal Rationale (nutrition + training + constraints). Bullet points.
-3) Allowed vs Avoid (bullet lists tailored to ${diet}, allergies, dislikes).
-4) Intermittent Fasting (if enabled): exact protocol, hydration, pre-fast & breaking-fast rules, meds note.
-5) 7-Day Nutrition Plan:
-   - Write **7 different full days**. For each day, list exactly ${user.meals} meals.
-   - Each meal: name, ingredients with **quantities (g/ml)**, and per-meal macros (P/F/C/kcal).
-   - End each day with a **Totals** row (must match targets within ±2%) and a short compliance tip.
-6) 7-Day Training Plan (exercises in **English ONLY**):
-   - Tailored to ${user.exp} at ${user.training_place}; avoid aggravating: ${user.injuries||'None'}.
-   - For **each of 7 days**, provide a table: Exercise • Sets • Reps • Tempo • Rest (s) • Notes (progression/cues).
-7) Supplements:
-   - Core stack (dose & timing).
-   - Condition-linked supplements based on health conditions (with safety note to consult physician).
-8) Progression & Check-ins:
-   - Weekly progression rules (load/reps/RPE), when to deload.
-   - Macro adjustment rules if weight loss/gain stalls (with numeric thresholds).
-9) Troubleshooting & Implementation Checklist:
-   - Common pitfalls and quick fixes.
-   - A clear, actionable checklist for daily execution.
-10) Safety & FAQs:
-   - Safety notes considering injuries and conditions.
-   - 4–6 FAQs with brief, precise answers.
-11) Professional Closing (1 short paragraph).
-
-FORMATTING
-- Use clear headings (###), tables for meals/training, and concise sentences.
-- Food items in ${locale}; exercise names in English only.
-- **Do not** output code blocks or JSON. **Do not** say "repeat" or "similarly". Write all details explicitly for 7 unique days.
+TARGETS (daily): ~${c.TDEE} kcal, ~${c.P} g protein, ~${c.F} g fat, ~${c.C} g carbs; tolerance ±2%.
+Quality gate: If any day misses meals/macros or totals deviate > ±2%, REWRITE that day fully. No placeholders, no "repeat".
 `.trim();
     }
 
-    async function callAI(prompt, timeoutMs=45000){
-      const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(), timeoutMs);
+    function nutritionPrompt(){
+      const locale=(lang==='ar'?'Arabic':'English');
+      return `
+${baseHeader()}
+
+=== TASK: 7-Day Nutrition Plan ONLY ===
+1) Welcome & commitment (2 lines).
+2) Allowed vs Avoid (tailored to ${user.diet}, allergies, dislikes).
+3) Intermittent Fasting (if enabled): exact protocol, hydration, breaking-fast rules, meds note.
+4) 7 FULL DAYS:
+   - For each day: exactly ${user.meals} named meals.
+   - Each meal: ingredients with quantities (g/ml) + per-meal macros (P/F/C/kcal).
+   - End each day with Totals (within ±2%) and a compliance tip.
+Formatting: headings (###), tables for meals. Food names in ${locale}.
+`.trim();
+    }
+
+    function trainingPrompt(){
+      return `
+${baseHeader()}
+
+=== TASK: 7-Day Training Plan ONLY ===
+- Tailored to ${user.exp} at ${user.training_place}; avoid aggravating: ${user.injuries||'None'}.
+- For each of 7 days: table with columns: Exercise (English) • Sets • Reps • Tempo • Rest (s) • Notes (cues/progression).
+- Include "Progression & Check-ins", "Troubleshooting & Implementation Checklist", "Safety & FAQs", and a short professional closing.
+Formatting: headings (###), tables for sessions. Exercises in English only.
+`.trim();
+    }
+
+    function singleDayPrompt(section, day){
+      const c=calc();
+      const locale=(lang==='ar'?'Arabic':'English');
+      if(section==='nutrition'){
+        return `
+${baseHeader()}
+
+=== TASK: Regenerate Day ${day} — Nutrition ONLY ===
+- Write Day ${day} meals (exactly ${user.meals}) with ingredients, quantities (g/ml), and per-meal macros.
+- Provide end-of-day Totals that match targets (~${c.TDEE} kcal; P ${c.P} g; F ${c.F} g; C ${c.C} g) within ±2%.
+- Respect ${user.diet}, allergies, dislikes, and IF (${user.fasting.enabled ? user.fasting.protocol : 'disabled'}).
+- Output only Day ${day} with its table and compliance tip (no other days).
+Food names in ${locale}.
+`.trim();
+      } else {
+        return `
+${baseHeader()}
+
+=== TASK: Regenerate Day ${day} — Training ONLY ===
+- Day ${day}: table with Exercise (English) • Sets • Reps • Tempo • Rest (s) • Notes (cues/progression).
+- Tailored to ${user.exp} at ${user.training_place}; avoid: ${user.injuries||'None'}.
+- Output only Day ${day} session (no other days).
+`.trim();
+      }
+    }
+
+    // ===== AI Call
+    async function callAI(prompt, section, maxTokens=8192){
       try{
-        const r=await fetch('/.netlify/functions/gemini-proxy',{
+        const r = await fetch('/.netlify/functions/gemini-proxy',{
           method:'POST',
           headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({prompt}),
-          signal:ctrl.signal
+          body:JSON.stringify({ prompt, section, locale:(lang==='ar'?'ar':'en'), maxTokens })
         });
-        clearTimeout(t);
         if(!r.ok){ throw new Error(await r.text()); }
-        const data=await r.json();
-        return data && data.text ? data.text : '';
+        const data = await r.json();
+        return data?.text || '';
       }catch(e){
-        console.error('AI error', e);
+        console.error('AI error:', e);
         return '';
       }
     }
 
-    function renderMarkdown(md){
-      if(!md){ html('ai-html',''); return; }
+    function renderMD(targetId, md){
+      if(!md){ html(targetId,''); return; }
       if(window.marked && !window.__NO_MARKED__){
         const raw=window.marked.parse(md);
         if(window.DOMPurify && !window.__NO_PURIFY__){
-          $('ai-html').innerHTML = window.DOMPurify.sanitize(raw);
-        } else { $('ai-html').innerHTML = raw; }
-      } else {
-        $('ai-html').textContent = md;
-      }
+          $(targetId).innerHTML = window.DOMPurify.sanitize(raw);
+        } else { $(targetId).innerHTML = raw; }
+      } else { $(targetId).textContent = md; }
     }
 
-    async function generatePlanAI(){
+    // ===== Generation Flow (Sequential)
+    async function generateNutrition(){
       $('result').classList.remove('hidden');
-      $('ai-html').innerHTML = `
-        <div class="text-center py-8">
-          <div class="w-12 h-12 rounded-full border-4 border-violet-600 border-t-transparent animate-spin mx-auto"></div>
-          <div class="mt-2 text-sm muted">${T('building')}</div>
-        </div>`;
+      renderMD('ai-nutrition', `
+<div class="text-center py-8">
+  <div class="w-10 h-10 rounded-full border-4 border-violet-600 border-t-transparent animate-spin mx-auto"></div>
+  <div class="mt-2 text-sm muted">${L[lang].ui.buildingN}</div>
+</div>`);
+      const md = await callAI(nutritionPrompt(), 'nutrition', 9000);
+      if(!md){ renderMD('ai-nutrition', `<div class="p-4 panel rounded-xl text-sm">${L[lang].ui.apiFail}</div>`); return ''; }
+      renderMD('ai-nutrition', md);
+      return md;
+    }
 
-      const prompt = buildPrompt();
-      const md = await callAI(prompt);
+    async function generateTraining(){
+      renderMD('ai-training', `
+<div class="text-center py-8">
+  <div class="w-10 h-10 rounded-full border-4 border-cyan-500 border-t-transparent animate-spin mx-auto"></div>
+  <div class="mt-2 text-sm muted">${L[lang].ui.buildingT}</div>
+</div>`);
+      const md = await callAI(trainingPrompt(), 'training', 9000);
+      if(!md){ renderMD('ai-training', `<div class="p-4 panel rounded-xl text-sm">${L[lang].ui.apiFail}</div>`); return ''; }
+      renderMD('ai-training', md);
+      return md;
+    }
 
-      if(!md){
-        $('ai-html').innerHTML = `
-          <div class="p-4 rounded-xl border border-[color:var(--line)] bg-[color:var(--chip)] text-sm">
-            ${T('apiFail')}
-          </div>`;
-        return;
+    // ===== Re-generation helpers (Quality Gate manual fix)
+    function extractDayBlock(md, dayLabel){
+      if(!md) return '';
+      const lines = md.split('\n');
+      const startIdx = lines.findIndex(l => new RegExp(`(Day\\s*${dayLabel}|اليوم\\s*${dayLabel})`, 'i').test(l));
+      if(startIdx < 0) return '';
+      let endIdx = lines.length;
+      for(let i = startIdx+1; i < lines.length; i++){
+        if(/^(###|##)\s/.test(lines[i]) || /(Day\s*\d+|اليوم\s*\d+)/i.test(lines[i])){ endIdx = i; break; }
       }
-      renderMarkdown(md);
-      text('status', T('ready'));
-      $('status').classList.remove('hidden');
-      $('result').scrollIntoView({behavior:'smooth',block:'start'});
+      return lines.slice(startIdx, endIdx).join('\n').trim();
+    }
+
+    async function regenDay(section){
+      const ask = prompt(L[lang].ui.regenDay);
+      const day = Number(ask);
+      if(!(day>=1 && day<=7)){ toast(lang==='ar'?'رقم اليوم غير صالح':'Invalid day','err'); return; }
+      const md = await callAI(singleDayPrompt(section, day), section, 4000);
+      if(!md){ toast(L[lang].ui.apiFail,'err'); return; }
+      // دمج اليوم في مكانه
+      const targetId = (section==='nutrition'?'ai-nutrition':'ai-training');
+      const current = $(targetId).innerText || '';
+      const oldBlock = extractDayBlock(current, day);
+      let merged;
+      if(oldBlock){
+        merged = current.replace(oldBlock, md);
+      }else{
+        merged = current + '\n\n' + md;
+      }
+      renderMD(targetId, merged);
+      toast(lang==='ar'?'تم تحديث اليوم':'Day updated','ok');
+    }
+
+    async function regenSection(){
+      const ask = prompt(L[lang].ui.regenSec + ' (nutrition/training)');
+      const key = (ask||'').toLowerCase().trim();
+      if(!['nutrition','training'].includes(key)){ toast('Invalid section','err'); return; }
+      if(key==='nutrition'){ await generateNutrition(); } else { await generateTraining(); }
+      toast(lang==='ar'?'تم تحديث القسم':'Section updated','ok');
     }
 
     // ===== Buttons & Navigation
-    function toast(msg,kind='ok'){
-      const box=document.createElement('div');
-      const side=(document.documentElement.dir==='rtl'?'right':'left');
-      box.className=`fixed top-5 ${side}-5 z-50 px-3 py-2 rounded-xl text-sm text-white ${kind==='err'?'bg-red-600':kind==='warn'?'bg-amber-600':'bg-emerald-600'}`;
-      box.textContent=msg; document.body.appendChild(box); setTimeout(()=>box.remove(),2600);
-    }
     function applyLang(l){
       lang=l; document.documentElement.lang=l; document.documentElement.dir=(l==='ar'?'rtl':'ltr');
       document.body.classList.toggle('font-ar',l==='ar'); document.body.classList.toggle('font-en',l!=='ar');
       $('lang-badge').textContent=l.toUpperCase();
-      $('hero-title').textContent=T('title');
-      $('live-title').textContent=T('live');
+      $('hero-title').textContent=L[l].ui.title;
+      $('live-title').textContent=L[l].ui.live;
       $('plan-title').textContent=(l==='ar'?L.ar.ui.resultTitle:L.en.ui.resultTitle);
-      text('rights', T('rights'));
+      text('rights', L[l].ui.rights);
       renderStep(); updateLive(); updateKPIs(); updateButtons();
     }
 
-    const contentEl=$('stage');
+    function updateButtons(){ $('btn-prev').disabled=(step===0); $('btn-next').textContent=(step===total-1?L[lang].ui.submit:L[lang].ui.next); }
     $('btn-prev').onclick=()=>{ if(step>0){ step--; renderStep(); updateKPIs(); updateLive(); } };
     $('btn-next').onclick=async ()=>{
       if(step<total-1){
         if(!saveStep()) return;
         step++; renderStep(); updateKPIs(); updateLive();
-        if(step===total-1){ if(!saveStep()) return; await generatePlanAI(); }
+        if(step===total-1){
+          $('result').classList.remove('hidden');
+          await generateNutrition();     // أولًا التغذية
+          await generateTraining();      // ثم التدريب
+          $('result').scrollIntoView({behavior:'smooth',block:'start'});
+        }
       }
     };
 
@@ -582,12 +642,17 @@ FORMATTING
       } else { toast(lang==='ar'?'تعذر حفظ PDF — استخدم الطباعة':'PDF unavailable — use print','warn'); window.print(); }
     };
 
+    // Regen buttons
+    $('btn-regen-day').onclick=()=>regenDay(confirm(lang==='ar'?'هل تريد إعادة توليد يوم من التغذية؟ اضغط "إلغاء" للتدريب.':'Regenerate nutrition day? Click "Cancel" for training.')
+      ? 'nutrition' : 'training');
+    $('btn-regen-sec').onclick=regenSection;
+
     // Header language buttons
     $('btn-lang-ar').onclick=()=>applyLang('ar');
     $('btn-lang-en').onclick=()=>applyLang('en');
 
     // ===== Init
-    applyLang('ar'); renderStep(); updateKPIs(); updateLive();
+    applyLang('ar');
   })();
   </script>
 
