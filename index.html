@@ -16,37 +16,68 @@
     :root{
       --brand:#6c5ce7; --brand-2:#00c2ff;
       --ok:#16a34a; --warn:#f59e0b; --err:#dc2626;
-      --muted:#93a2b8;
+      --muted:#8ea1be; --card:#0f1627; --card2:#111a2d;
     }
     html[dir="rtl"] body{font-family:'Tajawal',system-ui,-apple-system,Segoe UI,Roboto,"Noto Naskh Arabic",sans-serif}
     html[dir="ltr"] body{font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif}
-    body{background:linear-gradient(180deg,#0a0f1c 0%,#0e1526 100%);color:#eaf0ff}
+    body{background:linear-gradient(180deg,#0a0f1c 0%,#0e1526 100%);color:#eaf0ff;line-height:1.65}
     .glass{background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.10);border-radius:16px}
     .title-grad{background:linear-gradient(90deg,var(--brand),var(--brand-2));-webkit-background-clip:text;background-clip:text;color:transparent}
     .chip{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);padding:.35rem .6rem;border-radius:999px;font-size:.75rem}
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1rem;border-radius:.8rem;font-weight:800;transition:.2s}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1rem;border-radius:.9rem;font-weight:800;transition:.2s}
     .btn-primary{background:linear-gradient(90deg,var(--brand),var(--brand-2));color:#fff}
     .btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
     .btn-ghost{background:rgba(255,255,255,.06);color:#eaf0ff;border:1px solid rgba(255,255,255,.12)}
-    .field{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:.7rem;padding:.65rem .8rem;outline:none;width:100%;color:#eaf0ff}
+    .field{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:.8rem;padding:.7rem .85rem;outline:none;width:100%;color:#eaf0ff}
     .field::placeholder{color:#aab7cf}.field:focus{border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(0,194,255,.15)}
     .section-title{font-weight:900;letter-spacing:.3px}
     .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent)}
-    .progress{height:.45rem;background:rgba(255,255,255,.10);border-radius:999px;overflow:hidden}
+    .progress{height:.5rem;background:rgba(255,255,255,.10);border-radius:999px;overflow:hidden}
     .progress>i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand-2));width:0%;transition:width .25s ease}
-    .badge{display:inline-flex;align-items:center;gap:.4rem;padding:.25rem .55rem;border-radius:.5rem;font-size:.72rem;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06)}
-    .status-dot{width:.55rem;height:.55rem;border-radius:999px}
+    .badge{display:inline-flex;align-items:center;gap:.45rem;padding:.28rem .6rem;border-radius:.6rem;font-size:.72rem;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06)}
+    .status-dot{width:.56rem;height:.56rem;border-radius:999px}
     .g{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}
     html[dir="rtl"] .c1{grid-column:1/span 4} html[dir="rtl"] .c2{grid-column:5/span 4} html[dir="rtl"] .c3{grid-column:9/span 4}
     html[dir="ltr"] .c1{grid-column:1/span 4} html[dir="ltr"] .c2{grid-column:5/span 4} html[dir="ltr"] .c3{grid-column:9/span 4}
-    @media (max-width:1024px){.g .c1,.g .c2,.g .c3{grid-column:1/span 12}}
+    @media (max-width:1200px){.g .c1,.g .c2,.g .c3{grid-column:1/span 12}}
     .light body,.light{background:linear-gradient(180deg,#eef2ff 0%,#f7f9ff 100%);color:#0e1526}
     .light .glass{background:linear-gradient(180deg,rgba(0,0,0,.03),rgba(0,0,0,.02));border-color:rgba(0,0,0,.10)}
     .light .field{background:rgba(0,0,0,.03);color:#0e1526;border-color:rgba(0,0,0,.12)}
-    @media print{body{background:#fff;color:#111}.glass,.btn,.chip,.title-grad{all:unset}
+
+    /* ===== Typography for AI result ===== */
+    .ai-content{--pad:1.1rem}
+    .ai-content > *{margin-top:.6rem;margin-bottom:.6rem}
+    .ai-content p{color:#eaf3ff;line-height:1.9}
+    .ai-content h2,.ai-content h3,.ai-content h4{
+      margin:1.1rem 0 .6rem;font-weight:800;letter-spacing:.2px
+    }
+    .ai-content h2{font-size:1.25rem;border-inline-start:5px solid var(--brand-2);padding-inline-start:.7rem}
+    .ai-content h3{font-size:1.05rem;color:#d2e6ff}
+    .ai-content ul{padding-inline-start:1.2rem}
+    .ai-content li{margin:.3rem 0}
+    .ai-content code{background:#0c1324;border:1px solid rgba(255,255,255,.08);padding:.15rem .35rem;border-radius:.35rem}
+    /* Tables */
+    .ai-content table{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border:1px solid rgba(255,255,255,.10);border-radius:14px;overflow:hidden}
+    .ai-content thead th{
+      background:linear-gradient(180deg,#101a31,#0f172a); color:#cde3ff;font-weight:800;text-align:center;
+      padding:.75rem .6rem;border-bottom:1px solid rgba(255,255,255,.10)
+    }
+    .ai-content td{padding:.7rem .6rem;border-bottom:1px solid rgba(255,255,255,.06);text-align:center}
+    .ai-content tr:nth-child(even) td{background:rgba(255,255,255,.03)}
+    .ai-content tfoot td{background:#0e1a31;font-weight:800}
+    .ai-content .note{color:var(--muted);font-size:.85rem}
+
+    /* Section card spacing */
+    #plan-content .glass{background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.025));border-color:rgba(255,255,255,.12)}
+    #plan-content .glass + .glass{margin-top:14px}
+
+    @media print{
+      body{background:#fff;color:#111}
+      .glass,.btn,.chip,.title-grad{all:unset}
       .ai-content h2,.ai-content h3{color:#111}
       .ai-content table{border-collapse:collapse;width:100%}
-      .ai-content th,.ai-content td{border:1px solid #333;padding:.55rem;vertical-align:top}}
+      .ai-content th,.ai-content td{border:1px solid #333;padding:.55rem;vertical-align:top;text-align:center}
+    }
   </style>
 </head>
 <body>
@@ -121,9 +152,8 @@
 
 <script>
 /* =========================================================
-   1) إعدادات عامة وواجهة (الكود الأصلي مع تعزيزات)
+   CONFIG + STATE
    ========================================================= */
-
 const ENDPOINT =
   (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
     ? 'http://localhost:8888/.netlify/functions/gemini-proxy'
@@ -154,7 +184,7 @@ const state = {
   sectionStatus:{}
 };
 
-/* ---------- I18N ---------- */
+/* I18N */
 const T={
   ar:{appTitle:'المستشار الصحي الذكي',subtitle:'خطة دقيقة ١٠٠٪ للتغذية والتدريب والمكملات — مخصصة لك',hint:'سنُولّد الأقسام بالترتيب ويظهر كل قسم بمجرد جاهزيته.',
     steps:['الملف الشخصي','التغذية والتفضيلات','نمط الحياة','الصحة والتحديات'],
@@ -195,7 +225,7 @@ const T={
 };
 const t=(k)=> (T[state.lang]&&T[state.lang][k])||k;
 
-/* ---------- Helpers ---------- */
+/* Helpers */
 function detectCurrency(){
   try{
     const loc=Intl.DateTimeFormat().resolvedOptions().locale||navigator.language||'en-US';
@@ -210,54 +240,8 @@ function Num(label,id,value='',ph=''){return `<label class="block mb-2"><div cla
 function id(x){return document.getElementById(x)}
 
 /* =========================================================
-   2) طبقة “التسلسل/منع التكرار/لغة واحدة” (الكود المقترح مدموج)
+   Anti-duplication / One-language / Flow
    ========================================================= */
-
-window.APP_LANG = (document.documentElement.dir==='rtl')?'ar':'en';
-let currentLang = window.APP_LANG;
-
-const i18nRules = {
-  ar:{
-    keepReading:"— سيتم إظهار كل قسم فور توليده… الرجاء الانتظار —",
-    long:"اكتب بإسهاب وبدون اختصار، بنبرة عملية واضحة.",
-    only:"اكتب النص باللغة العربية فقط دون أي إدراج للإنجليزية.",
-    noDup:"لا تُكرر بيانات الملف الشخصي أو الترحيب أو أي محتوى ذُكر سابقًا.",
-    noDisc:"يُمنع كتابة عبارات عامة مثل: هذه خطة غير مخصصة/استشر أخصائي/هذه ليست نصيحة طبية…",
-    cohesion:"حافظ على تسلسل حديث منطقي يعتمد على ما سبق؛ لا تبدأ محادثة جديدة.",
-    intro:"ابدأ مباشرةً بمحتوى هذا القسم بلا ترحيب أو إعادة تعريف."
-  },
-  en:{
-    keepReading:"— Each section will appear as soon as it’s ready — please wait —",
-    long:"Write in-depth (no summaries) with a practical tone.",
-    only:"Use English only (no Arabic).",
-    noDup:"Do not repeat profile/welcome or previously stated content.",
-    noDisc:"Do NOT add generic disclaimers (not personalized / consult a professional / not medical advice…).",
-    cohesion:"Ensure narrative continuity with prior sections; don’t start a new chat.",
-    intro:"Start directly with this section content; no greetings or re-introductions."
-  }
-};
-
-const PlanState = {
-  lang: currentLang,
-  profile: null,
-  completed: [],          // [{key,title,text}]
-  seen: new Set(),        // لإزالة الجمل المكررة حرفيًا
-  push(key,title,text){ this.completed.push({key,title,text}); },
-  context(max=5000){
-    const s=this.completed.map(s=>`## ${s.title}\n${s.text}`).join('\n\n');
-    return s.slice(-max);
-  }
-};
-
-function buildRules(lang){
-  const t=i18nRules[lang];
-  return [
-    t.long,t.only,t.noDup,t.noDisc,t.cohesion,t.intro,
-    "استخدم عناوين فرعية ونقاط وجداول عند الحاجة.",
-    "لا تُدرج أي وسوم HTML أو رأس/تذييل صفحة — النص فقط."
-  ].map(s=>`- ${s}`).join('\n');
-}
-
 const RE_STRIP = [
   /هذه (?:الخطة|المعلومات).*?(?:غير|ليست).*?(?:مخصصة|طبية)[^\n]*$/gim,
   /استشر\s+(?:طبيب|أخصائي|مدرب)[^\n]*$/gim,
@@ -265,15 +249,21 @@ const RE_STRIP = [
   /consult (?:a )?(?:doctor|physician|dietitian|coach)[^\n]*$/gim,
   /<!DOCTYPE[\s\S]*?<body[^>]*>/gim, /<\/body>\s*<\/html>/gim
 ];
+const PlanState = {
+  lang:(document.documentElement.dir==='rtl')?'ar':'en',
+  profile:null,
+  completed:[],
+  seen:new Set(),
+  push(key,title,text){this.completed.push({key,title,text});},
+  context(max=5000){const s=this.completed.map(s=>`## ${s.title}\n${s.text}`).join('\n\n');return s.slice(-max);}
+};
 function sanitizeLLM(text,lang){
   let out=String(text||'');
   RE_STRIP.forEach(rx=>out=out.replace(rx,''));
-  // لغة واحدة
   out = out.split('\n').filter(line=>{
     const ar=(line.match(/[\u0600-\u06FF]/g)||[]).length, en=(line.match(/[A-Za-z]/g)||[]).length;
     return (lang==='ar')? ar>=en : en>=ar;
   }).join('\n');
-  // إزالة المكرر
   const acc=[]; for(const l of out.split('\n')){
     const k=l.trim().replace(/\s+/g,' ').toLowerCase();
     if(!k){acc.push(''); continue;}
@@ -284,9 +274,8 @@ function sanitizeLLM(text,lang){
 }
 
 /* =========================================================
-   3) واجهة الخطوات (UI) — كما في الكود الأصلي
+   Wizard UI
    ========================================================= */
-
 function setLang(lang){
   state.lang=lang; PlanState.lang=lang;
   document.documentElement.lang=lang; document.documentElement.dir=(lang==='ar'?'rtl':'ltr');
@@ -506,18 +495,17 @@ function saveStep(){
 }
 
 /* =========================================================
-   4) لوحة التقدم
+   Progress board
    ========================================================= */
-
 function renderBoard(){
   const board=id('sections-board'); board.innerHTML='';
   const list=state.sections.filter(s=> s!=='fasting' || state.diet.fasting!=='off');
   list.forEach(sec=>{
     if(!state.sectionStatus[sec]) state.sectionStatus[sec]={status:'idle'};
     const st=state.sectionStatus[sec].status;
-    const color = st==='ok'?'var(--ok)':st==='fail'?'var(--err)':st==='run'?'var(--warn)':'#888';
+    const color = st==='ok'?'var(--ok)':st==='fail'?'var(--err)':'#f59e0b';
     const b=document.createElement('button');
-    b.className='badge'; b.innerHTML=`<span class="status-dot" style="background:${color}"></span><span>${pretty(sec)}</span>`;
+    b.className='badge'; b.innerHTML=`<span class="status-dot" style="background:${st==='idle'?'#888':color}"></span><span>${pretty(sec)}</span>`;
     b.onclick=()=>{const card=id('sec-'+sec); if(card) card.scrollIntoView({behavior:'smooth',block:'center'});};
     board.appendChild(b);
   });
@@ -538,9 +526,8 @@ const pretty=(idstr)=>{
 };
 
 /* =========================================================
-   5) أهداف السعرات/الماكروز + رأس مشترك للسياق
+   Targets + header for prompt
    ========================================================= */
-
 function computeTargets(){
   const p=state.profile,L=state.lifestyle,D=state.diet;
   const W=+p.weight||0,H=+p.height||0,A=+p.age||0;
@@ -570,43 +557,52 @@ Training:${L.trainingPlace} | Session:${L.sessionLength}min | Days:${avail} | RP
 Fitness: HR ${F.restingHR||'?'}; PU ${F.maxPushups||'?'}; Plank ${F.plank||'?'}; 1km ${F.kmTime||'?'}
 Weak:${weak} | Injuries:${L.injuries||'None'} | Medical:${med}
 Targets: ~${T.tdee} kcal; P ${T.protein_g}g / F ${T.fat_g}g / C ${T.carb_g}g
-Tone:${tone}. LANGUAGE:${state.lang}. FOOD in ${state.lang}. Exercises EN only.`.trim();
+Tone:${tone}. LANGUAGE:${state.lang}.`.trim();
 }
 
 /* =========================================================
-   6) بناء البرومبت (مدمج مع القواعد والـ context)
+   Prompts (welcome uses user name explicitly)
    ========================================================= */
-
 function buildPrompt(sectionId){
-  const rules = buildRules(state.lang);
   const prev  = PlanState.context();
   const head  = headerBlock();
+  const name = state.profile.name || (state.lang==='ar'?'صديقي':'Athlete');
 
-  const forceLong = state.lang==='ar'
-    ? '\n\nلا تختصر أبدًا. أعطِ مخرجات تفصيلية كاملة.'
-    : '\n\nDo NOT be brief. Provide fully detailed outputs.';
-
-  const sectionTitle = pretty(sectionId);
+  const commonRules = (state.lang==='ar'
+    ? `- اكتب بإسهاب، وبلغة عربية واضحة فقط.
+- لا تُكرر معلومات الملف الشخصي أو الترحيب أو ما سبق.
+- لا تُدرج تحذيرات عامة مثل "هذه ليست نصيحة طبية" أو "استشر مختص".
+- حافظ على تسلسل الحديث مستندًا لما سبق، ولا تبدأ محادثة جديدة.`
+    : `- Write in-depth in English only.
+- Do not repeat profile/welcome or earlier content.
+- Do NOT add generic disclaimers.
+- Keep narrative continuity; do not start a new chat.`);
 
   const base = [
-    `القسم: ${sectionTitle}`,
-    `اللغة: ${state.lang==='ar'?'العربية':'English'}`,
-    `قواعد ملزمة:\n${rules}`,
+    `RULES:\n${commonRules}`,
     "",
-    "بيانات المستخدم (للاستدلال فقط — لا تعِد طباعتها):",
-    JSON.stringify(PlanState.profile || state, null, 2),
-    "",
-    "سياق الأقسام السابقة (لا تُكرّر نصه، فقط استدلّ به):",
-    prev || "(لا سياق سابق بعد.)",
+    "PREVIOUS CONTEXT (for continuity only; do not copy):",
+    prev || "(none yet)",
     "",
     head
   ].join('\n');
 
-  // تعليمات خاصة لكل قسم
-  if(sectionId==='welcome') return base + `\n\nCreate a professional ${state.lang} welcome (1–2 short paragraphs).`+forceLong;
-  if(sectionId==='analysis') return base + `\n\nDetailed ${state.lang} analysis in bullets with clear logic behind macros, constraints, and plan.`+forceLong;
-  if(sectionId==='allowed')  return base + `\n\nTwo lists in ${state.lang}: 1) Allowed/Recommended foods by cuisine/budget. 2) Limits/Avoid (respect allergies/dislikes).`+forceLong;
-  if(sectionId==='fasting' && state.diet.fasting!=='off') return base + `\n\nExplain ${state.diet.fasting} intermittent fasting: timings, hydration, caffeine, training window, safety.`+forceLong;
+  const forceLong = (state.lang==='ar'
+    ? '\n\nلا تختصر أبدًا. أعطِ مخرجات تفصيلية كاملة.'
+    : '\n\nDo NOT be brief. Provide fully detailed outputs.');
+
+  if(sectionId==='welcome'){
+    return base + `
+
+${state.lang==='ar'
+  ? `ابدأ بجملة ترحيبية قصيرة تُنادي المستخدم باسمه (مثال: أهلاً يا ${name}). ثم فقرتان موجزتان تشرحان كيف ستُدار الخطة وفق بياناته، دون تكرار مطول للبيانات.`
+  : `Start with a short greeting addressing the user by name (e.g., Hello ${name}). Then 1–2 concise paragraphs describing how the plan will be managed for them without reprinting profile data.`}
+${forceLong}`;
+  }
+
+  if(sectionId==='analysis') return base + `\n\nDetailed ${state.lang} analysis in bullets with clear logic behind macros, constraints, and plan.${forceLong}`;
+  if(sectionId==='allowed')  return base + `\n\nTwo lists in ${state.lang}: 1) Allowed/Recommended foods by cuisine/budget. 2) Limits/Avoid (respect allergies/dislikes).${forceLong}`;
+  if(sectionId==='fasting' && state.diet.fasting!=='off') return base + `\n\nExplain ${state.diet.fasting} intermittent fasting: timings, hydration, caffeine, training window, safety.${forceLong}`;
 
   if(sectionId.startsWith('nutrition-day')){
     const d=+sectionId.split('-').pop();
@@ -614,7 +610,7 @@ function buildPrompt(sectionId){
 
 STRICT OUTPUT: Markdown table ONLY. No prose.
 Columns: | Meal | Ingredients (g) | kcal | Protein | Fat | Carbs |
-Rows: 3 main meals + TOTAL row (4 rows in total).
+Rows: 3 main meals + TOTAL row (4 rows).
 Daily macros MUST be within ±10% of the Targets.
 Language: ${state.lang}. Day ${d} of 7.`+forceLong;
   }
@@ -629,19 +625,18 @@ Include warm-up first row if needed. Respect injuries and focus weak muscles.
 Day ${d} of 7.`+forceLong;
   }
 
-  if(sectionId==='supplements') return base + `\n\nEvidence-based supplements in ${state.lang}: essential, goal-specific, budget — with dosing/timing.`+forceLong;
-  if(sectionId==='progression') return base + `\n\n8–12 week progression: adjust weights/reps/rest, deloads, cardio, and how to recalc TDEE on weight change.`+forceLong;
-  if(sectionId==='troubleshoot') return base + `\n\nTroubleshooting: hunger, plateaus, sleep, stress, cravings, travel/eating out (2–3 bullets each).`+forceLong;
-  if(sectionId==='safety') return base + `\n\nSafety: technique, injury prevention, hydration, sleep, and red flags to stop & seek care.`+forceLong;
-  if(sectionId==='closing') return base + `\n\nShort motivating closing addressing user by name.`+forceLong;
+  if(sectionId==='supplements') return base + `\n\nEvidence-based supplements: essential, goal-specific, budget — with dosing/timing.${forceLong}`;
+  if(sectionId==='progression') return base + `\n\n8–12 week progression: adjust weights/reps/rest, deloads, cardio, and how to recalc TDEE on weight change.${forceLong}`;
+  if(sectionId==='troubleshoot') return base + `\n\nTroubleshooting: hunger, plateaus, sleep, stress, cravings, travel/eating out (2–3 bullets each).${forceLong}`;
+  if(sectionId==='safety') return base + `\n\nSafety: technique, injury prevention, hydration, sleep, and red flags to stop & seek care.${forceLong}`;
+  if(sectionId==='closing') return base + `\n\nShort motivating closing addressing ${name} by name.${forceLong}`;
 
   return base + forceLong;
 }
 
 /* =========================================================
-   7) استدعاء البروكسي + تسلسل التوليد (بدون شاشة حجب)
+   Call proxy / generation
    ========================================================= */
-
 async function callAI(prompt, opt={}, { attempts=4 } = {}){
   return queue = queue.then(() => _call(prompt, opt, {attempts}));
 }
@@ -685,7 +680,7 @@ Language: ${state.lang}. Day ${day}.`;
   if(!(r1.ok && r2.ok && r3.ok)) return {ok:false,error:'Both endpoints failed'};
   const total=await callAI(`${base}
 
-You are given three Markdown rows (without header). Compute a TOTAL row and return ONLY that TOTAL row (kcal, Protein, Fat, Carbs). 
+You are given three Markdown rows (no header). Compute a TOTAL row and return ONLY that TOTAL row (kcal, Protein, Fat, Carbs). 
 Rows:
 ${r1.text}
 ${r2.text}
@@ -694,8 +689,7 @@ ${r3.text}`,{}, {attempts:2});
   return {ok:true,text:r1.text.trim()+"\n"+r2.text.trim()+"\n"+r3.text.trim()+"\n"+total.text.trim()};
 }
 
-/* ===== بطاقات الأقسام والعرض ===== */
-
+/* Cards + render */
 function planCard(sectionId){
   const wrap=id('plan-content');
   const card=document.createElement('div'); card.className='glass p-4'; card.id='sec-'+sectionId;
@@ -730,7 +724,6 @@ async function generateAllSequential(){
   for(let i=0;i<list.length;i++){ await generateOne(list[i], (i/list.length)*100, ((i+1)/list.length)*100); }
   updateGlobalProgress(100);
 }
-
 async function generateOne(sectionId,startPct,endPct){
   setSectionStatus(sectionId,'run'); planCard(sectionId);
   const bodyEl=id('body-'+sectionId), noteEl=id('note-'+sectionId), barEl=id('bar-'+sectionId);
@@ -755,7 +748,7 @@ async function regenerateSection(sectionId){
   await generateOne(sectionId,0,5);
 }
 
-/* ===== أحداث واجهة ===== */
+/* Events */
 id('next').onclick=()=>{saveStep(); state.step=Math.min(3,state.step+1); renderStep()};
 id('prev').onclick=()=>{saveStep(); state.step=Math.max(0,state.step-1); renderStep()};
 id('generate-current').onclick=()=>generateAllSequential();
@@ -766,7 +759,7 @@ id('lang-ar').onclick=()=>setLang('ar');
 id('lang-en').onclick=()=>setLang('en');
 id('toggle-theme').onclick=()=>setTheme(state.theme==='dark'?'light':'dark');
 
-/* ===== تهيئة ===== */
+/* Init */
 window.addEventListener('load',()=>{
   setLang(state.lang); setTheme('dark'); renderStep(); renderBoard();
   id('run-label').textContent=t('idle'); id('hint').textContent=t('hint');
