@@ -63,7 +63,7 @@
     html[dir="ltr"] .g .c-life      { grid-column: 9 / span 4; }
     html[dir="ltr"] .g .c-med       { grid-column: 1 / span 12; }
 
-    /* Wizard (ثابت بصريًا الآن) */
+    /* Wizard (visual only) */
     .stepper{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
     .stepper > div{ height:6px; border-radius:6px; background:rgba(255,255,255,.08); position:relative; overflow:hidden; }
     .stepper > .on:before{ content:''; position:absolute; inset:0; background:linear-gradient(90deg,var(--brand),var(--brand-2)); }
@@ -89,9 +89,8 @@
       .ai-content table { background:#fff; border-color:#333 }
       .ai-content th { background:#f3f4f6; }
     }
-    /* منع تقطيع الصفوف عند الطباعة */
+    /* avoid page breaks inside rows */
     .ai-content table, .ai-content tr, .ai-content td { page-break-inside: avoid; }
-    /* تحسين قابلية القراءة للـ SR فقط */
     .sr-only{ position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0; }
   </style>
 </head>
@@ -129,7 +128,7 @@
       </div>
     </section>
 
-    <!-- Wizard (حاليًا خطوة واحدة شاملة) -->
+    <!-- Wizard (single step UI for now) -->
     <section id="wizard" class="glass card p-4">
       <div class="stepper mb-5"><div class="on" id="s1"></div><div id="s2"></div><div id="s3"></div><div id="s4"></div></div>
       <div id="step-title" class="section-title title-grad text-xl mb-3">الملف الشخصي</div>
@@ -169,121 +168,55 @@
     </div>
   </div>
 
+  <!-- ======= SCRIPT (with safe fallbacks) ======= -->
   <script>
-    /***** Marked + DOMPurify config *****/
-    marked.setOptions({ breaks:true, mangle:false, headerIds:false });
+    /***** SAFE optional deps (do not crash if CDNs fail) *****/
+    const hasMarked = !!(window.marked);
+    const hasDOMPurify = !!(window.DOMPurify);
+    if (hasMarked) { try { marked.setOptions({ breaks:true, mangle:false, headerIds:false }); } catch(_){} }
 
     /***** App state *****/
     const state = {
       lang: (navigator.language || 'ar').startsWith('ar') ? 'ar' : 'en',
       theme: 'dark',
-      // نُبقي step=0 ونظهر زر التوليد مباشرة
       step: 0,
       currency: detectCurrency(),
       profile: { name:'', age:'', height:'', weight:'', bodyFat:'', waist:'', sex:'Male', targetWeight:'', targetDate:'' },
-      diet: {
-        goals:[], // <-- مفاتيح ثابتة
-        mealsPerDay:3, preferredDiet:'Balanced', cuisine:'Arabic/Mediter.', prepTime:20,
-        monthlyBudget:0, foodsToAvoid:'', allergies:'', fasting:'off'
-      },
-      lifestyle:{
-        workActivity:'Sedentary', stepsPerDay:6000, sleep:'Low', stress:'Low',
-        trainingPlace:'Home/Gym', sessionLength:60, availableDays:[],
-        equipment:'', experience:'Beginner (0-6m)', rpe:8, caffeine:0, injuries:''
-      },
+      diet: { goals:[], mealsPerDay:3, preferredDiet:'Balanced', cuisine:'Arabic/Mediter.', prepTime:20, monthlyBudget:0, foodsToAvoid:'', allergies:'', fasting:'off' },
+      lifestyle:{ workActivity:'Sedentary', stepsPerDay:6000, sleep:'Low', stress:'Low', trainingPlace:'Home/Gym', sessionLength:60, availableDays:[], equipment:'', experience:'Beginner (0-6m)', rpe:8, caffeine:0, injuries:'' },
       fitness:{ restingHR:'', maxPushups:'', plank:'', kmTime:'' },
-      muscles: { chest:{on:false,note:''}, back:{on:false,note:''}, shoulders:{on:false,note:''},
-                 biceps:{on:false,note:''}, triceps:{on:false,note:''}, quads:{on:false,note:''},
-                 hamstrings:{on:false,note:''}, glutes:{on:false,note:''}, calves:{on:false,note:''}, abs:{on:false,note:''} },
+      muscles:{ chest:{on:false,note:''}, back:{on:false,note:''}, shoulders:{on:false,note:''}, biceps:{on:false,note:''}, triceps:{on:false,note:''}, quads:{on:false,note:''}, hamstrings:{on:false,note:''}, glutes:{on:false,note:''}, calves:{on:false,note:''}, abs:{on:false,note:''} },
       medical:{ conditions:[], other:'', meds:'', supplements:'' },
       challenges:{ past:'', motivation:'Direct' },
-      targets: null,
-      generating:false
+      targets:null, generating:false
     };
 
     /***** Constants *****/
     const GOALS = [
-      {key:'fatLoss',   ar:'خسارة الدهون',   en:'Fat loss'},
-      {key:'build',     ar:'بناء العضلات',   en:'Build muscle'},
-      {key:'strength',  ar:'زيادة القوة',     en:'Strength'},
-      {key:'endurance', ar:'تحسين التحمل',    en:'Endurance'},
-      {key:'health',    ar:'صحة عامة',        en:'General health'},
+      {key:'fatLoss',ar:'خسارة الدهون',en:'Fat loss'},
+      {key:'build',ar:'بناء العضلات',en:'Build muscle'},
+      {key:'strength',ar:'زيادة القوة',en:'Strength'},
+      {key:'endurance',ar:'تحسين التحمل',en:'Endurance'},
+      {key:'health',ar:'صحة عامة',en:'General health'},
     ];
-    function goalLabel(key){ const g=GOALS.find(x=>x.key===key); return state.lang==='ar' ? g.ar : g.en; }
-
-    /***** i18n *****/
     const T = {
-      ar:{
-        appTitle:'المستشار الصحي الذكي',
-        subtitle:'خطة دقيقة ١٠٠٪ للتغذية والتدريب والمكملات — مخصصة لك',
-        steps:['الملف الشخصي','النظام الغذائي والتفضيلات','نمط الحياة والتمارين','الحالة الصحية والتحديات'],
-        next:'التالي', prev:'السابق', generate:'توليد الخطة', print:'طباعة', top:'أعلى',
-        hint:'سنولّد الخطة قسمًا بعد قسم: ترحيب → تحليل → المسموح/الممنوع → الصيام (إن لزم) → التغذية ٧ أيام → التدريب ٧ أيام → المكملات → التقدّم → المشاكل → السلامة → ختام.',
-        profile:'الملف الشخصي', dietPrefs:'النظام الغذائي والتفضيلات', lifestyle:'نمط الحياة والتدريب', med:'العوامل الصحية والتحديات',
-        name:'الاسم', age:'العمر', height:'الطول (سم)', weight:'الوزن (كغ)', bodyFat:'نسبة الدهون % (اختياري)', waist:'محيط الخصر (سم) (اختياري)', sex:'الجنس',
-        male:'ذكر', female:'أنثى', targetWeight:'الوزن المستهدف (كغ)', targetDate:'موعد تحقيق الهدف (تاريخ)',
-        goals:'الأهداف (متعدد)', fatLoss:'خسارة الدهون', build:'بناء العضلات', strength:'زيادة القوة', endurance:'تحسين التحمل', health:'صحة عامة',
-        mealsPerDay:'عدد الوجبات', preferredDiet:'النظام المفضّل', balanced:'نظام متوازن', lowCarb:'قليل الكربوهيدرات', keto:'كيتو', med:'متوسطي/عربي', veg:'نباتي/مرن',
-        fasting:'الصيام المتقطع', fastingOff:'غير مفعّل', fasting16:'16:8', fasting18:'18:6', fasting20:'20:4',
-        cuisine:'المطبخ', prepTime:'زمن التحضير (د)', budget:'الميزانية الشهرية التقريبية', foodsAvoid:'أطعمة لا ترغب بها/حساسيات', allergies:'حساسيات شائعة',
-        workActivity:'العمل/النشاط', steps:'خطوات/اليوم', sleep:'النوم', stress:'التوتر', place:'مكان التمرين', session:'مدة الجلسة (د)',
-        days:'أيام التدريب المتاحة', equipment:'المعدات المتاحة', experience:'الخبرة', rpe:'RPE', caffeine:'كافيين/أكواب', injuries:'إصابات/قيود',
-        quick:'اختبار اللياقة المبسّط', restingHR:'نبض الراحة (bpm)', pushups:'الضغط الأقصى', plank:'Plank (د)', kmTime:'زمن 1 كم (د:ث)',
-        musclesFocus:'عضلات تحتاج عناية خاصة', describe:'وصف المشكلة/السبب',
-        medicalStatus:'الحالة الصحية', otherCond:'أمراض أخرى', currentMeds:'أدوية حالية', currentSupp:'مكملات حالية',
-        pastCh:'تحديات سابقة مع الأنظمة', motiv:'أسلوب التحفيز المفضل', motivDir:'عملي ومباشر', motivWarm:'تشجيعي وداعم',
-        generatingTitle:'نُجهّز خطتك الآن', generatingSub:'الرجاء الانتظار… سنولّد الأقسام بالترتيب حتى تكتمل الخطة.',
-        print2:'طباعة / PDF',
-        needBasics:'أكمل الحقول الأساسية: الاسم/العمر/الطول/الوزن.',
-        failed:'تعذّر توليد الخطة. تحقّق من الاتصال.'
-      },
-      en:{
-        appTitle:'Intelligent Health Coach',
-        subtitle:'100% precise plan for nutrition, training & supplements – fully personalized',
-        steps:['Profile','Diet & Preferences','Lifestyle & Training','Medical & Challenges'],
-        next:'Next', prev:'Back', generate:'Generate Plan', print:'Print', top:'Top',
-        hint:'We will generate the plan section-by-section: Welcome → Analysis → Allowed/Limits → Intermittent Fasting (if any) → Nutrition 7-day → Training 7-day → Supplements → Progression → Troubleshooting → Safety → Closing.',
-        profile:'Profile', dietPrefs:'Diet & Preferences', lifestyle:'Lifestyle & Training', med:'Medical & Challenges',
-        name:'Name', age:'Age', height:'Height (cm)', weight:'Weight (kg)', bodyFat:'Body fat % (optional)', waist:'Waist (cm) (optional)', sex:'Sex',
-        male:'Male', female:'Female', targetWeight:'Target weight (kg)', targetDate:'Target date',
-        goals:'Goals (multi-select)', fatLoss:'Fat loss', build:'Build muscle', strength:'Strength', endurance:'Endurance', health:'General health',
-        mealsPerDay:'Meals per day', preferredDiet:'Preferred diet', balanced:'Balanced', lowCarb:'Low-carb', keto:'Keto', med:'Mediterranean/Arabic', veg:'Plant-forward',
-        fasting:'Intermittent fasting', fastingOff:'Off', fasting16:'16:8', fasting18:'18:6', fasting20:'20:4',
-        cuisine:'Cuisine', prepTime:'Prep time (min)', budget:'Monthly budget (approx.)', foodsAvoid:'Foods to avoid / dislikes', allergies:'Common allergies',
-        workActivity:'Work/Activity', steps:'Steps/day', sleep:'Sleep', stress:'Stress', place:'Training place', session:'Session length (min)',
-        days:'Available training days', equipment:'Available equipment', experience:'Experience', rpe:'RPE', caffeine:'Caffeine/day (cups)', injuries:'Injuries/constraints',
-        quick:'Quick fitness test', restingHR:'Resting HR (bpm)', pushups:'Max push-ups', plank:'Plank (min)', kmTime:'1 km time (m:s)',
-        musclesFocus:'Muscles needing special focus', describe:'Describe the issue/reason',
-        medicalStatus:'Medical status', otherCond:'Other conditions', currentMeds:'Current medications', currentSupp:'Current supplements',
-        pastCh:'Past challenges with plans', motiv:'Preferred motivation style', motivDir:'Direct & pragmatic', motivWarm:'Supportive & encouraging',
-        generatingTitle:'Preparing your plan', generatingSub:'Please wait. We will build the plan section by section until completion.',
-        print2:'Print / PDF',
-        needBasics:'Please complete: name/age/height/weight.',
-        failed:'Plan generation failed. Check connectivity.'
-      }
+      ar:{appTitle:'المستشار الصحي الذكي',subtitle:'خطة دقيقة ١٠٠٪ للتغذية والتدريب والمكملات — مخصصة لك',steps:['الملف الشخصي','النظام الغذائي والتفضيلات','نمط الحياة والتمارين','الحالة الصحية والتحديات'],next:'التالي',prev:'السابق',generate:'توليد الخطة',print:'طباعة',top:'أعلى',hint:'سنولّد الخطة قسمًا بعد قسم: ترحيب → تحليل → المسموح/الممنوع → الصيام (إن لزم) → التغذية ٧ أيام → التدريب ٧ أيام → المكملات → التقدّم → المشاكل → السلامة → ختام.',profile:'الملف الشخصي',dietPrefs:'النظام الغذائي والتفضيلات',lifestyle:'نمط الحياة والتدريب',med:'العوامل الصحية والتحديات',name:'الاسم',age:'العمر',height:'الطول (سم)',weight:'الوزن (كغ)',bodyFat:'نسبة الدهون % (اختياري)',waist:'محيط الخصر (سم) (اختياري)',sex:'الجنس',male:'ذكر',female:'أنثى',targetWeight:'الوزن المستهدف (كغ)',targetDate:'موعد تحقيق الهدف (تاريخ)',goals:'الأهداف (متعدد)',fatLoss:'خسارة الدهون',build:'بناء العضلات',strength:'زيادة القوة',endurance:'تحسين التحمل',health:'صحة عامة',mealsPerDay:'عدد الوجبات',preferredDiet:'النظام المفضّل',balanced:'نظام متوازن',lowCarb:'قليل الكربوهيدرات',keto:'كيتو',med:'متوسطي/عربي',veg:'نباتي/مرن',fasting:'الصيام المتقطع',fastingOff:'غير مفعّل',fasting16:'16:8',fasting18:'18:6',fasting20:'20:4',cuisine:'المطبخ',prepTime:'زمن التحضير (د)',budget:'الميزانية الشهرية التقريبية',foodsAvoid:'أطعمة لا ترغب بها/حساسيات',allergies:'حساسيات شائعة',workActivity:'العمل/النشاط',steps:'خطوات/اليوم',sleep:'النوم',stress:'التوتر',place:'مكان التمرين',session:'مدة الجلسة (د)',days:'أيام التدريب المتاحة',equipment:'المعدات المتاحة',experience:'الخبرة',rpe:'RPE',caffeine:'كافيين/أكواب',injuries:'إصابات/قيود',quick:'اختبار اللياقة المبسّط',restingHR:'نبض الراحة (bpm)',pushups:'الضغط الأقصى',plank:'Plank (د)',kmTime:'زمن 1 كم (د:ث)',musclesFocus:'عضلات تحتاج عناية خاصة',describe:'وصف المشكلة/السبب',medicalStatus:'الحالة الصحية',otherCond:'أمراض أخرى',currentMeds:'أدوية حالية',currentSupp:'مكملات حالية',pastCh:'تحديات سابقة مع الأنظمة',motiv:'أسلوب التحفيز المفضل',motivDir:'عملي ومباشر',motivWarm:'تشجيعي وداعم',generatingTitle:'نُجهّز خطتك الآن',generatingSub:'الرجاء الانتظار… سنولّد الأقسام بالترتيب حتى تكتمل الخطة.',print2:'طباعة / PDF',needBasics:'أكمل الحقول الأساسية: الاسم/العمر/الطول/الوزن.',failed:'تعذّر توليد الخطة. تحقّق من الاتصال.'},
+      en:{appTitle:'Intelligent Health Coach',subtitle:'100% precise plan for nutrition, training & supplements – fully personalized',steps:['Profile','Diet & Preferences','Lifestyle & Training','Medical & Challenges'],next:'Next',prev:'Back',generate:'Generate Plan',print:'Print',top:'Top',hint:'We will generate the plan section-by-section: Welcome → Analysis → Allowed/Limits → Intermittent Fasting (if any) → Nutrition 7-day → Training 7-day → Supplements → Progression → Troubleshooting → Safety → Closing.',profile:'Profile',dietPrefs:'Diet & Preferences',lifestyle:'Lifestyle & Training',med:'Medical & Challenges',name:'Name',age:'Age',height:'Height (cm)',weight:'Weight (kg)',bodyFat:'Body fat % (optional)',waist:'Waist (cm) (optional)',sex:'Sex',male:'Male',female:'Female',targetWeight:'Target weight (kg)',targetDate:'Target date',goals:'Goals (multi-select)',fatLoss:'Fat loss',build:'Build muscle',strength:'Strength',endurance:'Endurance',health:'General health',mealsPerDay:'Meals per day',preferredDiet:'Preferred diet',balanced:'Balanced',lowCarb:'Low-carb',keto:'Keto',med:'Mediterranean/Arabic',veg:'Plant-forward',fasting:'Intermittent fasting',fastingOff:'Off',fasting16:'16:8',fasting18:'18:6',fasting20:'20:4',cuisine:'Cuisine',prepTime:'Prep time (min)',budget:'Monthly budget (approx.)',foodsAvoid:'Foods to avoid / dislikes',allergies:'Common allergies',workActivity:'Work/Activity',steps:'Steps/day',sleep:'Sleep',stress:'Stress',place:'Training place',session:'Session length (min)',days:'Available training days',equipment:'Available equipment',experience:'Experience',rpe:'RPE',caffeine:'Caffeine/day (cups)',injuries:'Injuries/constraints',quick:'Quick fitness test',restingHR:'Resting HR (bpm)',pushups:'Max push-ups',plank:'Plank (min)',kmTime:'1 km time (m:s)',musclesFocus:'Muscles needing special focus',describe:'Describe the issue/reason',medicalStatus:'Medical status',otherCond:'Other conditions',currentMeds:'Current medications',currentSupp:'Current supplements',pastCh:'Past challenges with plans',motiv:'Preferred motivation style',motivDir:'Direct & pragmatic',motivWarm:'Supportive & encouraging',generatingTitle:'Preparing your plan',generatingSub:'Please wait. We will build the plan section by section until completion.',print2:'Print / PDF',needBasics:'Please complete: name/age/height/weight.',failed:'Plan generation failed. Check connectivity.'}
     };
     const t = (k)=> (T[state.lang] && T[state.lang][k]) || k;
+    const goalLabel = (key)=>{ const g=GOALS.find(x=>x.key===key); return state.lang==='ar'?g.ar:g.en; };
 
-    /***** Helpers *****/
-    function esc(s){
-      return (s??'').toString()
-        .replace(/&/g,'&amp;')
-        .replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;')
-        .replace(/"/g,'&quot;')
-        .replace(/'/g,'&#39;');
-    }
+    /***** Utils *****/
     function $(id){ return document.getElementById(id); }
+    function esc(s){ return (s??'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function val(id){ const el=$(id); return el? el.value.trim():''; }
-    function numVal(id, fallback=0){ const el=$(id); return el? Number(el.value||fallback):fallback; }
+    function numVal(id,f=0){ const el=$(id); return el? Number(el.value||f):f; }
 
     /***** Language & UI *****/
     function setLang(lang){
       state.lang = lang;
       const html = document.documentElement;
-      html.lang = lang;
-      html.dir = (lang==='ar') ? 'rtl' : 'ltr';
-      // texts
+      html.lang = lang; html.dir = (lang==='ar')?'rtl':'ltr';
       $('app-title').textContent = t('appTitle');
       $('subtitle').textContent = t('subtitle');
       $('hint').textContent = t('hint');
@@ -306,27 +239,54 @@
         : 'linear-gradient(180deg,#eef2ff 0%,#f7f9ff 100%)';
     };
 
-    /***** Step rendering (خطوة واحدة شاملة) *****/
+    /***** Builders *****/
+    function weekInputs(){
+      const days = (state.lang==='ar')? ['السبت','الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'] : ['Sat','Sun','Mon','Tue','Wed','Thu','Fri'];
+      return days.map((d,i)=>`<label class="flex items-center gap-1 bg-white/5 px-2 py-1 rounded-md border border-white/10">
+        <input type="checkbox" id="day-${i}" class="accent-[var(--brand-2)]" ${state.lifestyle.availableDays.includes(i)?'checked':''}>
+        <span>${d}</span>
+      </label>`).join('');
+    }
+    function muscleInputs(){
+      const map = [['chest','الصدر','Chest'],['back','الظهر','Back'],['shoulders','الأكتاف','Shoulders'],['biceps','البايسبس','Biceps'],['triceps','الترايسبس','Triceps'],['quads','الأرجل الأمامية','Quads'],['hamstrings','الأرجل الخلفية','Hamstrings'],['glutes','المؤخرة','Glutes'],['calves','السمانة','Calves'],['abs','البطن','Abs']];
+      return map.map(([k,ar,en])=>{
+        const lab = (state.lang==='ar'?ar:en); const v = state.muscles[k]||{on:false,note:''};
+        return `<div class="grid grid-cols-2 gap-2 items-center">
+          <label class="flex items-center gap-2"><input type="checkbox" id="m-${k}" class="accent-[var(--brand-2)]" ${v.on?'checked':''}><span>${lab}</span></label>
+          <input id="mnote-${k}" class="field" placeholder="${t('describe')}" value="${esc(v.note)}">
+        </div>`;
+      }).join('');
+    }
+    function medicalInputs(){
+      const items = [['Hypertension','ضغط الدم'],['Diabetes','السكري'],['Insulin Resistance','مقاومة الأنسولين'],['Thyroid issues','مشاكل الغدة'],['Hormonal issues','مشاكل هرمونية'],['Fatty Liver','الكبد الدهني'],['Joint/Knee problems','مشاكل مفاصل/ركب'],['Heart disease','أمراض القلب'],['IBD/Ulcer','IBD/قرحة'],['GERD/Reflux','GERD/ارتجاع'],['Gluten intolerance','عدم تحمل الجلوتين'],['Lactose intolerance','عدم تحمل اللاكتوز']];
+      return `<div class="grid md:grid-cols-2 gap-2">${
+        items.map(([en,ar],idx)=>{
+          const lab = (state.lang==='ar')? ar : en;
+          const id = `cond-${idx}`;
+          const checked = state.medical.conditions.includes(en)||state.medical.conditions.includes(ar);
+          return `<label class="flex items-center gap-2"><input id="${id}" type="checkbox" ${checked?'checked':''} class="accent-[var(--brand-2)]"><span>${lab}</span></label>`;
+        }).join('')
+      }</div>`;
+    }
+    function currencyOptions(sel){
+      const all = ['USD','EUR','GBP','SAR','AED','KWD','QAR','EGP'];
+      return all.map(c=>`<option ${sel===c?'selected':''}>${c}</option>`).join('');
+    }
+
+    /***** Render (single step for now) *****/
     function renderStep(){
       const titles = T[state.lang].steps;
-      $('step-title').textContent = titles[0]; // خطوة واحدة حالياً
-      // stepper حالة مرئية فقط
+      $('step-title').textContent = titles[0];
       ['s1','s2','s3','s4'].forEach((id,i)=>$(id).className = (i===0?'on':''));
 
       const L = (k)=>t(k);
-      const num = (placeholder='')=>`inputmode="numeric" pattern="[0-9]*" class="field" placeholder="${placeholder}"`;
+      const num = (ph='')=>`inputmode="numeric" pattern="[0-9]*" class="field" placeholder="${ph}"`;
       const option = (val, lab)=>`<option value="${val}">${lab}</option>`;
-      const ch = (id,lab,checked=false)=>`<label class="flex items-center gap-2"><input type="checkbox" id="${id}" ${checked?'checked':''} class="accent-[var(--brand-2)]"><span>${lab}</span></label>`;
-
-      // أهداف (بالمفاتيح الثابتة)
       const goalChk = (key)=>`<label class="flex items-center gap-2">
         <input type="checkbox" data-goal="${key}" class="accent-[var(--brand-2)]" ${state.diet.goals.includes(key)?'checked':''}>
-        <span>${goalLabel(key)}</span>
-      </label>`;
+        <span>${(state.lang==='ar'?GOALS.find(g=>g.key===key).ar:GOALS.find(g=>g.key===key).en)}</span></label>`;
 
-      // body
-      const el = $('step-body');
-      el.innerHTML = `
+      $('step-body').innerHTML = `
         <div class="g">
           <div class="glass card p-4 c-profile">
             <div class="section-title mb-2">${L('profile')}</div>
@@ -334,11 +294,9 @@
               <label>${L('name')}<input id="name" class="field" value="${esc(state.profile.name)}" placeholder="${L('name')}"></label>
               <div class="grid grid-cols-2 gap-2">
                 <label>${L('age')}<input id="age" ${num()} value="${esc(state.profile.age)}"></label>
-                <label>${L('sex')}
-                  <select id="sex" class="field">
-                    ${option('Male',L('male'))}${option('Female',L('female'))}
-                  </select>
-                </label>
+                <label>${L('sex')}<select id="sex" class="field">
+                  ${option('Male',L('male'))}${option('Female',L('female'))}
+                </select></label>
               </div>
               <div class="grid grid-cols-2 gap-2">
                 <label>${L('height')}<input id="height" ${num()} value="${esc(state.profile.height)}"></label>
@@ -364,27 +322,19 @@
               </div>
               <div class="grid grid-cols-2 gap-2">
                 <label>${L('mealsPerDay')}<input id="meals" ${num()} value="${esc(state.diet.mealsPerDay)}"></label>
-                <label>${L('preferredDiet')}
-                  <select id="prefDiet" class="field">
-                    ${option('Balanced',L('balanced'))}
-                    ${option('LowCarb',L('lowCarb'))}
-                    ${option('Keto',L('keto'))}
-                    ${option('Arabic/Mediter.',L('med'))}
-                    ${option('Plant',L('veg'))}
-                  </select>
-                </label>
+                <label>${L('preferredDiet')}<select id="prefDiet" class="field">
+                  ${option('Balanced',L('balanced'))}${option('LowCarb',L('lowCarb'))}${option('Keto',L('keto'))}${option('Arabic/Mediter.',L('med'))}${option('Plant',L('veg'))}
+                </select></label>
               </div>
               <div class="grid grid-cols-2 gap-2">
-                <label>${L('fasting')}
-                  <select id="fasting" class="field">
-                    ${option('off',L('fastingOff'))}${option('16:8',L('fasting16'))}${option('18:6',L('fasting18'))}${option('20:4',L('fasting20'))}
-                  </select>
-                </label>
+                <label>${L('fasting')}<select id="fasting" class="field">
+                  ${option('off',L('fastingOff'))}${option('16:8',L('fasting16'))}${option('18:6',L('fasting18'))}${option('20:4',L('fasting20'))}
+                </select></label>
                 <label>${L('cuisine')}<input id="cuisine" class="field" value="${esc(state.diet.cuisine)}"></label>
               </div>
               <div class="grid grid-cols-2 gap-2">
                 <label>${L('prepTime')}<input id="prep" ${num()} value="${esc(state.diet.prepTime)}"></label>
-                <label>${L('budget')} <div class="flex gap-2">
+                <label>${L('budget')}<div class="flex gap-2">
                   <input id="budget" ${num()} value="${esc(state.diet.monthlyBudget)}" class="field flex-1">
                   <select id="currency" class="field w-28">${currencyOptions(state.currency)}</select>
                 </div></label>
@@ -398,31 +348,25 @@
             <div class="section-title mb-2">${L('lifestyle')}</div>
             <div class="col">
               <div class="grid grid-cols-2 gap-2">
-                <label>${L('workActivity')}
-                  <select id="work" class="field">
-                    ${option('Sedentary',state.lang==='ar'?'مكتبي':'Sedentary')}
-                    ${option('Light',state.lang==='ar'?'نشاط خفيف':'Light')}
-                    ${option('Moderate',state.lang==='ar'?'متوسط':'Moderate')}
-                    ${option('High',state.lang==='ar'?'مرتفع':'High')}
-                  </select>
-                </label>
+                <label>${L('workActivity')}<select id="work" class="field">
+                  <option value="Sedentary">${state.lang==='ar'?'مكتبي':'Sedentary'}</option>
+                  <option value="Light">${state.lang==='ar'?'نشاط خفيف':'Light'}</option>
+                  <option value="Moderate">${state.lang==='ar'?'متوسط':'Moderate'}</option>
+                  <option value="High">${state.lang==='ar'?'مرتفع':'High'}</option>
+                </select></label>
                 <label>${L('steps')}<input id="steps" ${num()} value="${esc(state.lifestyle.stepsPerDay)}"></label>
               </div>
               <div class="grid grid-cols-2 gap-2">
-                <label>${L('sleep')}
-                  <select id="sleep" class="field">
-                    ${option('Low',state.lang==='ar'?'منخفض':'Low')}
-                    ${option('Medium',state.lang==='ar'?'متوسط':'Medium')}
-                    ${option('High',state.lang==='ar'?'مرتفع':'High')}
-                  </select>
-                </label>
-                <label>${L('stress')}
-                  <select id="stress" class="field">
-                    ${option('Low',state.lang==='ar'?'منخفض':'Low')}
-                    ${option('Medium',state.lang==='ar'?'متوسط':'Medium')}
-                    ${option('High',state.lang==='ar'?'مرتفع':'High')}
-                  </select>
-                </label>
+                <label>${L('sleep')}<select id="sleep" class="field">
+                  <option value="Low">${state.lang==='ar'?'منخفض':'Low'}</option>
+                  <option value="Medium">${state.lang==='ar'?'متوسط':'Medium'}</option>
+                  <option value="High">${state.lang==='ar'?'مرتفع':'High'}</option>
+                </select></label>
+                <label>${L('stress')}<select id="stress" class="field">
+                  <option value="Low">${state.lang==='ar'?'منخفض':'Low'}</option>
+                  <option value="Medium">${state.lang==='ar'?'متوسط':'Medium'}</option>
+                  <option value="High">${state.lang==='ar'?'مرتفع':'High'}</option>
+                </select></label>
               </div>
               <div class="grid grid-cols-2 gap-2">
                 <label>${L('place')}<input id="place" class="field" value="${esc(state.lifestyle.trainingPlace)}"></label>
@@ -430,19 +374,13 @@
               </div>
               <div>
                 <div class="mb-1">${L('days')}</div>
-                <div class="grid grid-cols-7 gap-2 text-xs">
-                  ${weekInputs()}
-                </div>
+                <div class="grid grid-cols-7 gap-2 text-xs">${weekInputs()}</div>
               </div>
               <label>${L('equipment')}<input id="equip" class="field" value="${esc(state.lifestyle.equipment)}" placeholder="Dumbbells, barbell, bands…"></label>
               <div class="grid grid-cols-2 gap-2">
-                <label>${L('experience')}
-                  <select id="exp" class="field">
-                    <option>Beginner (0-6m)</option>
-                    <option>Intermediate (6-24m)</option>
-                    <option>Advanced (24m+)</option>
-                  </select>
-                </label>
+                <label>${L('experience')}<select id="exp" class="field">
+                  <option>Beginner (0-6m)</option><option>Intermediate (6-24m)</option><option>Advanced (24m+)</option>
+                </select></label>
                 <label>${L('rpe')}<input id="rpe" ${num()} value="${esc(state.lifestyle.rpe)}"></label>
               </div>
               <div class="grid grid-cols-2 gap-2">
@@ -476,18 +414,14 @@
                 <label>${L('currentMeds')}<input id="meds" class="field" value="${esc(state.medical.meds)}"></label>
                 <label>${L('currentSupp')}<input id="supps" class="field" value="${esc(state.medical.supplements)}"></label>
                 <label class="mt-2">${L('pastCh')}<input id="past" class="field" value="${esc(state.challenges.past)}" placeholder="جوع شديد، ملل من الطعام، إصابات…"></label>
-                <label>${L('motiv')}
-                  <select id="motiv" class="field">
-                    ${option('Direct',L('motivDir'))}${option('Warm',L('motivWarm'))}
-                  </select>
-                </label>
+                <label>${L('motiv')}<select id="motiv" class="field">
+                  <option value="Direct">${t('motivDir')}</option><option value="Warm">${t('motivWarm')}</option>
+                </select></label>
               </div>
             </div>
           </div>
         </div>
       `;
-
-      // ضبط القيم المختارة
       $('sex').value = state.profile.sex || 'Male';
       $('prefDiet').value = state.diet.preferredDiet;
       $('fasting').value = state.diet.fasting;
@@ -498,393 +432,20 @@
       $('exp').value = state.lifestyle.experience;
       $('motiv').value = state.challenges.motivation;
 
-      // الأزرار
-      $('prev').disabled = true; // لا يوجد رجوع حالياً
+      $('prev').disabled = true;
       $('next').classList.add('hidden');
       $('generate').classList.remove('hidden');
     }
 
-    /***** Inputs builders *****/
-    function weekInputs(){
-      const days = (state.lang==='ar')? ['السبت','الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'] : ['Sat','Sun','Mon','Tue','Wed','Thu','Fri'];
-      return days.map((d,i)=>`<label class="flex items-center gap-1 bg-white/5 px-2 py-1 rounded-md border border-white/10">
-        <input type="checkbox" id="day-${i}" class="accent-[var(--brand-2)]" ${state.lifestyle.availableDays.includes(i)?'checked':''}>
-        <span>${d}</span>
-      </label>`).join('');
-    }
-    function muscleInputs(){
-      const map = [
-        ['chest','الصدر','Chest'],['back','الظهر','Back'],['shoulders','الأكتاف','Shoulders'],
-        ['biceps','البايسبس','Biceps'],['triceps','الترايسبس','Triceps'],['quads','الأرجل الأمامية','Quads'],
-        ['hamstrings','الأرجل الخلفية','Hamstrings'],['glutes','المؤخرة','Glutes'],['calves','السمانة','Calves'],['abs','البطن','Abs']
-      ];
-      return map.map(([k,ar,en])=>{
-        const lab = (state.lang==='ar'?ar:en);
-        const v = state.muscles[k]||{on:false,note:''};
-        return `
-          <div class="grid grid-cols-2 gap-2 items-center">
-            <label class="flex items-center gap-2">
-              <input type="checkbox" id="m-${k}" class="accent-[var(--brand-2)]" ${v.on?'checked':''}>
-              <span>${lab}</span>
-            </label>
-            <input id="mnote-${k}" class="field" placeholder="${t('describe')}" value="${esc(v.note)}">
-          </div>
-        `;
-      }).join('');
-    }
-    function medicalInputs(){
-      const items = [
-        ['Hypertension','ضغط الدم'],['Diabetes','السكري'],['Insulin Resistance','مقاومة الأنسولين'],
-        ['Thyroid issues','مشاكل الغدة'],['Hormonal issues','مشاكل هرمونية'],['Fatty Liver','الكبد الدهني'],
-        ['Joint/Knee problems','مشاكل مفاصل/ركب'],['Heart disease','أمراض القلب'],['IBD/Ulcer','IBD/قرحة'],
-        ['GERD/Reflux','GERD/ارتجاع'],['Gluten intolerance','عدم تحمل الجلوتين'],['Lactose intolerance','عدم تحمل اللاكتوز']
-      ];
-      return `<div class="grid md:grid-cols-2 gap-2">
-        ${items.map(([en,ar],idx)=>{
-          const lab = (state.lang==='ar')? ar : en;
-          const id = \`cond-\${idx}\`;
-          const checked = state.medical.conditions.includes(en)||state.medical.conditions.includes(ar);
-          return \`<label class="flex items-center gap-2"><input id="\${id}" type="checkbox" \${checked?'checked':''} class="accent-[var(--brand-2)]"><span>\${lab}</span></label>\`;
-        }).join('')}
-      </div>`;
-    }
-    function currencyOptions(sel){
-      const all = ['USD','EUR','GBP','SAR','AED','KWD','QAR','EGP'];
-      return all.map(c=>`<option ${sel===c?'selected':''}>${c}</option>`).join('');
-    }
-
-    /***** Persist step data *****/
-    function saveStep(){
-      // Profile
-      state.profile.name = val('name');
-      state.profile.age = val('age');
-      state.profile.height = val('height');
-      state.profile.weight = val('weight');
-      state.profile.bodyFat = val('bodyFat');
-      state.profile.waist = val('waist');
-      if($('sex')) state.profile.sex = $('sex').value;
-      state.profile.targetWeight = val('targetWeight');
-      state.profile.targetDate = val('targetDate');
-
-      // Diet
-      const goalInputs = [...document.querySelectorAll('input[data-goal]')];
-      state.diet.goals = goalInputs.filter(i=>i.checked).map(i=>i.getAttribute('data-goal'));
-      if($('meals')) state.diet.mealsPerDay = numVal('meals',3);
-      if($('prefDiet')) state.diet.preferredDiet = $('prefDiet').value;
-      if($('fasting')) state.diet.fasting = $('fasting').value;
-      state.diet.cuisine = val('cuisine');
-      state.diet.prepTime = numVal('prep',20);
-      state.diet.monthlyBudget = numVal('budget',0);
-      if($('currency')) state.currency = $('currency').value;
-      state.diet.foodsToAvoid = val('avoid');
-      state.diet.allergies = val('allergies');
-
-      // Lifestyle
-      if($('work')) state.lifestyle.workActivity = $('work').value;
-      state.lifestyle.stepsPerDay = numVal('steps',6000);
-      if($('sleep')) state.lifestyle.sleep = $('sleep').value;
-      if($('stress')) state.lifestyle.stress = $('stress').value;
-      state.lifestyle.trainingPlace = val('place');
-      state.lifestyle.sessionLength = numVal('session',60);
-      state.lifestyle.availableDays = [];
-      for(let i=0;i<7;i++){ const d=$(`day-${i}`); if(d && d.checked) state.lifestyle.availableDays.push(i); }
-      state.lifestyle.equipment = val('equip');
-      if($('exp')) state.lifestyle.experience = $('exp').value;
-      state.lifestyle.rpe = numVal('rpe',8);
-      state.lifestyle.caffeine = numVal('caf',0);
-      state.lifestyle.injuries = val('inj');
-      // fitness
-      state.fitness.restingHR = val('q-hr');
-      state.fitness.maxPushups = val('q-pu');
-      state.fitness.plank = val('q-pl');
-      state.fitness.kmTime = val('q-km');
-      // muscles
-      const keys = Object.keys(state.muscles);
-      keys.forEach(k=>{
-        const ck = $(`m-${k}`), note = $(`mnote-${k}`);
-        if(ck) state.muscles[k].on = ck.checked;
-        if(note) state.muscles[k].note = note.value;
-      });
-      // medical
-      state.medical.conditions = [];
-      for(let i=0;i<12;i++){
-        const id=`cond-${i}`; const el=$(id);
-        if(el && el.checked){
-          const map = ['Hypertension','Diabetes','Insulin Resistance','Thyroid issues','Hormonal issues','Fatty Liver','Joint/Knee problems','Heart disease','IBD/Ulcer','GERD/Reflux','Gluten intolerance','Lactose intolerance'];
-          state.medical.conditions.push(map[i]);
-        }
-      }
-      state.medical.other = val('otherCond');
-      state.medical.meds = val('meds');
-      state.medical.supplements = val('supps');
-      state.challenges.past = val('past');
-      if($('motiv')) state.challenges.motivation = $('motiv').value;
-
-      persist();
-    }
-
-    /***** Navigation *****/
-    $('next').onclick = ()=>{/* مخفي حالياً */};
-    $('prev').onclick = ()=>{/* معطل حالياً */};
-    $('generate').onclick = startGenerate;
-
-    $('lang-ar').onclick = ()=>{ saveStep(); setLang('ar'); };
-    $('lang-en').onclick = ()=>{ saveStep(); setLang('en'); };
-
-    $('btn-print').onclick = ()=>window.print();
-    $('print-bottom').onclick = ()=>window.print();
-    $('scroll-top').onclick = ()=>window.scrollTo({top:0,behavior:'smooth'});
-
-    /***** Toasts *****/
-    function toast(msg, type='info'){
-      const div = document.createElement('div');
-      div.className='toast';
-      div.innerHTML = `<div class="font-bold mb-1">${type==='err'?'⚠️':''} ${msg}</div>`;
-      document.body.appendChild(div);
-      $('live').textContent = msg;
-      setTimeout(()=>div.remove(), 3500);
-    }
-
-    /***** Currency detect (region-first) *****/
-    function detectCurrency(){
-      try{
-        const loc = Intl.DateTimeFormat().resolvedOptions().locale || navigator.language || 'en-US';
-        const upper = loc.toUpperCase();
-        if(upper.includes('AR-AE') || upper.includes('AE')) return 'AED';
-        if(upper.includes('AR-SA') || upper.includes('SA')) return 'SAR';
-        if(upper.includes('AR-EG') || upper.includes('EG')) return 'EGP';
-        if(upper.includes('QA')) return 'QAR';
-        if(upper.includes('KW')) return 'KWD';
-        if(upper.includes('GB')) return 'GBP';
-        if(upper.includes('DE')||upper.includes('FR')||upper.includes('IT')||upper.includes('ES')||upper.includes('EU')) return 'EUR';
-        return 'USD';
-      }catch{ return 'USD'; }
-    }
-
-    /***** Targets calc (محسّن) *****/
-    function computeTargets(){
-      const p = state.profile, L = state.lifestyle, goals = state.diet.goals;
-      const W=+p.weight||0, H=+p.height||0, A=+p.age||0;
-      const male = (p.sex==='Male'||p.sex===t('male'));
-      const BMR = male ? 10*W + 6.25*H - 5*A + 5 : 10*W + 6.25*H - 5*A - 161;
-      const actMap = { 'Sedentary':1.2, 'Light':1.35, 'Moderate':1.5, 'High':1.7 };
-      let TDEE = BMR * (actMap[L.workActivity] || 1.35);
-
-      if(goals.includes('fatLoss')) TDEE *= 0.85;
-      if(goals.includes('build'))   TDEE *= 1.10;
-
-      const bf = +p.bodyFat || null;
-      const LM = bf ? W*(1-bf/100) : (p.targetWeight? +p.targetWeight : W*0.8);
-
-      let protein = Math.round(2.0 * Math.max(LM, 40));      // g
-      let fat     = Math.round(Math.max(0.8*W, 40));         // g
-      let carbs   = Math.round((TDEE - (protein*4 + fat*9))/4);
-
-      const hasIR = state.medical.conditions.some(c=>c==='Diabetes' || c==='Insulin Resistance');
-      if(hasIR) carbs = Math.min(carbs, 120);
-      carbs = Math.max(40, carbs);
-
-      const kcalPF = protein*4 + fat*9;
-      const rest = Math.round(TDEE - (kcalPF + carbs*4));
-      if(rest > 20) carbs += Math.round(rest/4);
-      if(rest < -20) fat = Math.max(40, Math.round((kcalPF + carbs*4 + rest - protein*4)/9));
-
-      return { bmr:Math.round(BMR), tdee:Math.round(TDEE), protein_g:protein, fat_g:fat, carb_g:carbs };
-    }
-
-    /***** AI calls (مهلة + إعادة محاولة) *****/
-    async function callAI(prompt, retries=2){
-      const ctrl = new AbortController();
-      const timer = setTimeout(()=>ctrl.abort(), 45_000);
-      try{
-        const res = await fetch('/.netlify/functions/gemini-proxy', {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ prompt }), signal: ctrl.signal
-        });
-        if(!res.ok) throw new Error('Bad response: '+res.status);
-        const data = await res.json();
-        return { ok:true, text:data.text };
-      }catch(e){
-        if(retries>0) return await callAI(prompt, retries-1);
-        return { ok:false, error:String(e) };
-      }finally{ clearTimeout(timer); }
-    }
-
-    /***** Prompt builder (كما هو مع إصلاحات المفاتيح) *****/
-    function buildPrompt(section, extra={}){
-      const lang = state.lang;
-      const L = (k)=>t(k);
-      const P = state.profile, D = state.diet, Ls = state.lifestyle, F = state.fitness;
-      const targets = state.targets;
-      const weak = Object.entries(state.muscles).filter(([k,v])=>v.on).map(([k,v])=>`${k}: ${v.note}`).join(', ') || 'None';
-      const med = state.medical.conditions.join(', ') || 'None';
-      const allergies = (D.allergies || 'None');
-      const avoid = (D.foodsToAvoid || 'None');
-      const days = (state.lang==='ar')? ['السبت','الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'] : ['Sat','Sun','Mon','Tue','Wed','Thu','Fri'];
-      const avail = Ls.availableDays.map(i=>days[i]).join(', ') || (state.lang==='ar'?'غير محدد':'Not specified');
-      const tone = state.challenges.motivation==='Direct' ? (lang==='ar'?'عملي مباشر بلا مبالغة':'Pragmatic, direct, no fluff') : (lang==='ar'?'تشجيعي وداعم':'Supportive & warm');
-
-      const goalLabels = state.diet.goals.map(goalLabel).join(', ') || (state.lang==='ar'?'غير محدد':'Not specified');
-
-      const header = `
-Name: ${P.name} | Sex: ${P.sex} | Age: ${P.age} | H: ${P.height}cm | W: ${P.weight}kg | BodyFat%: ${P.bodyFat||'n/a'} | Waist: ${P.waist||'n/a'}
-Goals: ${goalLabels} | Preferred diet: ${D.preferredDiet} | Meals/day: ${D.mealsPerDay} | Fasting: ${D.fasting}
-Cuisine: ${D.cuisine} | Prep time: ${D.prepTime}min | Budget: ${state.currency} ${D.monthlyBudget}
-Work/Activity: ${Ls.workActivity} | Steps/day: ${Ls.stepsPerDay} | Sleep: ${Ls.sleep} | Stress: ${Ls.stress}
-Training place: ${Ls.trainingPlace} | Session length: ${Ls.sessionLength}min | Available days: ${avail} | RPE: ${Ls.rpe} | Equipment: ${Ls.equipment||'Bodyweight'}
-Fitness test: HR ${F.restingHR||'?'}, Push-ups ${F.maxPushups||'?'}, Plank ${F.plank||'?'}, 1km ${F.kmTime||'?'}
-Weak muscles: ${weak} | Injuries: ${Ls.injuries || 'None'}
-Medical: ${med} | Other: ${state.medical.other||'None'} | Meds: ${state.medical.meds||'None'} | Supplements: ${state.medical.supplements||'None'}
-Allergies: ${allergies} | Dislikes: ${avoid}
-Energy targets: ~${targets.tdee} kcal/day | Macros: P ${targets.protein_g}g / F ${targets.fat_g}g / C ${targets.carb_g}g
-Tone: ${tone}.
-LANGUAGE: ${lang}. ALL FOOD IN ${lang}. EXERCISES NAMES IN ENGLISH ONLY.
-      `.trim();
-
-      if(section==='welcome'){
-        return `${header}
-
-Create a short warm ${lang} welcome for the user by name ONLY ONCE, congratulate the commitment, and preview what the plan includes. Do not repeat welcome later. Keep it crisp and professional.`;
-      }
-      if(section==='analysis'){
-        return `${header}
-
-Write a concise ${lang} analysis of the user's situation (goals, health, constraints) and explain the logic behind the plan and energy/macros numbers. Use bullet points.`;
-      }
-      if(section==='allowed'){
-        return `${header}
-
-List in ${lang} two bullet lists: 
-1) Allowed / Recommended foods (by cuisine), 
-2) Limits / to avoid (honor allergies and dislikes).
-Keep it practical.`;
-      }
-      if(section==='fasting' && D.fasting!=='off'){
-        return `${header}
-
-Explain in ${lang} how to implement Intermittent Fasting (${D.fasting}) safely with tips, hydration, caffeine timing, and training timing.`;
-      }
-      if(section==='nutrition-day'){
-        const day = extra.day;
-        return `${header}
-
-Build the ${lang} nutrition plan for Day ${day} (of 7). 
-- Provide 3–${D.mealsPerDay} meals + 1–2 snacks as needed.
-- For each meal show a table row with: Meal | Ingredients (with grams) | kcal | Protein | Fat | Carbs.
-- Finish with a summary row for total daily kcal and macros; must match the macro targets within ±10%.
-- Mark each main meal with [SWAP:MEAL:<meal-name>] to allow swapping later.`;
-      }
-      if(section==='training-day'){
-        const day = extra.day;
-        return `${header}
-
-Build the ${lang} training plan for Day ${day} (of 7) matching the user's experience and injuries.
-- Provide a Markdown table: Day | Exercise (English) | Sets | Reps | Rest (sec).
-- Include warm-up note if needed.
-- Ensure exercise selection respects injuries and focuses on weak muscles.
-- Mark each exercise with [SWAP:EXERCISE:<exercise>].`;
-      }
-      if(section==='supplements'){
-        return `${header}
-
-Suggest evidence-based supplements in ${lang} with doses and timing:
-- Essential stack, Goal-specific stack (fat loss/strength), Budget option.
-- Consider medical conditions and possible interactions with common meds.
-- Add a short disclaimer to consult a physician if uncertain.`;
-      }
-      if(section==='progression'){
-        return `${header}
-
-Describe in ${lang} a clear progression model for 8–12 weeks: how to adjust weights, reps, rest, deloads, cardio minutes, and how to re-estimate TDEE if weight changes.`;
-      }
-      if(section==='troubleshoot'){
-        return `${header}
-
-Write in ${lang} a troubleshooting section: hunger, plateaus, poor sleep, high stress, cravings, travel, eating out. Provide 2–3 bullet solutions each.`;
-      }
-      if(section==='safety'){
-        return `${header}
-
-Add ${lang} safety notes: technique reminders, injury prevention, hydration, sleep hygiene, and when to stop a session and seek medical advice.`;
-      }
-      if(section==='closing'){
-        return `${header}
-
-End with a short ${lang} motivating closing paragraph (no repeated welcome). Address the user by name.`;
-      }
-      return header;
-    }
-
-    /***** Generate plan (section-by-section) *****/
-    async function startGenerate(){
-      saveStep();
-      // مدخلات أساسية + نطاقات منطقية
-      const age=+state.profile.age, h=+state.profile.height, w=+state.profile.weight;
-      if(!(state.profile.name && age && h && w)){
-        toast(t('needBasics'),'err'); return;
-      }
-      if(age<10 || age>90){ toast('⚠️ تحقق من العمر', 'err'); return; }
-      if(h<120 || h>230){ toast('⚠️ تحقق من الطول (120-230سم)', 'err'); return; }
-      if(w<35 || w>250){ toast('⚠️ تحقق من الوزن (35-250كغ)', 'err'); return; }
-
-      state.targets = computeTargets();
-      state.generating = true;
-      $('overlay').style.display='flex';
-      $('overlay').setAttribute('aria-hidden','false');
-      $('plan-empty').style.display='none';
-      $('plan-content').innerHTML='';
-      const bar = $('ov-bar'), gbar = $('global-progress');
-      const progBars = [bar.parentElement, gbar.parentElement];
-
-      const sections = ['welcome','analysis','allowed', ...(state.diet.fasting!=='off'?['fasting']:[]),
-                        ...Array.from({length:7},(_,i)=>`nutrition-day-${i+1}`),
-                        ...Array.from({length:7},(_,i)=>`training-day-${i+1}`),
-                        'supplements','progression','troubleshoot','safety','closing'];
-      let done = 0;
-      for(const s of sections){
-        const pct = Math.round((done/sections.length)*100);
-        bar.style.width = pct+'%'; gbar.style.width = pct+'%';
-        progBars.forEach(pb=>pb.setAttribute('aria-valuenow', String(pct)));
-
-        let section = s, extra={};
-        if(s.startsWith('nutrition-day')){ section='nutrition-day'; extra.day=Number(s.split('-').pop()); }
-        if(s.startsWith('training-day')){ section='training-day'; extra.day=Number(s.split('-').pop()); }
-        const prompt = buildPrompt(section, extra);
-        const {ok, text, error} = await callAI(prompt);
-        if(!ok){ toast(t('failed'),'err'); console.error(error); break; }
-        appendToPlan(text);
-        done++;
-      }
-      bar.style.width='100%'; gbar.style.width='100%';
-      progBars.forEach(pb=>pb.setAttribute('aria-valuenow', '100'));
-      $('overlay').style.display='none';
-      $('overlay').setAttribute('aria-hidden','true');
-      state.generating=false;
-      $('plan').scrollIntoView({behavior:'smooth'});
-    }
-
-    /***** Safe append *****/
-    function appendToPlan(markdown){
-      const unsafe = marked.parse(markdown||'');
-      const safe = DOMPurify.sanitize(unsafe, {USE_PROFILES:{html:true}});
-      const wrap = $('plan-content');
-      const sec = document.createElement('div');
-      sec.className='mb-6';
-      sec.innerHTML = safe;
-      wrap.appendChild(sec);
-    }
-
-    /***** Persistence (localStorage) *****/
+    /***** Persistence *****/
     const STORAGE_KEY='ihc_state_v1';
     function persist(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch{} }
     function restore(){
       try{
         const raw = localStorage.getItem(STORAGE_KEY);
-        if(raw){ 
+        if(raw){
           const s = JSON.parse(raw);
-          // اندمج بأمان (مع الحفاظ على البنية)
           Object.assign(state, s);
-          // تأكد من وجود الحقول المتداخلة
           state.profile = Object.assign({ name:'', age:'', height:'', weight:'', bodyFat:'', waist:'', sex:'Male', targetWeight:'', targetDate:'' }, state.profile||{});
           state.diet = Object.assign({ goals:[], mealsPerDay:3, preferredDiet:'Balanced', cuisine:'Arabic/Mediter.', prepTime:20, monthlyBudget:0, foodsToAvoid:'', allergies:'', fasting:'off' }, state.diet||{});
           state.lifestyle = Object.assign({ workActivity:'Sedentary', stepsPerDay:6000, sleep:'Low', stress:'Low', trainingPlace:'Home/Gym', sessionLength:60, availableDays:[], equipment:'', experience:'Beginner (0-6m)', rpe:8, caffeine:0, injuries:'' }, state.lifestyle||{});
@@ -898,10 +459,198 @@ End with a short ${lang} motivating closing paragraph (no repeated welcome). Add
     }
     document.addEventListener('input', ()=>{ persist(); }, {capture:true});
 
+    /***** Actions *****/
+    $('lang-ar').onclick = ()=>{ saveStep(); setLang('ar'); };
+    $('lang-en').onclick = ()=>{ saveStep(); setLang('en'); };
+    $('btn-print').onclick = ()=>window.print();
+    $('print-bottom').onclick = ()=>window.print();
+    $('scroll-top').onclick = ()=>window.scrollTo({top:0,behavior:'smooth'});
+    $('next').onclick = ()=>{};
+    $('prev').onclick = ()=>{};
+    $('generate').onclick = startGenerate;
+
+    /***** Save *****/
+    function saveStep(){
+      state.profile.name = val('name'); state.profile.age = val('age'); state.profile.height = val('height'); state.profile.weight = val('weight');
+      state.profile.bodyFat = val('bodyFat'); state.profile.waist = val('waist'); if($('sex')) state.profile.sex = $('sex').value;
+      state.profile.targetWeight = val('targetWeight'); state.profile.targetDate = val('targetDate');
+
+      const goalInputs = [...document.querySelectorAll('input[data-goal]')];
+      state.diet.goals = goalInputs.filter(i=>i.checked).map(i=>i.getAttribute('data-goal'));
+
+      if($('meals')) state.diet.mealsPerDay = numVal('meals',3);
+      if($('prefDiet')) state.diet.preferredDiet = $('prefDiet').value;
+      if($('fasting')) state.diet.fasting = $('fasting').value;
+      state.diet.cuisine = val('cuisine'); state.diet.prepTime = numVal('prep',20); state.diet.monthlyBudget = numVal('budget',0);
+      if($('currency')) state.currency = $('currency').value;
+      state.diet.foodsToAvoid = val('avoid'); state.diet.allergies = val('allergies');
+
+      if($('work')) state.lifestyle.workActivity = $('work').value; state.lifestyle.stepsPerDay = numVal('steps',6000);
+      if($('sleep')) state.lifestyle.sleep = $('sleep').value; if($('stress')) state.lifestyle.stress = $('stress').value;
+      state.lifestyle.trainingPlace = val('place'); state.lifestyle.sessionLength = numVal('session',60);
+      state.lifestyle.availableDays = []; for(let i=0;i<7;i++){ const d=$(`day-${i}`); if(d && d.checked) state.lifestyle.availableDays.push(i); }
+      state.lifestyle.equipment = val('equip'); if($('exp')) state.lifestyle.experience = $('exp').value;
+      state.lifestyle.rpe = numVal('rpe',8); state.lifestyle.caffeine = numVal('caf',0); state.lifestyle.injuries = val('inj');
+
+      state.fitness.restingHR = val('q-hr'); state.fitness.maxPushups = val('q-pu'); state.fitness.plank = val('q-pl'); state.fitness.kmTime = val('q-km');
+
+      const keys = Object.keys(state.muscles);
+      keys.forEach(k=>{ const ck=$(`m-${k}`), note=$(`mnote-${k}`); if(ck) state.muscles[k].on=ck.checked; if(note) state.muscles[k].note=note.value; });
+
+      state.medical.conditions = [];
+      for(let i=0;i<12;i++){
+        const el=$(`cond-${i}`); if(el && el.checked){
+          const map=['Hypertension','Diabetes','Insulin Resistance','Thyroid issues','Hormonal issues','Fatty Liver','Joint/Knee problems','Heart disease','IBD/Ulcer','GERD/Reflux','Gluten intolerance','Lactose intolerance'];
+          state.medical.conditions.push(map[i]);
+        }
+      }
+      state.medical.other = val('otherCond'); state.medical.meds = val('meds'); state.medical.supplements = val('supps');
+      state.challenges.past = val('past'); if($('motiv')) state.challenges.motivation = $('motiv').value;
+
+      persist();
+    }
+
+    /***** Currency *****/
+    function detectCurrency(){
+      try{
+        const loc = Intl.DateTimeFormat().resolvedOptions().locale || navigator.language || 'en-US';
+        const u = loc.toUpperCase();
+        if(u.includes('AR-AE')||u.includes('AE')) return 'AED';
+        if(u.includes('AR-SA')||u.includes('SA')) return 'SAR';
+        if(u.includes('AR-EG')||u.includes('EG')) return 'EGP';
+        if(u.includes('QA')) return 'QAR';
+        if(u.includes('KW')) return 'KWD';
+        if(u.includes('GB')) return 'GBP';
+        if(u.includes('DE')||u.includes('FR')||u.includes('IT')||u.includes('ES')||u.includes('EU')) return 'EUR';
+        return 'USD';
+      }catch{ return 'USD'; }
+    }
+
+    /***** Targets *****/
+    function computeTargets(){
+      const p=state.profile,L=state.lifestyle,goals=state.diet.goals;
+      const W=+p.weight||0,H=+p.height||0,A=+p.age||0; const male=(p.sex==='Male'||p.sex===t('male'));
+      const BMR = male ? 10*W + 6.25*H - 5*A + 5 : 10*W + 6.25*H - 5*A - 161;
+      const actMap={Sedentary:1.2,Light:1.35,Moderate:1.5,High:1.7}; let TDEE=BMR*(actMap[L.workActivity]||1.35);
+      if(goals.includes('fatLoss')) TDEE*=0.85; if(goals.includes('build')) TDEE*=1.10;
+      const bf=+p.bodyFat||null; const LM=bf? W*(1-bf/100):(p.targetWeight?+p.targetWeight:W*0.8);
+      let protein=Math.round(2.0*Math.max(LM,40)); let fat=Math.round(Math.max(0.8*W,40)); let carbs=Math.round((TDEE-(protein*4+fat*9))/4);
+      const hasIR=state.medical.conditions.some(c=>c==='Diabetes'||c==='Insulin Resistance'); if(hasIR) carbs=Math.min(carbs,120); carbs=Math.max(40,carbs);
+      const kcalPF=protein*4+fat*9; const rest=Math.round(TDEE-(kcalPF+carbs*4));
+      if(rest>20) carbs+=Math.round(rest/4); if(rest<-20) fat=Math.max(40,Math.round((kcalPF+carbs*4+rest-protein*4)/9));
+      return { bmr:Math.round(BMR), tdee:Math.round(TDEE), protein_g:protein, fat_g:fat, carb_g:carbs };
+    }
+
+    /***** AI fetch (timeout + retry) *****/
+    async function callAI(prompt,retries=2){
+      const ctrl=new AbortController(); const timer=setTimeout(()=>ctrl.abort(),45_000);
+      try{
+        const res=await fetch('/.netlify/functions/gemini-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt}),signal:ctrl.signal});
+        if(!res.ok) throw new Error('Bad response: '+res.status);
+        const data=await res.json(); return {ok:true,text:data.text};
+      }catch(e){ if(retries>0) return await callAI(prompt,retries-1); return {ok:false,error:String(e)}; }
+      finally{ clearTimeout(timer); }
+    }
+
+    /***** Prompt builder (shortened templates) *****/
+    function buildPrompt(section, extra={}){
+      const lang=state.lang, P=state.profile, D=state.diet, Ls=state.lifestyle, F=state.fitness, targets=state.targets;
+      const weak=Object.entries(state.muscles).filter(([_,v])=>v.on).map(([k,v])=>`${k}: ${v.note}`).join(', ')||'None';
+      const med=state.medical.conditions.join(', ')||'None';
+      const allergies=(D.allergies||'None'), avoid=(D.foodsToAvoid||'None');
+      const days=(lang==='ar')?['السبت','الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة']:['Sat','Sun','Mon','Tue','Wed','Thu','Fri'];
+      const avail=Ls.availableDays.map(i=>days[i]).join(', ')||(lang==='ar'?'غير محدد':'Not specified');
+      const tone=state.challenges.motivation==='Direct'?(lang==='ar'?'عملي مباشر بلا مبالغة':'Pragmatic, direct, no fluff'):(lang==='ar'?'تشجيعي وداعم':'Supportive & warm');
+      const goalLabels=state.diet.goals.map(goalLabel).join(', ')||(lang==='ar'?'غير محدد':'Not specified');
+
+      const header = `
+Name: ${P.name} | Sex: ${P.sex} | Age: ${P.age} | H: ${P.height}cm | W: ${P.weight}kg | BodyFat%: ${P.bodyFat||'n/a'} | Waist: ${P.waist||'n/a'}
+Goals: ${goalLabels} | Preferred diet: ${D.preferredDiet} | Meals/day: ${D.mealsPerDay} | Fasting: ${D.fasting}
+Cuisine: ${D.cuisine} | Prep time: ${D.prepTime}min | Budget: ${state.currency} ${D.monthlyBudget}
+Work/Activity: ${Ls.workActivity} | Steps/day: ${Ls.stepsPerDay} | Sleep: ${Ls.sleep} | Stress: ${Ls.stress}
+Training place: ${Ls.trainingPlace} | Session length: ${Ls.sessionLength}min | Available days: ${avail} | RPE: ${Ls.rpe} | Equipment: ${Ls.equipment||'Bodyweight'}
+Fitness test: HR ${F.restingHR||'?'}, Push-ups ${F.maxPushups||'?'}, Plank ${F.plank||'?'}, 1km ${F.kmTime||'?'}
+Weak muscles: ${weak} | Injuries: ${Ls.injuries||'None'}
+Medical: ${med} | Other: ${state.medical.other||'None'} | Meds: ${state.medical.meds||'None'} | Supplements: ${state.medical.supplements||'None'}
+Allergies: ${allergies} | Dislikes: ${avoid}
+Energy targets: ~${targets.tdee} kcal/day | Macros: P ${targets.protein_g}g / F ${targets.fat_g}g / C ${targets.carb_g}g
+Tone: ${tone}.
+LANGUAGE: ${lang}. ALL FOOD IN ${lang}. EXERCISES NAMES IN ENGLISH ONLY.`.trim();
+
+      if(section==='welcome') return `${header}\n\nCreate a short warm ${lang} welcome for the user by name ONLY ONCE, and preview the plan. Keep it crisp.`;
+      if(section==='analysis') return `${header}\n\nWrite a concise ${lang} analysis of the user's situation and the logic behind energy/macros. Use bullet points.`;
+      if(section==='allowed') return `${header}\n\nList in ${lang}: 1) Allowed/Recommended foods, 2) Limits/To avoid (respect allergies/dislikes).`;
+      if(section==='fasting' && D.fasting!=='off') return `${header}\n\nExplain in ${lang} how to implement Intermittent Fasting (${D.fasting}) safely, with hydration/caffeine/training timing.`;
+      if(section==='nutrition-day'){ const day=extra.day; return `${header}\n\nBuild the ${lang} nutrition plan for Day ${day} (of 7) with table rows Meal|Ingredients(g)|kcal|Protein|Fat|Carbs and daily totals within ±10% of targets. Mark main meals with [SWAP:MEAL:<name>].`; }
+      if(section==='training-day'){ const day=extra.day; return `${header}\n\nBuild the ${lang} training plan for Day ${day} (of 7). Table columns: Day|Exercise (English)|Sets|Reps|Rest(s). Respect injuries and focus weak muscles. Mark each with [SWAP:EXERCISE:<name>].`; }
+      if(section==='supplements') return `${header}\n\nSuggest evidence-based supplements in ${lang}: essential stack, goal-specific, budget. Include doses/timing and brief medical disclaimer.`;
+      if(section==='progression') return `${header}\n\nDescribe in ${lang} a clear 8–12 week progression: adjust loads/reps/rest, deloads, cardio minutes, and retune TDEE as weight changes.`;
+      if(section==='troubleshoot') return `${header}\n\nWrite in ${lang} troubleshooting for hunger, plateaus, poor sleep, high stress, cravings, travel, eating out (2–3 bullets each).`;
+      if(section==='safety') return `${header}\n\nAdd ${lang} safety notes: technique, injury prevention, hydration, sleep, and stop/seek medical advice triggers.`;
+      if(section==='closing') return `${header}\n\nEnd with a short ${lang} motivating closing paragraph (no repeated welcome), address the user by name.`;
+      return header;
+    }
+
+    /***** Generate *****/
+    async function startGenerate(){
+      saveStep();
+      const age=+state.profile.age, h=+state.profile.height, w=+state.profile.weight;
+      if(!(state.profile.name && age && h && w)){ toast(t('needBasics'),'err'); return; }
+      if(age<10 || age>90){ toast('⚠️ تحقق من العمر', 'err'); return; }
+      if(h<120 || h>230){ toast('⚠️ تحقق من الطول (120-230سم)', 'err'); return; }
+      if(w<35 || w>250){ toast('⚠️ تحقق من الوزن (35-250كغ)', 'err'); return; }
+
+      state.targets = computeTargets();
+      state.generating = true;
+      $('overlay').style.display='flex'; $('overlay').setAttribute('aria-hidden','false');
+      $('plan-empty').style.display='none'; $('plan-content').innerHTML='';
+      const bar=$('ov-bar'), gbar=$('global-progress'); const pbs=[bar.parentElement,gbar.parentElement];
+
+      const sections = ['welcome','analysis','allowed', ...(state.diet.fasting!=='off'?['fasting']:[]),
+        ...Array.from({length:7},(_,i)=>`nutrition-day-${i+1}`),
+        ...Array.from({length:7},(_,i)=>`training-day-${i+1}`),
+        'supplements','progression','troubleshoot','safety','closing'];
+
+      let done=0;
+      for(const s of sections){
+        const pct=Math.round((done/sections.length)*100); bar.style.width=pct+'%'; gbar.style.width=pct+'%'; pbs.forEach(pb=>pb.setAttribute('aria-valuenow', String(pct)));
+        let section=s, extra={}; if(s.startsWith('nutrition-day')){ section='nutrition-day'; extra.day=+s.split('-').pop(); }
+        if(s.startsWith('training-day')){ section='training-day'; extra.day=+s.split('-').pop(); }
+        const prompt=buildPrompt(section,extra);
+        const {ok,text,error}=await callAI(prompt);
+        if(!ok){ toast(t('failed'),'err'); console.error(error); break; }
+        appendToPlan(text); done++;
+      }
+      bar.style.width='100%'; gbar.style.width='100%'; pbs.forEach(pb=>pb.setAttribute('aria-valuenow','100'));
+      $('overlay').style.display='none'; $('overlay').setAttribute('aria-hidden','true'); state.generating=false;
+      $('plan').scrollIntoView({behavior:'smooth'});
+    }
+
+    /***** Safe append (fallbacks if libs missing) *****/
+    function simpleMD(md){
+      const lines = (md||'').split(/\n{2,}/).map(p=>`<p>${esc(p).replace(/\n/g,'<br>')}</p>`);
+      return lines.join('\n');
+    }
+    function appendToPlan(markdown){
+      let html = '';
+      if(hasMarked){ try{ html = marked.parse(markdown||''); } catch{ html = simpleMD(markdown); } }
+      else { html = simpleMD(markdown); }
+      if(hasDOMPurify){ try{ html = DOMPurify.sanitize(html, {USE_PROFILES:{html:true}}); }catch{} }
+      const wrap=$('plan-content'); const sec=document.createElement('div');
+      sec.className='mb-6'; sec.innerHTML=html; wrap.appendChild(sec);
+    }
+
+    /***** Toast *****/
+    function toast(msg, type='info'){
+      const div=document.createElement('div'); div.className='toast';
+      div.innerHTML = `<div class="font-bold mb-1">${type==='err'?'⚠️':''} ${msg}</div>`;
+      document.body.appendChild(div); const live=document.getElementById('live'); if(live) live.textContent=msg;
+      setTimeout(()=>div.remove(), 3500);
+    }
+
     /***** Init *****/
     window.addEventListener('load', ()=>{
-      restore();
-      setLang(state.lang); // renderStep داخل setLang
+      try{ restore(); setLang(state.lang); }catch(e){ console.error(e); }
     });
   </script>
 </body>
