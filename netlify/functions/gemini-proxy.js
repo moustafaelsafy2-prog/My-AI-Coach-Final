@@ -1,6 +1,5 @@
 // netlify/functions/gemini-proxy.js
-// CommonJS — compatible with Netlify Node 18+
-// No external dependencies required
+// CommonJS – Netlify Node 18+, no extra deps.
 
 const MODEL = process.env.LLM_MODEL || "gemini-1.5-pro";
 const API_KEY = process.env.LLM_API_KEY;
