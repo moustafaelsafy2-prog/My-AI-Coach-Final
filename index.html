@@ -496,10 +496,27 @@ function promptFor(section){
   if(section==='analysis') return `${H}\n\nWrite concise ${state.lang} analysis (bullets) with plan logic and macros.`;
   if(section==='allowed') return `${H}\n\nTwo lists in ${state.lang}: (1) Allowed/Recommended by cuisine. (2) Limits/Avoid (respect allergies/dislikes). Practical.`;
   if(section==='fasting' && state.diet.fasting!=='off') return `${H}\n\nExplain in ${state.lang} Intermittent Fasting (${state.diet.fasting}) safely: timing, hydration, caffeine, training window.`;
-  if(section.startsWith('nutrition-day')){ const day=+section.split('-').pop();
-    return `${H}\n\n${state.lang} only. OUTPUT MUST BE A MARKDOWN TABLE ONLY.\nColumns: Meal | Ingredients (g) | kcal | Protein | Fat | Carbs.\n3–${state.diet.mealsPerDay} meals + one TOTAL row (±10% of targets). Day ${day} of 7.`; }
-  if(section.startsWith('training-day')){ const day=+section.split('-').pop();
-    return `${H}\n\nOUTPUT ONLY A MARKDOWN TABLE.\nColumns: Day | Exercise | Sets | Reps | Rest (sec).\nRespect injuries; mark [SWAP:EXERCISE:<exercise>]. Day ${day} of 7.`; }
+
+  if(section.startsWith('nutrition-day')){
+    const day=+section.split('-').pop();
+    return `${H}
+
+STRICT OUTPUT: Markdown table ONLY. No prose, no bullets, no explanations.
+Columns: | Meal | Ingredients (g) | kcal | Protein | Fat | Carbs |
+Rows: 3 main meals + TOTAL row only (4 rows total).
+Daily macros MUST be within ±10% of Targets at the end row.
+Language: ${state.lang}. Use local Arabic dish names if lang=ar.
+Day ${day} of 7.`; }
+
+  if(section.startsWith('training-day')){
+    const day=+section.split('-').pop();
+    return `${H}
+
+STRICT OUTPUT: Markdown table ONLY.
+Columns: | Day | Exercise | Sets | Reps | Rest (sec) |
+Include warm-up as first row if needed. Respect injuries and focus weak muscles.
+Day ${day} of 7.`; }
+
   if(section==='supplements') return `${H}\n\nEvidence-based supplements in ${state.lang}: essential, goal-specific, budget. Doses & timing. Bullets. Medical disclaimer.`;
   if(section==='progression') return `${H}\n\n8–12 week progression in ${state.lang}: adjust weights/reps/rest, deloads, cardio, TDEE recalculation. Bullets.`;
   if(section==='troubleshoot') return `${H}\n\nTroubleshooting in ${state.lang}: hunger, plateaus, poor sleep, stress, cravings, travel/eating out. 2–3 bullets each.`;
@@ -509,25 +526,75 @@ function promptFor(section){
 }
 
 /* ============================ API (robust) ============================ */
-async function callAI(prompt, { attempts = 2 } = {}) {
+async function callAI(prompt, params = {}, { attempts = 2 } = {}) {
+  const body = JSON.stringify({ prompt, ...params });
   const endpoints = ['/api/generate', '/.netlify/functions/gemini-proxy'];
+
   for (const ep of endpoints) {
     for (let i = 0; i < attempts; i++) {
       try {
-        const r = await fetch(ep, { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ prompt }) });
+        const r = await fetch(ep, { method:'POST', headers:{'content-type':'application/json'}, body });
         const raw = await r.text();
         let data = null; try { data = JSON.parse(raw); } catch {}
-        if (!r.ok) throw new Error((data && (data.error || data.message)) || raw.slice(0, 200));
-        const text = (data && data.text) ? String(data.text).trim() : String(raw).trim();
+        if (!r.ok) throw new Error((data && (data.error || data.details || data.message)) || raw.slice(0, 200));
+        const text = (data && data.text) ? String(data.text).trim() : "";
         if (!text || /^<!doctype/i.test(text)) throw new Error('Invalid response body');
         return { ok:true, text };
       } catch (e) {
         if (i === attempts - 1) continue;
-        await new Promise(res => setTimeout(res, 800 * (i + 1)));
+        await new Promise(res => setTimeout(res, 1000 * (i + 1)));
       }
     }
   }
   return { ok:false, error:'Both endpoints failed' };
+}
+
+/* Params per section */
+function paramsFor(sectionId){
+  const common = { response_mime_type: "text/markdown" };
+  if (sectionId.startsWith('nutrition-day') || sectionId.startsWith('training-day')) {
+    return { ...common, model: "gemini-1.5-pro", temperature: 0.25, top_p: 0.85, max_output_tokens: 6144 };
+  }
+  return { ...common, model: "gemini-2.5-flash-preview-05-20", temperature: 0.45, top_p: 0.9, max_output_tokens: 2048 };
+}
+
+/* Nutrition fallback: split & merge */
+async function generateNutritionFallback(sectionId){
+  const day = +sectionId.split('-').pop();
+  const base = headerBlock();
+  const params = paramsFor(sectionId);
+
+  const p1 = `${base}
+
+OUTPUT: Markdown table ONLY with 2 meals (Breakfast + Lunch).
+Columns: | Meal | Ingredients (g) | kcal | Protein | Fat | Carbs |
+Language: ${state.lang}. Day ${day} (part 1 of 2).`;
+
+  const p2 = `${base}
+
+OUTPUT: Markdown table ONLY with 1 meal (Dinner).
+Columns: | Meal | Ingredients (g) | kcal | Protein | Fat | Carbs |
+Language: ${state.lang}. Day ${day} (part 2 of 2).`;
+
+  const [r1, r2] = await Promise.all([
+    callAI(p1, params, { attempts: 2 }),
+    callAI(p2, params, { attempts: 2 })
+  ]);
+
+  if(!(r1.ok && r2.ok)) return { ok:false, error: (r1.error||'') + ' ' + (r2.error||'') };
+
+  const totalPrompt = `${base}
+
+You are given the rows below as Markdown rows (without header).
+Compute a TOTAL row (kcal, Protein, Fat, Carbs) and return ONLY the TOTAL row.
+Rows:
+${r1.text}\n${r2.text}`;
+
+  const rTotal = await callAI(totalPrompt, params, { attempts: 2 });
+  if(!rTotal.ok) return { ok:false, error:rTotal.error };
+
+  const merged = r1.text.trim() + "\n" + r2.text.trim() + "\n" + rTotal.text.trim();
+  return { ok:true, text: merged };
 }
 
 /* ============================ GENERATION ============================ */
@@ -576,8 +643,11 @@ async function generateOne(sectionId,startPct,endPct){
   const noteEl=document.getElementById('note-'+sectionId);
   const barEl=document.getElementById('bar-'+sectionId); noteEl.textContent=t('gen');
 
-  let r=await callAI(promptFor(sectionId),{attempts:2});
-  if(!r.ok) r=await callAI(promptFor(sectionId),{attempts:2}); // محاولة إضافية بنفس البرومبت (قابلة للتبديل)
+  let r = await callAI(promptFor(sectionId), paramsFor(sectionId), { attempts: 2 });
+
+  if(!r.ok && sectionId.startsWith('nutrition-day')){
+    r = await generateNutritionFallback(sectionId);
+  }
 
   if(!r.ok){
     setSectionStatus(sectionId,'fail',r.error);
