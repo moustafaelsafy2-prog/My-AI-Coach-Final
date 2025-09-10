@@ -8,7 +8,7 @@
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Markdown + Sanitize + PDF -->
+  <!-- Markdown + Sanitize + PDF (تهبط بأمان إن تعذّر تحميلها) -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
@@ -19,7 +19,7 @@
 
   <style>
     :root{
-      --bg:#f7f9fc; --panel:#fff; --ink:#0c1220; --muted:#5b6878; --line:#e5eaf1;
+      --bg:#f7f9fc; --panel:#ffffff; --ink:#0b1220; --muted:#5b6878; --line:#e5eaf1;
       --brand:#6d28d9; --brand2:#0891b2; --ok:#059669; --warn:#d97706; --err:#dc2626;
       --chip:#f1f5f9; --th:#f3f4f6;
     }
@@ -54,7 +54,7 @@
 <body class="font-ar">
   <!-- Header -->
   <header class="glass sticky top-0 z-30">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-cyan-500 text-white grid place-items-center font-extrabold">AI</div>
         <div class="leading-tight">
@@ -74,17 +74,17 @@
   </header>
 
   <!-- Hero -->
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 mt-6">
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 mt-6">
     <div class="glass rounded-2xl p-6">
       <h1 id="hero-title" class="text-3xl sm:text-4xl font-extrabold">المدرب الشخصي — خطة نهائية دقيقة</h1>
       <p id="hero-sub" class="muted mt-1">
-        توليد ذكي **قسمًا بعد قسم**: ترحيب، تحليل الحالة، المسموح/الممنوع، الصيام المتقطع، تغذية ٧ أيام، تدريب ٧ أيام، مكملات، قواعد التقدّم، معالجة التعثر، قائمة تنفيذ، سلامة، وأسئلة شائعة — بدون اختصار.
+        توليد ذكي **قسمًا بعد قسم**: ترحيب وتحفيز، تشخيص الحالة، المسموح/الممنوع، الصيام المتقطع، تغذية ٧ أيام، تدريب ٧ أيام، مكملات، قواعد التقدّم، حلول التعثر، قائمة تنفيذ، سلامة وأسئلة شائعة — بدون اختصار.
       </p>
     </div>
   </section>
 
   <!-- Main -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 mt-6 grid xl:grid-cols-[minmax(0,1fr),420px] gap-6">
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 mt-6 grid lg:grid-cols-[minmax(0,1fr),360px] gap-6">
     <!-- Form Panel -->
     <section class="panel rounded-2xl p-6">
       <div class="flex items-center justify-between mb-4">
@@ -94,8 +94,9 @@
 
       <div id="form"></div>
 
-      <div id="controls" class="mt-6 flex gap-2">
+      <div class="mt-6 flex gap-2 no-print">
         <button id="btn-start" class="btn btn-primary flex-1">ابدأ التوليد</button>
+        <button id="btn-regen" class="btn btn-soft flex-1 hidden">إعادة توليد قسم</button>
       </div>
 
       <div id="progress" class="mt-4 hidden">
@@ -106,7 +107,6 @@
       </div>
 
       <div class="mt-4 no-print">
-        <button id="btn-regen" class="btn btn-soft hidden">إعادة توليد قسم</button>
         <button id="btn-print" class="btn btn-ghost hidden">طباعة</button>
         <button id="btn-pdf" class="btn btn-ghost hidden">PDF</button>
       </div>
@@ -119,12 +119,12 @@
         <span id="lang-badge" class="chip">AR</span>
       </div>
       <div id="live" class="mt-3 space-y-2 text-sm"></div>
-      <div class="mt-3 text-[11px] muted">* اللغة تُقفل عند بدء التوليد لضمان عدم الخلط.</div>
+      <div class="mt-3 text-[11px] muted">* تُقفل اللغة عند بدء التوليد لمنع أي خلط.</div>
     </aside>
   </main>
 
   <!-- Result -->
-  <section id="result" class="max-w-7xl mx-auto px-4 sm:px-6 mt-6 mb-14 hidden">
+  <section id="result" class="max-w-6xl mx-auto px-4 sm:px-6 mt-6 mb-14 hidden">
     <article class="glass rounded-2xl p-6" id="resultRoot">
       <h2 id="plan-title" class="text-2xl font-extrabold">الخطة الشاملة — Section by Section</h2>
       <div id="ai" class="prose prose-invert rtl:text-right ltr:text-left mt-4"></div>
@@ -146,7 +146,14 @@
   (function(){
     // ===== Shortcuts
     const $ = (id)=>document.getElementById(id);
+    const byQS = (sel,root=document)=>root.querySelector(sel);
     const setHTML = (el, html)=>{ el.innerHTML = (window.DOMPurify? window.DOMPurify.sanitize(html) : html); };
+    const toast = (msg,kind='ok')=>{
+      const box=document.createElement('div');
+      const side=(document.documentElement.dir==='rtl'?'right':'left');
+      box.className=`fixed top-5 ${side}-5 z-50 px-3 py-2 rounded-xl text-sm text-white ${kind==='err'?'bg-red-600':kind==='warn'?'bg-amber-600':'bg-emerald-600'}`;
+      box.textContent=msg; document.body.appendChild(box); setTimeout(()=>box.remove(),2600);
+    };
 
     // ===== Theme
     const themeBtn = $('themeToggle');
@@ -171,9 +178,10 @@
           meds:'أدوية (إن وجدت)', allergies:'حساسيات', allergyVals:['الجلوتين','اللاكتوز','المكسرات','المأكولات البحرية','البقوليات','السكريات المضافة','الزيوت النباتية'],
           injuries:'إصابات (اذكر المكان والوصف)', exp:'خبرة المقاومة', expVals:['مبتدئ','متوسط','متقدم'],
           dislikes:'أطعمة غير مفضلة (اختياري)',
-          start:'ابدأ التوليد', regen:'إعادة توليد قسم', printing:'طباعة', pdf:'PDF',
-          rights:'Powered by Mustafa Elsafy 2025',
-          locked:'* تم قفل اللغة لمنع الخلط أثناء التوليد.'
+          start:'ابدأ التوليد', regen:'إعادة توليد قسم',
+          printing:'طباعة', pdf:'PDF', rights:'Powered by Mustafa Elsafy 2025',
+          locked:'* تم قفل اللغة لمنع الخلط أثناء التوليد.',
+          spinner:'جاري التوليد… الرجاء الانتظار.'
         }
       },
       en: {
@@ -191,17 +199,17 @@
           meds:'Medications (if any)', allergies:'Allergies', allergyVals:['Gluten','Lactose','Nuts','Seafood','Legumes','Added sugars','Vegetable oils'],
           injuries:'Injuries (location & description)', exp:'Resistance experience', expVals:['Beginner','Intermediate','Advanced'],
           dislikes:'Disliked foods (optional)',
-          start:'Start Generation', regen:'Regenerate Section', printing:'Print', pdf:'PDF',
-          rights:'Powered by Mustafa Elsafy 2025',
-          locked:'* Language is locked to avoid mixing during generation.'
+          start:'Start Generation', regen:'Regenerate Section',
+          printing:'Print', pdf:'PDF', rights:'Powered by Mustafa Elsafy 2025',
+          locked:'* Language is locked to avoid mixing during generation.',
+          spinner:'Generating… please wait.'
         }
       }
     };
 
     // ===== State
-    let lang = 'ar';   // lock on start
-    let locked = false;
-
+    let lang = 'ar';           // تُختار قبل البدء
+    let locked = false;        // تُقفل عند البدء
     const user = {
       name:'', age:'', height:'', weight:'', gender:'Male',
       jobLabel:'Desk/Light (PAL 1.25)',
@@ -301,6 +309,26 @@
       $('sleep').value = 7;
     }
 
+    // ===== Language toggle (قبل القفل فقط)
+    function applyLang(l){
+      if(locked) return; // لا تبديل أثناء التوليد
+      lang=l;
+      document.documentElement.lang=l;
+      document.documentElement.dir=(l==='ar'?'rtl':'ltr');
+      document.body.classList.toggle('font-ar', l==='ar');
+      document.body.classList.toggle('font-en', l!=='ar');
+      $('lang-badge').textContent=l.toUpperCase();
+      $('hero-title').textContent=L[l].ui.title;
+      $('live-title').textContent=L[l].ui.live;
+      $('rights').textContent=L[l].ui.rights;
+      renderForm();
+      updateLivePreview(); // تحديث الملخص
+    }
+    $('btn-lang-ar').onclick=()=>applyLang('ar');
+    $('btn-lang-en').onclick=()=>applyLang('en');
+    renderForm(); // AR افتراضيًا
+
+    // ===== التحقق + تلخيص حي
     function capture(){
       const U = L[lang].ui;
       user.name     = $('name').value.trim();
@@ -333,39 +361,22 @@
       return true;
     }
 
-    function live(){
+    function updateLivePreview(){
+      const U=L[lang].ui;
       $('live').innerHTML = `
-        <div class="text-xs muted">${L[lang].ui.name}: <b>${user.name||'—'}</b></div>
+        <div class="text-xs muted">${U.name}: <b>${user.name||'—'}</b></div>
         <div class="grid grid-cols-3 gap-2 text-xs">
-          <div class="kpi"><div class="muted">${L[lang].ui.age}</div><b>${user.age||'—'}</b></div>
-          <div class="kpi"><div class="muted">${L[lang].ui.height}</div><b>${user.height||'—'}</b></div>
-          <div class="kpi"><div class="muted">${L[lang].ui.weight}</div><b>${user.weight||'—'}</b></div>
+          <div class="kpi"><div class="muted">${U.age}</div><b>${user.age||'—'}</b></div>
+          <div class="kpi"><div class="muted">${U.height}</div><b>${user.height||'—'}</b></div>
+          <div class="kpi"><div class="muted">${U.weight}</div><b>${user.weight||'—'}</b></div>
         </div>
-        <div class="text-xs muted">${L[lang].ui.goals}: <b>${user.goals.join(lang==='ar'?'، ':', ')}</b></div>
-        <div class="text-xs muted">${L[lang].ui.diet}: <b>${user.diet}</b> — ${L[lang].ui.meals}: <b>${user.meals}</b></div>
-        <div class="text-[11px] text-amber-600 mt-1">${L[lang].ui.locked}</div>
+        <div class="text-xs muted">${U.goals}: <b>${(user.goals||[]).join(lang==='ar'?'، ':', ')||'—'}</b></div>
+        <div class="text-xs muted">${U.diet}: <b>${user.diet}</b> — ${U.meals}: <b>${user.meals}</b></div>
+        <div class="text-[11px] text-amber-600 mt-1">${U.locked}</div>
       `;
     }
 
-    // ===== Language toggle (before lock)
-    function applyLang(l){
-      if(locked) return; // prevent switch while generating
-      lang=l;
-      document.documentElement.lang=l;
-      document.documentElement.dir=(l==='ar'?'rtl':'ltr');
-      document.body.classList.toggle('font-ar', l==='ar');
-      document.body.classList.toggle('font-en', l!=='ar');
-      $('lang-badge').textContent=l.toUpperCase();
-      $('hero-title').textContent=L[l].ui.title;
-      $('live-title').textContent=L[l].ui.live;
-      $('rights').textContent=L[l].ui.rights;
-      renderForm();
-    }
-    $('btn-lang-ar').onclick=()=>applyLang('ar');
-    $('btn-lang-en').onclick=()=>applyLang('en');
-    applyLang('ar'); // default
-
-    // ===== Progress UI
+    // ===== Progress
     function setProgress(i, n, label){
       const pct = Math.round((i/n)*100);
       $('progress').classList.remove('hidden');
@@ -373,86 +384,104 @@
       $('prog-bar').style.width = pct+'%';
     }
 
-    // ===== Prompt Builders (strict, language-locked)
+    // ===== حسابات عامة (تُستخدم داخل الموجه فقط)
+    function parsePAL(label){ const m=String(label).match(/PAL\s*([0-9.]+)/); return m? parseFloat(m[1]) : 1.25; }
+    function calcTargets(){
+      const W=+user.weight||0, H=+user.height||0, A=+user.age||0, male=(user.gender==='Male');
+      const BMR = male? 10*W+6.25*H-5*A+5 : 10*W+6.25*H-5*A-161;
+      const pal = parsePAL(user.jobLabel||'PAL 1.25');
+      let TDEE=BMR*pal;
+      if(user.goals.some(g=>/Fat|دهون/.test(g))) TDEE*=0.86;
+      if(user.goals.some(g=>/Muscle|عضلات/.test(g))) TDEE*=1.10;
+      const P=Math.round(2.0*(+user.weight||1));
+      const F=Math.round(Math.max(0,0.8*(+user.weight||1)));
+      let C=Math.round((TDEE-(P*4+F*9))/4);
+      if(user.health.some(h=>/Diab|السكري|Insulin|الأنسولين/.test(h))) C=Math.min(C,120);
+      C=Math.max(0,C);
+      return {TDEE:Math.round(TDEE),P,F,C};
+    }
+
+    // ===== Prompts (لا تعتمد على تغييرات في الـ proxy — ترسل {prompt} فقط)
     function baseHeader(){
       const locale = (lang==='ar'?'Arabic':'English');
       const ifTxt = user.fasting.enabled ? `${user.fasting.protocol} (${user.fasting.start}-${user.fasting.end})` : 'disabled';
+      const c = calcTargets();
       return `
-IMPORTANT LANGUAGE RULE: Output must be in ${locale} only. Do not use any other language or mixed terms.
-FORMAT: Return Markdown only (no code blocks, no JSON). Use clean headings (###) and tables when relevant.
+IMPORTANT LANGUAGE RULE: Output must be in ${locale} only. Do not mix languages or include any other language terms.
+FORMAT: Markdown only (no code fences). Use clean headings (###) and tables when relevant.
 
 CLIENT PROFILE
 - Name: ${user.name}; Sex: ${user.gender}
 - Age/Height/Weight: ${user.age}y / ${user.height}cm / ${user.weight}kg
 - Daily Activity (PAL): ${user.jobLabel}; Sleep: ${user.sleep}h; Stress: ${user.stress}
-- Goals: ${user.goals.join(', ')}
+- Goals: ${(user.goals||[]).join(', ')}
 - Diet style: ${user.diet}; Meals/day: ${user.meals}; Intermittent fasting: ${ifTxt}
 - Training place: ${user.training_place}; Equipment: ${user.equipment||'—'}
 - Experience: ${user.exp}; Injuries: ${user.injuries||'None'}
 - Allergies: ${(user.allergies||[]).join(', ')||'None'}
 - Health conditions: ${(user.health||[]).join(', ')||'None'}
 - Disliked foods: ${user.dislikes||'None'}
+DAILY TARGETS: ~${c.TDEE} kcal; Protein ~${c.P} g; Fat ~${c.F} g; Carbs ~${c.C} g; tolerance ±2%.
 `.trim();
     }
 
-    const SECTIONS = [
-      {key:'welcome',    label_ar:'١) ترحيب وتهنئة ونبذة عن الخطة', label_en:'1) Welcome, congratulations & plan overview',
+    const PIPE = [
+      { key:'welcome', label_ar:'١) ترحيب وتحفيز ونبذة', label_en:'1) Welcome, Motivation & Overview',
         prompt:()=>`${baseHeader()}
 
 SECTION: Welcome & Motivation and Plan Overview
-- Write 2–3 short, warm lines to greet the user and congratulate their decision.
-- Add a concise overview of the plan structure and what to expect (section-by-section).
-- Keep it professional, motivating, and clear.`},
+- Write 2–3 warm, professional lines to congratulate the user and set expectations.
+- Add a concise overview of the plan structure (the sections that will follow).`},
 
-      {key:'analysis',   label_ar:'٢) تشخيص الحالة والهدف', label_en:'2) Case analysis & goal rationale',
+      { key:'analysis', label_ar:'٢) تشخيص الحالة والهدف', label_en:'2) Case analysis & goal rationale',
         prompt:()=>`${baseHeader()}
 
 SECTION: Case Analysis & Goal Rationale
 - Summarize user context and constraints.
-- Explain how nutrition + training address the goals, considering injuries/health/allergies.
-- Bullet points, precise, no fluff.`},
+- Explain how nutrition + training will be tailored to goals considering injuries/health/allergies.
+- Use tight bullet points; no fluff.`},
 
-      {key:'allowed',    label_ar:'٣) قائمة المسموح والممنوع', label_en:'3) Allowed vs Avoid',
+      { key:'allowed', label_ar:'٣) المسموح والممنوع', label_en:'3) Allowed vs Avoid',
         prompt:()=>`${baseHeader()}
 
 SECTION: Allowed vs Avoid
-- Tailor to the chosen diet, allergies and dislikes.
-- Bulleted lists with practical examples.`},
+- Tailor to chosen diet, allergies and dislikes.
+- Bullet lists with practical examples to keep/avoid.`},
 
-      {key:'fasting',    label_ar:'٤) الصيام المتقطع', label_en:'4) Intermittent Fasting',
+      { key:'fasting', label_ar:'٤) الصيام المتقطع', label_en:'4) Intermittent Fasting',
         prompt:()=>`${baseHeader()}
 
 SECTION: Intermittent Fasting
-- If disabled, briefly explain why/when to consider it. If enabled, specify exact protocol, hydration, electrolytes, pre/after window rules, and meds note.
-- Practical guidance for daily application.`},
+- If disabled: when to consider it and how. If enabled: exact protocol, hydration, electrolytes, breaking-the-fast rules, meds note.
+- Keep instructions actionable for daily life.`},
 
-      {key:'nutrition',  label_ar:'٥) تغذية ٧ أيام — جداول كاملة', label_en:'5) 7-Day Nutrition — full tables',
+      { key:'nutrition', label_ar:'٥) تغذية ٧ أيام — جداول كاملة', label_en:'5) 7-Day Nutrition — full tables',
         prompt:()=>`${baseHeader()}
 
 SECTION: 7-Day Nutrition Plan (FULL)
-STRICT REQUIREMENTS:
+STRICT:
 - Write 7 DIFFERENT days. For EACH day write EXACTLY ${user.meals} meals.
 - Each meal: name, ingredients with quantities (g/ml), per-meal macros (Protein/Fat/Carbs/kcal).
-- End each day with a Totals row (must match daily targets within ±2%), and a 1-line compliance tip.
-- NO "repeat", NO "etc", NO placeholders. Everything explicit.`},
+- End each day with Totals row (match daily targets within ±2%) and a 1-line compliance tip.
+- NO placeholders, NO "repeat", NO "etc". Everything explicit.`},
 
-      {key:'training',   label_ar:'٦) تدريب ٧ أيام — جداول كاملة', label_en:'6) 7-Day Training — full tables',
+      { key:'training', label_ar:'٦) تدريب ٧ أيام — جداول كاملة', label_en:'6) 7-Day Training — full tables',
         prompt:()=>`${baseHeader()}
 
 SECTION: 7-Day Training Plan (FULL)
 - Tailored to ${user.exp} at ${user.training_place}; avoid aggravating injuries: ${user.injuries||'None'}.
-- For EACH of 7 days: a table with columns: Exercise (English only) • Sets • Reps • Tempo • Rest (s) • Notes (cues/progression).
+- For EACH of 7 days: table with columns: Exercise (English only) • Sets • Reps • Tempo • Rest (s) • Notes (cues/progression).
 - No placeholders. Fully detailed for 7 days.`},
 
-      {key:'supps',      label_ar:'٧) المكملات', label_en:'7) Supplements',
+      { key:'supps', label_ar:'٧) المكملات', label_en:'7) Supplements',
         prompt:()=>`${baseHeader()}
 
 SECTION: Supplements
 - Core stack (dose & timing).
-- Condition-linked supplements based on health profile (with 'consult physician' note).
-- Keep it practical and safe.`},
+- Condition-linked supplements based on health profile (with "consult physician" note).
+- Practical and safe suggestions.`},
 
-      {key:'progress',   label_ar:'٨) التقدم والضبط', label_en:'8) Progression & Adjustments',
+      { key:'progress', label_ar:'٨) التقدم والضبط', label_en:'8) Progression & Adjustments',
         prompt:()=>`${baseHeader()}
 
 SECTION: Progression & Weekly Check-ins
@@ -460,39 +489,51 @@ SECTION: Progression & Weekly Check-ins
 - Macro adjustment thresholds if weight stalls up/down.
 - Deload criteria and recovery cues.`},
 
-      {key:'troubleshoot',label_ar:'٩) التعثر والحلول + قائمة تنفيذ', label_en:'9) Troubleshooting + Implementation Checklist',
+      { key:'troubleshoot', label_ar:'٩) حلول التعثر + قائمة تنفيذ', label_en:'9) Troubleshooting + Implementation Checklist',
         prompt:()=>`${baseHeader()}
 
 SECTION: Troubleshooting & Implementation Checklist
 - Common pitfalls and quick fixes.
-- A daily/weekly actionable checklist.`},
+- A daily/weekly actionable checklist to ensure compliance.`},
 
-      {key:'safety',     label_ar:'١٠) السلامة والأسئلة الشائعة', label_en:'10) Safety & FAQs',
+      { key:'safety', label_ar:'١٠) السلامة والأسئلة الشائعة', label_en:'10) Safety & FAQs',
         prompt:()=>`${baseHeader()}
 
 SECTION: Safety & FAQs
-- Safety notes given injuries/conditions.
+- Specific safety notes given injuries/conditions.
 - 4–6 concise FAQs with precise answers.`},
 
-      {key:'closing',    label_ar:'١١) ختام احترافي', label_en:'11) Professional Closing',
+      { key:'closing', label_ar:'١١) ختام احترافي', label_en:'11) Professional Closing',
         prompt:()=>`${baseHeader()}
 
 SECTION: Professional Closing
-- Close with a short professional paragraph reinforcing commitment and next steps.`},
+- Short, professional closing reinforcing commitment and next steps.`}
     ];
 
-    // ===== AI Call
-    async function callAI(prompt, maxTokens){
+    // ===== AI Call (يعمل مع الـ proxy القديم: body={prompt})
+    async function callAI(prompt){
       const r = await fetch('/.netlify/functions/gemini-proxy', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ prompt, locale:(lang==='ar'?'ar':'en'), maxTokens })
+        body: JSON.stringify({ prompt })
       });
       if(!r.ok){ throw new Error(await r.text()); }
       const data = await r.json();
       return data?.text || '';
     }
 
-    function appendMarkdown(md){
+    function appendSpinner(title){
+      const sp = `
+### ${title}
+> ${L[lang].ui.spinner}
+      `;
+      const ai = $('ai');
+      const html = (window.marked ? window.marked.parse(sp) : sp);
+      const safe = (window.DOMPurify ? window.DOMPurify.sanitize(html) : html);
+      ai.insertAdjacentHTML('beforeend', safe);
+      return sp; // نعيد النص للعثور عليه لاحقًا إن لزم
+    }
+    function replaceLastSpinnerWith(md){
+      // بدلاً من الاستبدال النصي المعقّد، نُضيف المحتوى ببساطة أسفل السبينر (آمن وسريع)
       const ai = $('ai');
       const html = (window.marked ? window.marked.parse(md) : md);
       const safe = (window.DOMPurify ? window.DOMPurify.sanitize(html) : html);
@@ -501,59 +542,50 @@ SECTION: Professional Closing
 
     async function generatePipeline(){
       locked = true;
-      // قفل مفاتيح الواجهة
       $('btn-lang-ar').disabled = true;
       $('btn-lang-en').disabled = true;
-
-      // إظهار نتيحة
-      $('result').classList.remove('hidden');
       $('btn-regen').classList.remove('hidden');
       $('btn-print').classList.remove('hidden');
       $('btn-pdf').classList.remove('hidden');
+      $('result').classList.remove('hidden');
 
-      const n = SECTIONS.length;
-      for(let i=0;i<n;i++){
-        const sec = SECTIONS[i];
+      const total = PIPE.length;
+      for(let i=0;i<total;i++){
+        const sec = PIPE[i];
         const label = (lang==='ar'? sec.label_ar : sec.label_en);
-        setProgress(i, n, label);
-
-        // سبينر خفيف لكل قسم
-        appendMarkdown(`\n### ${label}\n\n> ${(lang==='ar'?'جاري التوليد… الرجاء الانتظار.':'Generating… please wait.')}\n`);
-
-        let md = '';
-        try{
-          md = await callAI(sec.prompt(), (i<=1? 2048 : i<=3? 4096 : 8192));
-        }catch(e){
-          md = (lang==='ar'?'تعذّر إنشاء هذا القسم.':'Failed to generate this section.');
-        }
-
-        // استبدال كتلة الـ “جاري التوليد” بالمحتوى الفعلي (بدون البحث المعقد، نضيف تحتها المحتوى ونترك الملاحظة أعلاه لئلا نفقد التتالي)
-        appendMarkdown(`\n${md}\n`);
+        setProgress(i, total, label);
+        appendSpinner(label);
+        let md='';
+        try { md = await callAI(sec.prompt()); }
+        catch(e){ md = (lang==='ar'?'تعذّر إنشاء هذا القسم.':'Failed to generate this section.'); }
+        replaceLastSpinnerWith('\n'+md+'\n');
       }
-
-      setProgress(n, n, (lang==='ar'?'اكتمل التوليد':'Generation complete'));
+      setProgress(total, total, (lang==='ar'?'اكتمل التوليد':'Generation complete'));
+      $('result').scrollIntoView({behavior:'smooth',block:'start'});
     }
 
-    // ===== Actions
+    // ===== Buttons & Actions
+    $('btn-lang-ar').onclick=()=>applyLang('ar');
+    $('btn-lang-en').onclick=()=>applyLang('en');
+
     $('btn-start').onclick = async ()=>{
       if(!capture()) return;
-      // قفل اللغة وبدء
-      $('lang-badge').textContent = (lang==='ar'?'AR':'EN');
-      live();
+      updateLivePreview();
       $('result').classList.remove('hidden');
       await generatePipeline();
-      $('result').scrollIntoView({behavior:'smooth',block:'start'});
     };
 
     $('btn-regen').onclick = async ()=>{
       if(!locked){ alert(lang==='ar'?'ابدأ التوليد أولًا':'Start generation first'); return; }
-      const label = (lang==='ar'?'اكتب رقم القسم من 1 إلى 11 لإعادة توليده:':'Enter section number 1..11 to regenerate:');
-      const idx = Number(prompt(label));
-      if(!(idx>=1 && idx<=SECTIONS.length)) return;
-      const sec = SECTIONS[idx-1];
-      setProgress(idx-1, SECTIONS.length, (lang==='ar'?sec.label_ar:sec.label_en)+' (regen)');
-      const md = await callAI(sec.prompt(), 8192);
-      appendMarkdown(`\n\n---\n\n${md}\n\n`);
+      const ask = prompt(lang==='ar'?'اكتب رقم القسم 1..11 لإعادة توليده:':'Enter section number 1..11 to regenerate:');
+      const idx = Number(ask);
+      if(!(idx>=1 && idx<=PIPE.length)) return;
+      const sec = PIPE[idx-1];
+      setProgress(idx-1, PIPE.length, (lang==='ar'?sec.label_ar:sec.label_en)+' (regen)');
+      let md='';
+      try { md = await callAI(sec.prompt()); }
+      catch(e){ md = (lang==='ar'?'تعذّر إنشاء هذا القسم.':'Failed to generate this section.'); }
+      replaceLastSpinnerWith('\n\n---\n\n'+md+'\n\n');
       $('result').scrollIntoView({behavior:'smooth',block:'start'});
     };
 
@@ -561,13 +593,11 @@ SECTION: Professional Closing
     $('act-print').onclick = ()=>window.print();
     $('act-pdf').onclick = ()=>{
       if(window.html2pdf){
-        const opt={ margin:10, filename:(lang==='ar'?'خطة-':'plan-')+(user.name||'client')+'.pdf', image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2,useCORS:true}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'} };
+        const fn = (lang==='ar'?'خطة-':'plan-') + (user.name||'client') + '.pdf';
+        const opt={ margin:10, filename:fn, image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2,useCORS:true}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'} };
         window.html2pdf().from($('resultRoot')).set(opt).save();
-      } else {
-        window.print();
-      }
+      } else { window.print(); }
     };
-
     $('btn-print').onclick = ()=>window.print();
     $('btn-pdf').onclick = ()=>$('act-pdf').click();
 
@@ -575,7 +605,7 @@ SECTION: Professional Closing
   </script>
 
   <!-- Footer -->
-  <footer class="max-w-7xl mx-auto px-4 sm:px-6 mt-8 mb-10 text-center text-[12px] muted no-print">
+  <footer class="max-w-6xl mx-auto px-4 sm:px-6 mt-8 mb-10 text-center text-[12px] muted no-print">
     Powered by Mustafa Elsafy 2025
   </footer>
 </body>
