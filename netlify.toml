@@ -7,6 +7,7 @@
   timeout = 26
 [[redirects]]
   from = "/api/generate"
-  to = "/.netlify/functions/gemini-proxy"
+  to = "/.netlify/functions/gemini-proxy.js"
   status = 200
   force = true
+
