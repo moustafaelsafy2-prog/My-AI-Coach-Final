@@ -62,13 +62,21 @@ body{background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 100%); color:var
 .ai-content th,.ai-content td{border:1px solid var(--border);padding:.5rem;vertical-align:top}
 .ai-content th{background:rgba(255,255,255,.06)}
 
-/* Top mini progress (non-blocking) */
+/* Top mini progress */
 #miniProgress{position:sticky; top:0; z-index:50; padding:.4rem .8rem; display:none}
 #miniProgress.show{display:flex}
 
+/* Live notice (bottom) */
+#liveNotice{position:fixed; inset-inline:0; bottom:0; z-index:60; display:none}
+#liveNotice.show{display:block}
+
+/* Spinner */
+.spin{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:var(--brand2);display:inline-block;animation:sp 1s linear infinite;vertical-align:-3px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
 /* Toast */
 .toast{position:fixed;inset-inline-end:16px;bottom:16px;background:#0e1a2d;color:#eaf0ff;border:1px solid rgba(255,255,255,.14);padding:.6rem .8rem;border-radius:.7rem;z-index:90}
-@media print{#topbar,#wizard,#actions,#miniProgress{display:none!important} body{background:#fff;color:#111}}
+@media print{#topbar,#wizard,#actions,#miniProgress,#liveNotice{display:none!important} body{background:#fff;color:#111}}
 </style>
 </head>
 <body>
@@ -98,6 +106,16 @@ body{background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 100%); color:var
   <div class="container" style="display:flex;align-items:center;gap:10px;justify-content:space-between">
     <div id="mp-text" class="text-xs">نولّد الأقسام الآن…</div>
     <div class="progress" style="width:240px"><i id="mp-bar"></i></div>
+  </div>
+</div>
+
+<!-- Bottom live notice -->
+<div id="liveNotice">
+  <div class="glass section" style="max-width:640px;margin:0 auto 12px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <div><span class="spin"></span> <span id="ln-msg">جارٍ توليد الخطة بالتتابع…</span></div>
+      <div class="progress" style="width:220px"><i id="ln-bar"></i></div>
+    </div>
   </div>
 </div>
 
@@ -156,7 +174,7 @@ function mdSafe(s){ let html=hasMD?marked.parse(s):(s||'').replace(/\n/g,'<br>')
 function toast(msg){ const d=document.createElement('div'); d.className='toast'; d.textContent=msg; document.body.appendChild(d); setTimeout(()=>d.remove(),3500); }
 
 /* ===== State ===== */
-const saveKey='ihc.v6';
+const saveKey='ihc.v7';
 const S={
   lang:(navigator.language||'ar').startsWith('ar')?'ar':'en',
   step:0, theme:'dark', mock:false,
@@ -178,6 +196,7 @@ const I={
       prev:'السابق', next:'التالي', generate:'توليد الخطة', print:'طباعة',
       sectionsTitle:'تقدم الأقسام (يُعرض كل قسم فور توليده)', result:'الخطة',
       retry:'إعادة توليد هذا القسم', need:'أكمل الاسم/العمر/الطول/الوزن.', fail:'فشل', done:'تم', run:'جارٍ…',
+      reading:'يتم التوليد تباعًا — رجاءً انتظر حتى يكتمل (%s%)',
       sec:{welcome:'الترحيب',analysis:'التحليل',allowed:'المسموح/الممنوع',fasting:'الصيام',nut:'التغذية — يوم',tra:'التدريب — يوم',supp:'المكملات',prog:'التقدّم',trbl:'المشاكل',safe:'السلامة',close:'الختام'}
   },
   en:{app:'Intelligent Health Coach', sub:'100% precise plan for nutrition, training & supplements – fully personalized',
@@ -185,6 +204,7 @@ const I={
       prev:'Back', next:'Next', generate:'Generate Plan', print:'Print',
       sectionsTitle:'Section progress (each appears when ready)', result:'Plan',
       retry:'Regenerate this section', need:'Please complete: name/age/height/weight.', fail:'Failed', done:'Done', run:'Running…',
+      reading:'Generating sequentially — please keep reading (%s%)',
       sec:{welcome:'Welcome',analysis:'Analysis',allowed:'Allowed / Limits',fasting:'Intermittent fasting',nut:'Nutrition — Day',tra:'Training — Day',supp:'Supplements',prog:'Progression',trbl:'Troubleshooting',safe:'Safety',close:'Closing'}
   }
 };
@@ -345,7 +365,7 @@ function targets(){
 }
 
 /* ===== Sections ===== */
-function buildSections(){
+function listSections(){
   const arr=['welcome','analysis','allowed']; const f=S.data.diet.fasting||'off'; if(f!=='off') arr.push('fasting');
   for(let i=1;i<=7;i++) arr.push('nutrition-day-'+i);
   for(let i=1;i<=7;i++) arr.push('training-day-'+i);
@@ -364,11 +384,12 @@ Place:${L.trainingPlace} | Session:${L.sessionLength} | Days:${avail} | RPE:${L.
 Medical:${(M.conditions||[]).join(', ')||'None'} | Injuries:${L.injuries||'None'}
 Allergies:${D.allergies||'None'} | Dislikes:${D.foodsToAvoid||'None'}
 Targets:~${T.tdee} kcal / P ${T.protein_g}g / F ${T.fat_g}g / C ${T.carb_g}g
-Tone:${tone}. LANGUAGE:${S.lang}. EXERCISES in English.`.trim();
+Tone:${tone}. LANGUAGE:${S.lang}. EXERCISES in English.
+STRICT: Output in ${S.lang==='ar'?'Arabic':'English'} only. Never apologize. If exact data unavailable, create a valid table matching macros within ±10% and proceed.`.trim();
 }
 function prompt(section,extra={},mode='full'){
   const A=(S.lang==='ar'), H=headerBlock();
-  const onlyTable = '\n\nأجب بجدول ماركداون فقط دون أي فقرات إضافية.';
+  const onlyTable = '\n\nأجب بجدول ماركداون فقط دون أي فقرات إضافية. إذا لم تتمكّن من الحساب الدقيق، قسّم القيم بالتساوي على الوجبات مع صف إجمالي يطابق الأهداف ضمن ±10%. لا تكتب أي سطور تفسيرية.';
   if(section==='welcome') return `${H}\n\n${A?'اكتب ترحيبًا قصيرًا باسم المستخدم ولمحة موجزة عن محتوى الخطة.':''}`;
   if(section==='analysis') return `${H}\n\n${A?'حلّل الأهداف والقيود ومنطق السعرات/الماكروز بنقاط مركّزة.':''}`;
   if(section==='allowed') return `${H}\n\n${A?'قائمتان: 1) المسموح والمقترح 2) ما يفضّل الحد منه/تجنبه.':''}`;
@@ -384,7 +405,7 @@ function prompt(section,extra={},mode='full'){
 }
 
 /* ===== AI / Mock ===== */
-async function callAI(p,{tries=2,base=900,timeout=60000}={}){
+async function callAI(p,{tries=3,base=900,timeout=60000}={}){
   if(S.mock){ return {ok:true,text:mockText(p)}; }
   for(let i=0;i<tries;i++){
     const ctrl=new AbortController(); const to=setTimeout(()=>ctrl.abort(),timeout);
@@ -401,14 +422,15 @@ async function callAI(p,{tries=2,base=900,timeout=60000}={}){
 function validate(s){
   if(!s || s.trim().length<40) return false;
   if(S.lang==='ar' && /[A-Za-z]{6,}/.test(s) && !/kcal|Protein|Fat|Carbs|Exercise|Sets|Reps/i.test(s)) return false;
-  if(/التغذية|Nutrition/.test(s) && !/\|.*kcal/i.test(s)) return false;
-  return true;
+  if(/\|.*kcal/i.test(s)) return true; // جداول التغذية
+  if(/Exercise|Sets|Reps/i.test(s)) return true; // جداول التدريب
+  if(/^\s*[-*]|^#|\n-/.test(s)) return true; // قوائم عامة
+  return false;
 }
 function mockText(p){
-  // نص محاكاة واضح للمستخدم — مفيد للتشغيل حين يتعذّر الـLLM
   if(/خطة التغذية ليوم/.test(p)) return localNutritionSkeleton(1);
   if(/خطة التمرين ليوم/.test(p)) return localTrainingSkeleton(1);
-  if(/الترحيب|Welcome/.test(p)) return (S.lang==='ar')?`### أهلاً ${S.data.profile.name}\nسنبني خطة عملية دقيقة ومخصصة لك. ستظهر الأقسام تباعًا هنا.`:`### Welcome ${S.data.profile.name}\nYour personalized plan will stream in below.`;
+  if(/الترحيب|Welcome/.test(p)) return (S.lang==='ar')?`### أهلاً ${S.data.profile.name}\nسنبني خطة عملية مخصصة لك. ستظهر الأقسام تباعًا هنا.`:`### Welcome ${S.data.profile.name}\nYour personalized plan will stream in below.`;
   if(/المسموح/.test(p)) return (S.lang==='ar')?`- بروتينات: دجاج، لحم خفيف، سمك\n- كارب: أرز/بطاطس/شوفان\n- دهون: زيت زيتون/مكسرات\n\n**التقليل:** سكريات سائلة، أطعمة مقلية.`:`- Proteins: chicken/lean beef/fish\n- Carbs: rice/potatoes/oats\n- Fats: olive oil/nuts\n\n**Limit:** liquid sugars, deep-fried foods.`;
   return (S.lang==='ar')?`نص تجريبي من وضع المحاكاة.`:`Mock text generated locally.`;
 }
@@ -438,49 +460,69 @@ function appendCard(key,html,status){
         ${status==='fail'?`<button class="btn btn-ghost text-xs" data-retry="${key}">↻ ${I[S.lang].retry}</button>`:''}
       </div>
     </div>`;
-  card.innerHTML=head+`<div id="body-${key}" class="text-sm leading-6">${html}</div>`;
+  const note = status==='run'
+      ? `<div id="note-${key}" class="text-xs" style="color:var(--mut);margin:.3rem 0 .6rem"><span class="spin"></span> ${I[S.lang].reading.replace('%s','0')}</div>`
+      : '';
+  card.innerHTML=head+ note + `<div id="body-${key}" class="text-sm leading-6">${html}</div>`;
   wrap.appendChild(card);
 }
 
 /* ===== Orchestrate generation ===== */
-function buildSections(){ const arr=['welcome','analysis','allowed']; const f=S.data.diet.fasting||'off'; if(f!=='off') arr.push('fasting'); for(let i=1;i<=7;i++) arr.push('nutrition-day-'+i); for(let i=1;i<=7;i++) arr.push('training-day-'+i); arr.push('supplements','progression','troubleshoot','safety','closing'); S.sectionList=arr; }
 async function generateAll(){
   saveStep();
   const p=S.data.profile; if(!(p.name&&p.age&&p.height&&p.weight)){ toast(t('need')); return; }
 
   $('plan-empty').style.display='none'; $('plan-content').innerHTML='';
-  buildSections(); buildTimeline();
-  $('miniProgress').classList.add('show');
+  listSections(); buildTimeline();
+  $('miniProgress').classList.add('show'); $('liveNotice').classList.add('show');
 
   const total=S.sectionList.length; let done=0;
+  const updateBars=()=>{ const pct=Math.round((done/total)*100); $('mp-bar').style.width=pct+'%'; $('ln-bar').style.width=pct+'%'; $('ln-msg').textContent=I[S.lang].reading.replace('%s',pct); };
+
   for(const key of S.sectionList){
     setTL(key,'run'); S.statuses[key]='run';
     let sec=key, extra={}; if(key.startsWith('nutrition-day')){sec='nutrition-day'; extra.day=+key.split('-').pop();} if(key.startsWith('training-day')){sec='training-day'; extra.day=+key.split('-').pop();}
+    appendCard(key, '', 'run'); // فارغة مع الملاحظة
 
-    let {ok,text}=await callAI(prompt(sec,extra,'full'),{tries:2,base:900,timeout:60000});
-    if(!ok){ const r2=await callAI(prompt(sec,extra,'table'),{tries:1,base:1200,timeout:60000}); ok=r2.ok; text=r2.text; }
+    // 1) كامل  2) جدول فقط  3) جدول مشدد  4) fallback محلي
+    let res = await callAI(prompt(sec,extra,'full'),{tries:2,base:900,timeout:60000});
+    if(!res.ok) res = await callAI(prompt(sec,extra,'table'),{tries:2,base:1100,timeout:60000});
+    if(!res.ok) res = await callAI(prompt(sec,extra,'table')+'\n\nأعد إنشاء الجدول فورًا دون أي نص خارج الجدول.',{tries:1,base:1300,timeout:60000});
+
+    let ok=res.ok, text=res.text;
     if(!ok){ if(sec==='nutrition-day') text=localNutritionSkeleton(extra.day); else if(sec==='training-day') text=localTrainingSkeleton(extra.day); }
 
     S.results[key]=text||''; S.statuses[key]= ok? 'ok':'fail'; setTL(key,S.statuses[key]);
-    appendCard(key, mdSafe(text||`<div style="color:var(--err)">${I[S.lang].fail}</div>`), S.statuses[key]);
 
-    done++; $('mp-bar').style.width=Math.round((done/total)*100)+'%';
+    const n=$('note-'+key); if(n) n.remove();
+    const bodyEl = document.querySelector('#body-' + key);
+    if(bodyEl) bodyEl.innerHTML = mdSafe(text||`<div style="color:var(--err)">${I[S.lang].fail}</div>`);
+    // زر إعادة المحاولة إذا فشل
+    if(!ok){
+      const headEl=document.querySelector('#sec-'+key+' [data-retry]'); if(headEl){ headEl.disabled=false; }
+    } else {
+      const btn=document.querySelector('#sec-'+key+' [data-retry]'); if(btn) btn.remove();
+    }
+
+    done++; updateBars();
     document.getElementById('sec-'+key).scrollIntoView({behavior:'smooth',block:'center'});
   }
-  $('miniProgress').classList.remove('show');
+  $('miniProgress').classList.remove('show'); $('liveNotice').classList.remove('show');
 }
 
-/* ===== Retry click (bug fixed) ===== */
+/* ===== Retry click (fixed) ===== */
 document.addEventListener('click', async (e)=>{
   const btn=e.target.closest('[data-retry]'); if(!btn) return;
   const key=btn.getAttribute('data-retry'); btn.disabled=true; btn.textContent='…'; setTL(key,'run');
+  const noteId='note-'+key; const note=document.createElement('div'); note.id=noteId; note.className='text-xs'; note.style.color='var(--mut)'; note.style.margin='.3rem 0 .6rem'; note.innerHTML=`<span class="spin"></span> ${I[S.lang].reading.replace('%s','…')}`; document.querySelector('#sec-'+key).insertAdjacentElement('afterbegin',note);
   let sec=key, extra={}; if(key.startsWith('nutrition-day')){sec='nutrition-day'; extra.day=+key.split('-').pop();} if(key.startsWith('training-day')){sec='training-day'; extra.day=+key.split('-').pop();}
-  let {ok,text}=await callAI(prompt(sec,extra,'table'),{tries:2,base:1000,timeout:60000});
-  if(!ok){ if(sec==='nutrition-day') text=localNutritionSkeleton(extra.day); else if(sec==='training-day') text=localTrainingSkeleton(extra.day); }
-  S.results[key]=text||''; S.statuses[key]= ok? 'ok':'fail'; setTL(key,S.statuses[key]);
-  const bodyEl = document.querySelector('#body-' + key);  /* <-- FIXED QUOTE BUG */
-  if(bodyEl) bodyEl.innerHTML = mdSafe(text||`<div style="color:var(--err)">${I[S.lang].fail}</div>`);
-  if(ok) btn.remove(); else { btn.disabled=false; btn.textContent='↻ '+I[S.lang].retry; }
+  let res = await callAI(prompt(sec,extra,'table'),{tries:3,base:1000,timeout:60000});
+  if(!res.ok){ if(sec==='nutrition-day') res={ok:true,text:localNutritionSkeleton(extra.day)}; else if(sec==='training-day') res={ok:true,text:localTrainingSkeleton(extra.day)}; }
+  S.results[key]=res.text||''; S.statuses[key]= res.ok? 'ok':'fail'; setTL(key,S.statuses[key]);
+  const bodyEl = document.querySelector('#body-' + key);  /* <-- FIXED */
+  if(bodyEl) bodyEl.innerHTML = mdSafe(res.text||`<div style="color:var(--err)">${I[S.lang].fail}</div>`);
+  const n=document.getElementById(noteId); if(n) n.remove();
+  if(res.ok) btn.remove(); else { btn.disabled=false; btn.textContent='↻ '+I[S.lang].retry; }
 });
 
 /* ===== Buttons / Toggles ===== */
