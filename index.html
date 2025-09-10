@@ -1,724 +1,908 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>المدرب الشخصي الخبير — خطة مخصصة بالذكاء الاصطناعي</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>المستشار الصحي الذكي | Intelligent Health Coach</title>
 
-  <!-- Tailwind -->
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Google Font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-
-  <!-- Markdown renderer -->
+  <!-- Marked (Markdown Parser) -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-  <!-- html2pdf for PDF Export -->
-  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+  <!-- DOMPurify (Sanitizer) -->
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <style>
     :root{
-      --bg:#f7f7fb;
-      --card:#ffffff;
-      --ink:#0f172a;
-      --sub:#475569;
-      --prime:#635bff;
-      --line:#e5e7eb;
-      --chip:#eef2ff;
+      --brand:#6c5ce7; --brand-2:#00c2ff;
+      --ok:#16a34a; --warn:#f59e0b; --err:#dc2626;
+      --card:#0b1220; --muted:#93a2b8;
     }
-    html.dark{
-      --bg:#0b0f17;
-      --card:#0f1624;
-      --ink:#f1f5f9;
-      --sub:#98a2b3;
-      --prime:#7c8cff;
-      --line:#1f2738;
-      --chip:#151c2c;
-    }
-    *{ font-family:'Tajawal',system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
-    body{ background:var(--bg); color:var(--ink); }
-    .card{ background:var(--card); border:1px solid var(--line); }
-    .chip{ background:var(--chip); }
+    html[dir="rtl"] body { font-family: 'Tajawal', system-ui, -apple-system, Segoe UI, Roboto, "Noto Naskh Arabic", sans-serif; }
+    html[dir="ltr"] body { font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Inter, sans-serif; }
+    body{ background:linear-gradient(180deg,#0a0f1c 0%,#0e1526 100%); color:#eaf0ff; }
+    .glass{ background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03)); border:1px solid rgba(255,255,255,.08); }
+    .title-grad{ background:linear-gradient(90deg,var(--brand),var(--brand-2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .card{ border-radius:16px; }
+    .chip{ background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); padding:.35rem .6rem; border-radius:999px; font-size:.75rem; }
+    .kbd{ border:1px solid rgba(255,255,255,.2); border-bottom-width:2px; padding:.05rem .4rem; border-radius:6px; font-size:.75rem; }
+    .btn{ display:inline-flex; align-items:center; justify-content:center; gap:.5rem; padding:.75rem 1rem; border-radius:.8rem; font-weight:800; transition:.2s; }
+    .btn-primary{ background:linear-gradient(90deg,var(--brand),var(--brand-2)); color:#fff; }
+    .btn-primary:hover{ filter:brightness(1.1); transform:translateY(-1px); }
+    .btn-ghost{ background:rgba(255,255,255,.06); color:#eaf0ff; border:1px solid rgba(255,255,255,.1); }
+    .btn-ghost:hover{ background:rgba(255,255,255,.1); }
+    .field{ background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:.7rem; padding:.65rem .8rem; outline:none; width:100%; color:#eaf0ff; }
+    .field::placeholder{ color:#9fb0c7; }
+    .field:focus{ border-color:var(--brand-2); box-shadow:0 0 0 3px rgba(0,194,255,.15); }
+    .section-title{ font-weight:900; letter-spacing:.3px; }
+    .divider{ height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent); }
+    .toast{ position:fixed; inset-inline-end:16px; bottom:16px; background:#0e1a2d; border:1px solid rgba(255,255,255,.14); color:#eaf0ff; padding:.6rem .8rem; border-radius:.7rem; z-index:80; box-shadow:0 10px 20px rgba(0,0,0,.35)}
+    .tag{ font-size:.72rem; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:.5rem; padding:.2rem .5rem;}
+    .progress{ height:.45rem; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden; }
+    .progress > i{ display:block; height:100%; background:linear-gradient(90deg,var(--brand),var(--brand-2)); width:0%; transition:width .25s ease; }
 
-    /* إصلاح @apply: استخدام CSS صريح بدلًا من Tailwind @apply */
-    .btn{ padding:0.5rem 1rem; border-radius:0.5rem; font-weight:800; border:0; cursor:pointer; }
-    .btn-prime{ background:var(--prime); color:#fff; }
-    .btn-ghost{ background:transparent; border:1px solid var(--line); color:var(--ink); }
+    /* Grid ordering per language */
+    .col{ display:flex; flex-direction:column; gap:.75rem;}
+    /* Arabic: Profile on right */
+    html[dir="rtl"] .g{ display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:14px;}
+    html[dir="rtl"] .g .c-profile   { grid-column: 9 / span 4; }
+    html[dir="rtl"] .g .c-diet      { grid-column: 5 / span 4; }
+    html[dir="rtl"] .g .c-life      { grid-column: 1 / span 4; }
+    html[dir="rtl"] .g .c-med       { grid-column: 1 / span 12; }
+    /* English: Profile on left */
+    html[dir="ltr"] .g{ display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:14px;}
+    html[dir="ltr"] .g .c-profile   { grid-column: 1 / span 4; }
+    html[dir="ltr"] .g .c-diet      { grid-column: 5 / span 4; }
+    html[dir="ltr"] .g .c-life      { grid-column: 9 / span 4; }
+    html[dir="ltr"] .g .c-med       { grid-column: 1 / span 12; }
 
-    .kbd{
-      font-size:0.75rem; padding:0.125rem 0.5rem; border-radius:0.25rem; border:1px solid var(--line);
-      background:var(--chip); color:var(--sub);
-    }
+    /* Wizard (ثابت بصريًا الآن) */
+    .stepper{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+    .stepper > div{ height:6px; border-radius:6px; background:rgba(255,255,255,.08); position:relative; overflow:hidden; }
+    .stepper > .on:before{ content:''; position:absolute; inset:0; background:linear-gradient(90deg,var(--brand),var(--brand-2)); }
 
-    .progress-bar { height:8px; background:linear-gradient(90deg, var(--prime), #22c55e); transition: width .3s; }
-    .print-ready *{ animation:none !important; transition:none !important; }
+    /* Overlay */
+    #overlay{ position:fixed; inset:0; background:rgba(9,12,20,.6); backdrop-filter:blur(6px); z-index:70; display:none; align-items:center; justify-content:center;}
+    .spinner{ width:44px; height:44px; border-radius:50%; border:4px solid rgba(255,255,255,.2); border-top-color:var(--brand-2); animation:spin 1s linear infinite;}
+    @keyframes spin{ to { transform:rotate(360deg)}}
 
+    /* Plan content */
+    .ai-content h2{ font-weight:900; font-size:1.5rem; margin:.75rem 0; color:#eaf0ff }
+    .ai-content h3{ font-weight:800; font-size:1.2rem; margin:.6rem 0; color:#d7e3fb }
+    .ai-content table{ border-collapse:collapse; width:100%; background:rgba(255,255,255,.04); margin:.75rem 0; }
+    .ai-content th,.ai-content td{ border:1px solid rgba(255,255,255,.12); padding:.55rem; vertical-align:top; }
+    .ai-content th{ background:rgba(255,255,255,.07); font-weight:800 }
+
+    /* Print */
     @media print{
-      body { background:#fff; }
-      #topbar, #setup, #actions { display:none !important; }
-      #resultRoot { box-shadow:none !important; border:none !important; }
+      body{ background:#fff; color:#111 }
+      #shell, #bar, #wizard, #actions { display:none !important; }
+      #plan { margin:0 !important; padding:0 !important; border:0 !important; box-shadow:none !important; }
+      .ai-content h2, .ai-content h3 { color:#111 }
+      .ai-content table { background:#fff; border-color:#333 }
+      .ai-content th { background:#f3f4f6; }
     }
+    /* منع تقطيع الصفوف عند الطباعة */
+    .ai-content table, .ai-content tr, .ai-content td { page-break-inside: avoid; }
+    /* تحسين قابلية القراءة للـ SR فقط */
+    .sr-only{ position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0; }
   </style>
 </head>
+<body>
 
-<body class="min-h-screen">
-  <!-- Top Bar -->
-  <header id="topbar" class="sticky top-0 z-40 backdrop-blur bg-[color:var(--card)]/85 border-b" role="banner">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+  <!-- Top bar -->
+  <header id="bar" class="sticky top-0 z-40 glass border-b border-white/10">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="size-9 rounded-lg grid place-items-center text-white font-extrabold" style="background:var(--prime)">AI</div>
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[var(--brand)] to-[var(--brand-2)] grid place-items-center font-black">AI</div>
         <div>
-          <div class="text-sm font-extrabold">المدرب الشخصي الخبير</div>
-          <div class="text-[11px] text-[color:var(--sub)]">خطة دقيقة 100% للتغذية والتدريب والمكملات — مخصصة لك</div>
+          <div id="app-title" class="text-lg font-extrabold">المستشار الصحي الذكي</div>
+          <div class="text-xs text-[color:var(--muted)]" id="subtitle">خطة دقيقة ١٠٠% للتغذية والتدريب والمكملات – مخصصة لك</div>
         </div>
       </div>
-
       <div class="flex items-center gap-2">
-        <button id="btn-ar" class="btn btn-ghost text-sm">عربي</button>
-        <button id="btn-en" class="btn btn-ghost text-sm">EN</button>
-        <div class="w-px h-6 bg-[color:var(--line)] mx-1"></div>
-        <button id="btn-theme" class="btn btn-ghost text-sm" title="الوضع الليلي/النهاري">🌓</button>
+        <button id="lang-ar" class="chip" type="button">عربي</button>
+        <button id="lang-en" class="chip" type="button">EN</button>
+        <button id="toggle-theme" class="chip" title="Theme" type="button">☾</button>
+        <button id="btn-print" class="btn btn-ghost" type="button"><span id="t-print">طباعة</span></button>
       </div>
     </div>
   </header>
 
-  <!-- Container -->
-  <main class="max-w-6xl mx-auto px-4 py-6">
-
-    <!-- Intro Card -->
-    <div class="card rounded-2xl p-5 md:p-7 mb-6">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <div>
-          <h1 class="text-2xl md:text-3xl font-extrabold mb-1">
-            لنصمم خطتك المثالية
-          </h1>
-          <p class="text-sm text-[color:var(--sub)]">
-            أدخل بياناتك بدقة. سنولّد النتيجة قسمًا بعد قسم لضمان الشمول والوضوح.
-          </p>
+  <!-- Shell -->
+  <main id="shell" class="max-w-6xl mx-auto px-4 py-6">
+    <!-- Stepper + hint -->
+    <section class="glass card p-4 mb-4">
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <span class="kbd">1</span><span class="kbd">2</span><span class="kbd">3</span><span class="kbd">4</span>
+          <span class="text-sm text-[color:var(--muted)]" id="hint">سنولّد الخطة قسمًا بعد قسم: ترحيب → تحليل → المسموح/الممنوع → الصيام (إن لزم) → التغذية ٧ أيام → التدريب ٧ أيام → المكملات → التقدّم → المشاكل → السلامة → ختام.</span>
         </div>
-        <div class="flex flex-wrap items-center gap-2" id="actions">
-          <button id="btn-start" class="btn btn-prime">ابدأ توليد الخطة</button>
-          <button id="btn-regen" class="btn btn-ghost hidden">إعادة توليد كامل</button>
-          <button id="btn-print" class="btn btn-ghost hidden">طباعة</button>
-          <button id="btn-pdf" class="btn btn-ghost hidden">PDF</button>
-        </div>
+        <div class="w-56 progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="global-progress"></i></div>
       </div>
+    </section>
 
-      <!-- Progress -->
-      <div class="mt-4">
-        <div class="w-full bg-[color:var(--line)] h-2 rounded-full overflow-hidden">
-          <div id="progress" class="progress-bar w-0"></div>
-        </div>
-        <div id="progressText" class="text-[12px] text-[color:var(--sub)] mt-1">جاهز</div>
-      </div>
-    </div>
-
-    <!-- Form -->
-    <section id="setup" class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-      <!-- Profile -->
-      <div class="card rounded-2xl p-5">
-        <div class="text-lg font-extrabold mb-3">الملف الشخصي</div>
-        <div class="grid grid-cols-2 gap-3">
-          <label class="col-span-2">
-            <div class="text-sm mb-1">الاسم</div>
-            <input id="name" class="w-full rounded-lg border px-3 py-2 bg-transparent" placeholder="الاسم الأول" />
-          </label>
-          <label>
-            <div class="text-sm mb-1">العمر</div>
-            <input id="age" type="number" class="w-full rounded-lg border px-3 py-2 bg-transparent" min="12" max="100" />
-          </label>
-          <label>
-            <div class="text-sm mb-1">الطول (سم)</div>
-            <input id="height" type="number" class="w-full rounded-lg border px-3 py-2 bg-transparent" min="120" max="230" />
-          </label>
-          <label>
-            <div class="text-sm mb-1">الوزن (كغ)</div>
-            <input id="weight" type="number" class="w-full rounded-lg border px-3 py-2 bg-transparent" min="30" max="250" />
-          </label>
-          <label>
-            <div class="text-sm mb-1">الجنس</div>
-            <select id="gender" class="w-full rounded-lg border px-3 py-2 bg-transparent">
-              <option value="Male">ذكر</option>
-              <option value="Female">أنثى</option>
-            </select>
-          </label>
-        </div>
-      </div>
-
-      <!-- Goals & Diet -->
-      <div class="card rounded-2xl p-5">
-        <div class="text-lg font-extrabold mb-3">الأهداف والنظام الغذائي</div>
-        <div class="grid grid-cols-2 gap-3">
-          <label class="col-span-2">
-            <div class="text-sm mb-1">الأهداف (اختر عدة)</div>
-            <div class="grid grid-cols-2 gap-2">
-              <label class="flex items-center gap-2"><input type="checkbox" name="goals" value="خسارة الدهون" class="accent-[var(--prime)]"><span>خسارة الدهون</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="goals" value="بناء العضلات" class="accent-[var(--prime)]"><span>بناء العضلات</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="goals" value="زيادة القوة" class="accent-[var(--prime)]"><span>زيادة القوة</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="goals" value="تحسين التحمل" class="accent-[var(--prime)]"><span>تحسين التحمل</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="goals" value="صحة عامة" class="accent-[var(--prime)]"><span>صحة عامة</span></label>
-            </div>
-          </label>
-          <label class="col-span-2">
-            <div class="text-sm mb-1">النظام الغذائي المفضل</div>
-            <select id="diet" class="w-full rounded-lg border px-3 py-2 bg-transparent">
-              <option>نظام متوازن</option>
-              <option>قليل الكربوهيدرات</option>
-              <option>صيام متقطع</option>
-              <option>كيتو</option>
-              <option>نظام البحر المتوسط</option>
-              <option>نباتي</option>
-            </select>
-          </label>
-          <label>
-            <div class="text-sm mb-1">عدد الوجبات/اليوم</div>
-            <select id="meals" class="w-full rounded-lg border px-3 py-2 bg-transparent">
-              <option>3</option><option>4</option><option>5</option>
-            </select>
-          </label>
-          <label>
-            <div class="text-sm mb-1">الصيام المتقطع</div>
-            <select id="fasting" class="w-full rounded-lg border px-3 py-2 bg-transparent">
-              <option value="off">غير مفعل</option>
-              <option value="16:8">16:8</option>
-              <option value="18:6">18:6</option>
-              <option value="20:4">20:4</option>
-            </select>
-          </label>
-          <label class="col-span-2">
-            <div class="text-sm mb-1">أطعمة لا ترغب بها / حساسية</div>
-            <input id="dislikes" class="w-full rounded-lg border px-3 py-2 bg-transparent" placeholder="اكتب الأطعمة أو مسببات الحساسية" />
-          </label>
-        </div>
-      </div>
-
-      <!-- Lifestyle & Health -->
-      <div class="card rounded-2xl p-5">
-        <div class="text-lg font-extrabold mb-3">نمط الحياة والحالة الصحية</div>
-        <div class="grid grid-cols-2 gap-3">
-          <label>
-            <div class="text-sm mb-1">طبيعة العمل</div>
-            <select id="job" class="w-full rounded-lg border px-3 py-2 bg-transparent">
-              <option value="Sedentary">عمل مكتبي</option>
-              <option value="Light">نشاط خفيف</option>
-              <option value="Moderate">نشاط متوسط</option>
-            </select>
-          </label>
-          <label>
-            <div class="text-sm mb-1">ساعات النوم</div>
-            <input id="sleep" type="number" min="3" max="12" class="w-full rounded-lg border px-3 py-2 bg-transparent" />
-          </label>
-          <label>
-            <div class="text-sm mb-1">التوتر</div>
-            <select id="stress" class="w-full rounded-lg border px-3 py-2 bg-transparent">
-              <option>منخفض</option>
-              <option>متوسط</option>
-              <option>مرتفع</option>
-            </select>
-          </label>
-          <label>
-            <div class="text-sm mb-1">مكان التدريب</div>
-            <select id="place" class="w-full rounded-lg border px-3 py-2 bg-transparent">
-              <option>نادي</option><option>منزل</option>
-            </select>
-          </label>
-          <label class="col-span-2">
-            <div class="text-sm mb-1">المعدات المتاحة (إن وجدت)</div>
-            <input id="equipment" class="w-full rounded-lg border px-3 py-2 bg-transparent" placeholder="مثال: دمبل، بار، بنش…" />
-          </label>
-
-          <label class="col-span-2">
-            <div class="text-sm mb-1">الخبرة التدريبية</div>
-            <select id="exp" class="w-full rounded-lg border px-3 py-2 bg-transparent">
-              <option>مبتدئ (0-6 أشهر)</option>
-              <option>متوسط (6-24 شهر)</option>
-              <option>متقدم (+24 شهر)</option>
-            </select>
-          </label>
-
-          <label class="col-span-2">
-            <div class="text-sm mb-1">إصابات / ملاحظات طبية</div>
-            <input id="injuries" class="w-full rounded-lg border px-3 py-2 bg-transparent" placeholder="اذكر الإصابات أو القيود إن وجدت" />
-          </label>
-
-          <label class="col-span-2">
-            <div class="text-sm mb-1">حالات صحية</div>
-            <div class="grid grid-cols-2 gap-2">
-              <label class="flex items-center gap-2"><input type="checkbox" name="health" value="ضغط الدم" class="accent-[var(--prime)]"><span>ضغط الدم</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="health" value="السكري" class="accent-[var(--prime)]"><span>السكري</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="health" value="مقاومة الانسولين" class="accent-[var(--prime)]"><span>مقاومة الانسولين</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="health" value="مشاكل الغدة" class="accent-[var(--prime)]"><span>مشاكل الغدة</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="health" value="الكبد الدهني" class="accent-[var(--prime)]"><span>الكبد الدهني</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="health" value="مشاكل هضمية" class="accent-[var(--prime)]"><span>مشاكل هضمية</span></label>
-            </div>
-          </label>
+    <!-- Wizard (حاليًا خطوة واحدة شاملة) -->
+    <section id="wizard" class="glass card p-4">
+      <div class="stepper mb-5"><div class="on" id="s1"></div><div id="s2"></div><div id="s3"></div><div id="s4"></div></div>
+      <div id="step-title" class="section-title title-grad text-xl mb-3">الملف الشخصي</div>
+      <div id="step-body"></div>
+      <div id="wizard-actions" class="mt-5 flex items-center justify-between">
+        <button id="prev" class="btn btn-ghost" type="button" disabled>◀ <span id="t-prev">السابق</span></button>
+        <div class="flex items-center gap-2">
+          <button id="next" class="btn btn-primary hidden" type="button"><span id="t-next">التالي</span> ▶</button>
+          <button id="generate" class="btn btn-primary" type="button">⚡ <span id="t-generate">توليد الخطة</span></button>
         </div>
       </div>
     </section>
 
-    <!-- Result -->
-    <section id="result" class="hidden mt-6">
-      <div id="resultRoot" class="card rounded-2xl p-5 md:p-8">
-        <div class="flex items-center justify-between gap-3 mb-3">
-          <div class="text-lg font-extrabold">
-            النتيجة — خطة مخصصة 100%
-          </div>
-          <div class="flex items-center gap-2">
-            <button id="act-print" class="btn btn-ghost">طباعة</button>
-            <button id="act-pdf" class="btn btn-ghost">PDF</button>
-          </div>
-        </div>
-        <article id="ai" class="prose max-w-none prose-headings:font-extrabold prose-p:leading-7 prose-ul:leading-7 prose-ol:leading-7"></article>
+    <!-- Plan output -->
+    <section id="plan" class="glass card p-5 mt-6">
+      <div class="text-sm text-[color:var(--muted)]" id="plan-empty">— سيتم عرض الخطة هنا بعد التوليد —</div>
+      <div id="plan-content" class="ai-content"></div>
+      <div id="actions" class="mt-5 flex items-center justify-end gap-2">
+        <button class="btn btn-ghost" id="scroll-top" type="button">↑ <span id="t-top">أعلى</span></button>
+        <button class="btn btn-primary" id="print-bottom" type="button">🖨 <span id="t-print2">طباعة / PDF</span></button>
       </div>
     </section>
 
-    <footer class="text-center text-[11px] text-[color:var(--sub)] mt-6">
-      Powered by Mustafa Elsafy 2025 — جميع الحقوق محفوظة
-    </footer>
+    <footer class="text-center text-xs text-[color:var(--muted)] mt-6">Powered by <strong>Mustafa Elsafy</strong> 2025 — جميع الحقوق محفوظة</footer>
   </main>
 
-  <!-- Scripts -->
+  <!-- Live region for accessibility -->
+  <div id="live" class="sr-only" aria-live="polite"></div>
+
+  <!-- Overlay -->
+  <div id="overlay" aria-busy="true" aria-hidden="true">
+    <div class="glass card p-6 w-[min(92vw,520px)] text-center">
+      <div class="spinner mx-auto mb-3"></div>
+      <div class="font-extrabold mb-1" id="ov-title">نُجهّز خطتك الآن</div>
+      <div class="text-sm text-[color:var(--muted)]" id="ov-sub">الرجاء الانتظار. سنقوم بتوليد الخطة قسمًا بعد قسم: الترحيب، التحليل، المسموح/الممنوع، الصيام، التغذية 7 أيام، التدريب 7 أيام، المكملات، التقدّم، المشاكل، السلامة، الخاتمة.</div>
+      <div class="mt-3 progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="ov-bar"></i></div>
+    </div>
+  </div>
+
   <script>
-    /******************* Utilities *******************/
-    const $ = (id)=>document.getElementById(id);
-    const PROXY_URL = '/.netlify/functions/gemini-proxy';
-    const HEALTH_URL = '/.netlify/functions/health';
+    /***** Marked + DOMPurify config *****/
+    marked.setOptions({ breaks:true, mangle:false, headerIds:false });
 
-    const state = { lang:'ar' };
-    const t = (ar,en)=> state.lang==='ar'? ar : en;
-
-    function setLang(l){
-      state.lang = l;
-      document.documentElement.lang = l==='ar'?'ar':'en';
-      document.documentElement.dir  = l==='ar'?'rtl':'ltr';
-      $('btn-ar').classList.toggle('btn-prime', l==='ar');
-      $('btn-en').classList.toggle('btn-prime', l==='en');
-      $('progressText').textContent = t('جاهز','Ready');
-    }
-
-    function toggleTheme(){ document.documentElement.classList.toggle('dark'); }
-
-    function setProgress(step,total,label){
-      const p = Math.round((step/total)*100);
-      $('progress').style.width = p+'%';
-      $('progressText').textContent = `${p}% — ${label}`;
-    }
-
-    function appendSpinner(label){
-      const el = document.createElement('div');
-      el.id = 'ai-spinner';
-      el.className = "chip border rounded-lg p-3 my-2 text-sm";
-      el.innerHTML = `⏳ ${t('نقوم الآن بتجهيز هذا القسم بعناية، الرجاء الانتظار…','We are preparing this section carefully, please wait…')} <span class="ml-2 text-[color:var(--sub)]">${label}</span>`;
-      $('ai').appendChild(el);
-    }
-    function replaceLastSpinnerWith(html){
-      const sp = $('ai-spinner');
-      if(sp) sp.remove();
-      const box = document.createElement('div');
-      box.className = 'my-4';
-      box.innerHTML = marked.parse(html);
-      $('ai').appendChild(box);
-    }
-
-    /******************* Collect & compute *******************/
-    function collect(){
-      const goals = [...document.querySelectorAll('input[name="goals"]:checked')].map(e=>e.value);
-      const health = [...document.querySelectorAll('input[name="health"]:checked')].map(e=>e.value);
-      return {
-        name:$('name').value?.trim(),
-        age:+$('age').value||0,
-        height:+$('height').value||0,
-        weight:+$('weight').value||0,
-        gender:$('gender').value,
-        goals, diet:$('diet').value,
-        meals:+$('meals').value,
-        fasting: $('fasting').value,
-        dislikes: $('dislikes').value?.trim(),
-        job:$('job').value,
-        sleep:+$('sleep').value||0,
-        stress:$('stress').value,
-        training_place:$('place').value,
-        equipment:$('equipment').value?.trim(),
-        exp:$('exp').value,
-        injuries:$('injuries').value?.trim(),
-        health
-      };
-    }
-
-    function calcTargets(){
-      const u = collect();
-      const male = u.gender==='Male';
-      const BMR = male ? 10*u.weight + 6.25*u.height - 5*u.age + 5
-                       : 10*u.weight + 6.25*u.height - 5*u.age - 161;
-      const factor = (u.job==='Sedentary'?1.2 : u.job==='Moderate'?1.5 : 1.35);
-      let TDEE = Math.round(BMR*factor);
-      if(u.goals.includes('خسارة الدهون')) TDEE = Math.round(TDEE*0.88);
-      if(u.goals.includes('بناء العضلات'))   TDEE = Math.round(TDEE*1.10);
-      const P = Math.round(2.0 * (u.weight||1));
-      const F = Math.round(0.8 * (u.weight||1));
-      let C = Math.max(0, Math.round((TDEE - (P*4 + F*9))/4));
-      if(u.health.includes('السكري')||u.health.includes('مقاومة الانسولين')) C = Math.min(C, 140);
-      return { TDEE, P, F, C };
-    }
-
-    /******************* Backend health *******************/
-    async function checkBackend(){
-      try{
-        const r = await fetch(HEALTH_URL, { cache:'no-store' });
-        if(!r.ok) return { ok:false, error:'health status '+r.status };
-        const j = await r.json().catch(()=> ({}));
-        return j?.ok? { ok:true } : { ok:false, error:'health json' };
-      }catch(e){ return { ok:false, error:String(e) }; }
-    }
-
-    /******************* AI call via proxy *******************/
-    async function callAI(prompt){
-      const res = await fetch(PROXY_URL,{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({ prompt })
-      });
-      if(!res.ok){
-        const tt = await res.text().catch(()=> '');
-        throw new Error('Proxy '+res.status+': '+tt.slice(0,300));
-      }
-      const data = await res.json();
-      const text = data?.text || '';
-      if(!text) throw new Error('Empty AI response');
-      return text;
-    }
-
-    /******************* Prompts & Pipeline *******************/
-    function userObj(){
-      const u = collect(), t = calcTargets();
-      const IF = u.fasting!=='off' ? `${u.fasting}` : 'disabled';
-      return { u, t, IF };
-    }
-
-    function baseHeader(){
-      const {u,t} = userObj();
-      const locale = state.lang==='ar'?'Arabic':'English';
-      return `
-STRICT GLOBAL RULES
-- OUTPUT LANGUAGE: ${locale} ONLY. DO NOT MIX.
-- GREETINGS/MOTIVATION: ONLY in "Welcome" section ONCE. STRICTLY FORBIDDEN elsewhere.
-- DO NOT restate the client's profile fields repeatedly. Mention the name ONCE in the welcome section only. No age/height/weight/gender repetitions later.
-- Use clean Markdown. Each section must start with "### Title".
-- Use tables and precise bullet points. No placeholders. No emojis.
-
-CLIENT PROFILE (internal, do NOT restate inside sections)
-- Name: ${u.name}; Sex: ${u.gender}
-- Age/Height/Weight: ${u.age}y / ${u.height}cm / ${u.weight}kg
-- Activity: ${u.job}; Sleep: ${u.sleep}h; Stress: ${u.stress}
-- Goals: ${(u.goals||[]).join(', ')}
-- Diet: ${u.diet}; Meals/day: ${u.meals}; IF: ${u.fasting}
-- Place: ${u.training_place}; Equipment: ${u.equipment||'—'}
-- Experience: ${u.exp}; Injuries: ${u.injuries||'None'}
-- Health: ${(u.health||[]).join(', ')||'None'}
-- Disliked/allergic: ${u.dislikes||'None'}
-
-DAILY TARGETS (reference only)
-- Energy ~${t.TDEE} kcal/day; P ~${t.P} g; F ~${t.F} g; C ~${t.C} g (±2% tolerance)`.trim();
-    }
-
-    // أقسام أساسية تُولَّد مرة واحدة
-    const BASE_PIPE = [
-      {
-        key:'welcome',
-        label_ar:'١) ترحيب وتحفيز',
-        label_en:'1) Welcome & Motivation',
-        prompt:()=>`${baseHeader()}
-
-### Welcome & Motivation
-Write a short warm welcome to **${collect().name||t('العميل','client')}** (6–8 concise lines). No lists, no tables.`
+    /***** App state *****/
+    const state = {
+      lang: (navigator.language || 'ar').startsWith('ar') ? 'ar' : 'en',
+      theme: 'dark',
+      // نُبقي step=0 ونظهر زر التوليد مباشرة
+      step: 0,
+      currency: detectCurrency(),
+      profile: { name:'', age:'', height:'', weight:'', bodyFat:'', waist:'', sex:'Male', targetWeight:'', targetDate:'' },
+      diet: {
+        goals:[], // <-- مفاتيح ثابتة
+        mealsPerDay:3, preferredDiet:'Balanced', cuisine:'Arabic/Mediter.', prepTime:20,
+        monthlyBudget:0, foodsToAvoid:'', allergies:'', fasting:'off'
       },
-      {
-        key:'analysis',
-        label_ar:'٢) تحليل الحالة والهدف',
-        label_en:'2) Profile Analysis & Goal',
-        prompt:()=>`${baseHeader()}
-
-### Analysis
-Provide a concise professional analysis (no profile repetition, no greetings). Explain rationale behind calorie target and macro split, and how the plan aligns with goals, health and constraints.`
+      lifestyle:{
+        workActivity:'Sedentary', stepsPerDay:6000, sleep:'Low', stress:'Low',
+        trainingPlace:'Home/Gym', sessionLength:60, availableDays:[],
+        equipment:'', experience:'Beginner (0-6m)', rpe:8, caffeine:0, injuries:''
       },
-      {
-        key:'allowed',
-        label_ar:'٣) المسموح والممنوع',
-        label_en:'3) Allowed & Avoid List',
-        prompt:()=>`${baseHeader()}
+      fitness:{ restingHR:'', maxPushups:'', plank:'', kmTime:'' },
+      muscles: { chest:{on:false,note:''}, back:{on:false,note:''}, shoulders:{on:false,note:''},
+                 biceps:{on:false,note:''}, triceps:{on:false,note:''}, quads:{on:false,note:''},
+                 hamstrings:{on:false,note:''}, glutes:{on:false,note:''}, calves:{on:false,note:''}, abs:{on:false,note:''} },
+      medical:{ conditions:[], other:'', meds:'', supplements:'' },
+      challenges:{ past:'', motivation:'Direct' },
+      targets: null,
+      generating:false
+    };
 
-### Allowed & Avoid
-Two bullet lists only:
-- Allowed & preferred foods (based on diet ${collect().diet}) with brief reasons
-- Avoid/limit foods considering allergies/dislikes: ${collect().dislikes||'None'}`
-      },
-      {
-        key:'fasting',
-        label_ar:'٤) الصيام المتقطع (إن وُجد)',
-        label_en:'4) Intermittent Fasting (if enabled)',
-        prompt:()=>`${baseHeader()}
-
-### Intermittent Fasting
-If fasting = ${collect().fasting}, explain implementation (feeding window, hydration, electrolytes, first/last meal structure). If disabled, write "Not applicable". No greetings.`
-      },
-      {
-        key:'supps',
-        label_ar:'٧) المكملات — أساسية + مرتبطة بالحالة',
-        label_en:'7) Supplements — Core + Condition-linked',
-        prompt:()=>`${baseHeader()}
-
-### Supplements (SAFE, PRACTICAL)
-Provide two sublists:
-1) Core stack — item, dose, timing, duration.
-2) Condition-linked — only if relevant to: ${(collect().health||[]).join(', ')||'None'}; otherwise state "Not indicated".
-Respect allergies/dislikes: ${collect().dislikes||'None'}.
-Add safety line: consult physician if on medications.`
-      },
-      {
-        key:'progress',
-        label_ar:'٨) التقدم والتصعيد',
-        label_en:'8) Progression & Tracking',
-        prompt:()=>`${baseHeader()}
-
-### Progress & Tracking
-Explain how to progress training and when to adjust calories/macros. Provide weekly checklist.`
-      },
-      {
-        key:'troubleshoot',
-        label_ar:'٩) المشكلات الشائعة والحلول',
-        label_en:'9) Troubleshooting',
-        prompt:()=>`${baseHeader()}
-
-### Troubleshooting
-Bullet list of frequent issues and exact fixes (plateaus, hunger, fatigue, schedule conflicts).`
-      },
-      {
-        key:'safety',
-        label_ar:'١٠) السلامة والنصائح الصحية',
-        label_en:'10) Safety & Health Notes',
-        prompt:()=>`${baseHeader()}
-
-### Safety & Health
-Short section on hydration, sleep hygiene, warm-up, technique, red flags to stop and seek care.`
-      },
-      {
-        key:'closing',
-        label_ar:'١١) ختام وتحفيز',
-        label_en:'11) Closing & Motivation',
-        prompt:()=>`${baseHeader()}
-
-### Closing
-Positive closing paragraph encouraging adherence and celebrating small wins, without repeating the profile. No greetings duplication.`
-      }
+    /***** Constants *****/
+    const GOALS = [
+      {key:'fatLoss',   ar:'خسارة الدهون',   en:'Fat loss'},
+      {key:'build',     ar:'بناء العضلات',   en:'Build muscle'},
+      {key:'strength',  ar:'زيادة القوة',     en:'Strength'},
+      {key:'endurance', ar:'تحسين التحمل',    en:'Endurance'},
+      {key:'health',    ar:'صحة عامة',        en:'General health'},
     ];
+    function goalLabel(key){ const g=GOALS.find(x=>x.key===key); return state.lang==='ar' ? g.ar : g.en; }
 
-    // توليد يومي للتغذية
-    function nutritionDayPrompt(dayIdx){
-      return `${baseHeader()}
+    /***** i18n *****/
+    const T = {
+      ar:{
+        appTitle:'المستشار الصحي الذكي',
+        subtitle:'خطة دقيقة ١٠٠٪ للتغذية والتدريب والمكملات — مخصصة لك',
+        steps:['الملف الشخصي','النظام الغذائي والتفضيلات','نمط الحياة والتمارين','الحالة الصحية والتحديات'],
+        next:'التالي', prev:'السابق', generate:'توليد الخطة', print:'طباعة', top:'أعلى',
+        hint:'سنولّد الخطة قسمًا بعد قسم: ترحيب → تحليل → المسموح/الممنوع → الصيام (إن لزم) → التغذية ٧ أيام → التدريب ٧ أيام → المكملات → التقدّم → المشاكل → السلامة → ختام.',
+        profile:'الملف الشخصي', dietPrefs:'النظام الغذائي والتفضيلات', lifestyle:'نمط الحياة والتدريب', med:'العوامل الصحية والتحديات',
+        name:'الاسم', age:'العمر', height:'الطول (سم)', weight:'الوزن (كغ)', bodyFat:'نسبة الدهون % (اختياري)', waist:'محيط الخصر (سم) (اختياري)', sex:'الجنس',
+        male:'ذكر', female:'أنثى', targetWeight:'الوزن المستهدف (كغ)', targetDate:'موعد تحقيق الهدف (تاريخ)',
+        goals:'الأهداف (متعدد)', fatLoss:'خسارة الدهون', build:'بناء العضلات', strength:'زيادة القوة', endurance:'تحسين التحمل', health:'صحة عامة',
+        mealsPerDay:'عدد الوجبات', preferredDiet:'النظام المفضّل', balanced:'نظام متوازن', lowCarb:'قليل الكربوهيدرات', keto:'كيتو', med:'متوسطي/عربي', veg:'نباتي/مرن',
+        fasting:'الصيام المتقطع', fastingOff:'غير مفعّل', fasting16:'16:8', fasting18:'18:6', fasting20:'20:4',
+        cuisine:'المطبخ', prepTime:'زمن التحضير (د)', budget:'الميزانية الشهرية التقريبية', foodsAvoid:'أطعمة لا ترغب بها/حساسيات', allergies:'حساسيات شائعة',
+        workActivity:'العمل/النشاط', steps:'خطوات/اليوم', sleep:'النوم', stress:'التوتر', place:'مكان التمرين', session:'مدة الجلسة (د)',
+        days:'أيام التدريب المتاحة', equipment:'المعدات المتاحة', experience:'الخبرة', rpe:'RPE', caffeine:'كافيين/أكواب', injuries:'إصابات/قيود',
+        quick:'اختبار اللياقة المبسّط', restingHR:'نبض الراحة (bpm)', pushups:'الضغط الأقصى', plank:'Plank (د)', kmTime:'زمن 1 كم (د:ث)',
+        musclesFocus:'عضلات تحتاج عناية خاصة', describe:'وصف المشكلة/السبب',
+        medicalStatus:'الحالة الصحية', otherCond:'أمراض أخرى', currentMeds:'أدوية حالية', currentSupp:'مكملات حالية',
+        pastCh:'تحديات سابقة مع الأنظمة', motiv:'أسلوب التحفيز المفضل', motivDir:'عملي ومباشر', motivWarm:'تشجيعي وداعم',
+        generatingTitle:'نُجهّز خطتك الآن', generatingSub:'الرجاء الانتظار… سنولّد الأقسام بالترتيب حتى تكتمل الخطة.',
+        print2:'طباعة / PDF',
+        needBasics:'أكمل الحقول الأساسية: الاسم/العمر/الطول/الوزن.',
+        failed:'تعذّر توليد الخطة. تحقّق من الاتصال.'
+      },
+      en:{
+        appTitle:'Intelligent Health Coach',
+        subtitle:'100% precise plan for nutrition, training & supplements – fully personalized',
+        steps:['Profile','Diet & Preferences','Lifestyle & Training','Medical & Challenges'],
+        next:'Next', prev:'Back', generate:'Generate Plan', print:'Print', top:'Top',
+        hint:'We will generate the plan section-by-section: Welcome → Analysis → Allowed/Limits → Intermittent Fasting (if any) → Nutrition 7-day → Training 7-day → Supplements → Progression → Troubleshooting → Safety → Closing.',
+        profile:'Profile', dietPrefs:'Diet & Preferences', lifestyle:'Lifestyle & Training', med:'Medical & Challenges',
+        name:'Name', age:'Age', height:'Height (cm)', weight:'Weight (kg)', bodyFat:'Body fat % (optional)', waist:'Waist (cm) (optional)', sex:'Sex',
+        male:'Male', female:'Female', targetWeight:'Target weight (kg)', targetDate:'Target date',
+        goals:'Goals (multi-select)', fatLoss:'Fat loss', build:'Build muscle', strength:'Strength', endurance:'Endurance', health:'General health',
+        mealsPerDay:'Meals per day', preferredDiet:'Preferred diet', balanced:'Balanced', lowCarb:'Low-carb', keto:'Keto', med:'Mediterranean/Arabic', veg:'Plant-forward',
+        fasting:'Intermittent fasting', fastingOff:'Off', fasting16:'16:8', fasting18:'18:6', fasting20:'20:4',
+        cuisine:'Cuisine', prepTime:'Prep time (min)', budget:'Monthly budget (approx.)', foodsAvoid:'Foods to avoid / dislikes', allergies:'Common allergies',
+        workActivity:'Work/Activity', steps:'Steps/day', sleep:'Sleep', stress:'Stress', place:'Training place', session:'Session length (min)',
+        days:'Available training days', equipment:'Available equipment', experience:'Experience', rpe:'RPE', caffeine:'Caffeine/day (cups)', injuries:'Injuries/constraints',
+        quick:'Quick fitness test', restingHR:'Resting HR (bpm)', pushups:'Max push-ups', plank:'Plank (min)', kmTime:'1 km time (m:s)',
+        musclesFocus:'Muscles needing special focus', describe:'Describe the issue/reason',
+        medicalStatus:'Medical status', otherCond:'Other conditions', currentMeds:'Current medications', currentSupp:'Current supplements',
+        pastCh:'Past challenges with plans', motiv:'Preferred motivation style', motivDir:'Direct & pragmatic', motivWarm:'Supportive & encouraging',
+        generatingTitle:'Preparing your plan', generatingSub:'Please wait. We will build the plan section by section until completion.',
+        print2:'Print / PDF',
+        needBasics:'Please complete: name/age/height/weight.',
+        failed:'Plan generation failed. Check connectivity.'
+      }
+    };
+    const t = (k)=> (T[state.lang] && T[state.lang][k]) || k;
 
-### 7-Day Nutrition Plan — Day ${dayIdx}
-- For **Day ${dayIdx}** ONLY, provide EXACTLY ${collect().meals} meals in a MARKDOWN TABLE with columns:
-| ${t('اليوم','Day')} | ${t('الوجبة','Meal')} | ${t('المكونات (بالجرامات/مل)','Ingredients (g/ml)')} | Protein (g) | Fat (g) | Carbs (g) | kcal |
-- Close with a "Totals" row meeting daily targets within ±2%.
-- Add one short compliance tip after the table.
-- No greetings, no motivational lines.`;
+    /***** Helpers *****/
+    function esc(s){
+      return (s??'').toString()
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;');
+    }
+    function $(id){ return document.getElementById(id); }
+    function val(id){ const el=$(id); return el? el.value.trim():''; }
+    function numVal(id, fallback=0){ const el=$(id); return el? Number(el.value||fallback):fallback; }
+
+    /***** Language & UI *****/
+    function setLang(lang){
+      state.lang = lang;
+      const html = document.documentElement;
+      html.lang = lang;
+      html.dir = (lang==='ar') ? 'rtl' : 'ltr';
+      // texts
+      $('app-title').textContent = t('appTitle');
+      $('subtitle').textContent = t('subtitle');
+      $('hint').textContent = t('hint');
+      $('t-prev').textContent = t('prev');
+      $('t-next').textContent = t('next');
+      $('t-generate').textContent = t('generate');
+      $('t-print').textContent = t('print');
+      $('t-print2').textContent = t('print2');
+      $('t-top').textContent = t('top');
+      $('ov-title').textContent = t('generatingTitle');
+      $('ov-sub').textContent = t('generatingSub');
+      renderStep();
     }
 
-    // توليد يومي للتدريب
-    function trainingDayPrompt(dayIdx){
-      return `${baseHeader()}
-
-### 7-Day Training Plan — Day ${dayIdx}
-- Tailored to experience: ${collect().exp}, place: ${collect().training_place}, equipment: ${collect().equipment||'—'}.
-- STRICTLY avoid aggravating injuries: ${collect().injuries||'None'}.
-- Provide ONE table:
-| ${t('اليوم','Day')} | Exercise (English) | Sets | Reps | Tempo | Rest (s) | Notes |
-- Include warm-up/mobility notes if helpful.
-- No greetings or motivational language.`;
-    }
-
-    // مُصادِقات مبسّطة
-    function hasTable(md){ return md.split('\n').filter(l=>l.includes('|')).length>=5; }
-    function containsDay(md, i){
-      const d = md.toLowerCase();
-      const en = new RegExp(`\\bday\\s*${i}\\b`);
-      const ar = new RegExp(`\\bاليوم\\s*${i}\\b`);
-      return en.test(d) || ar.test(d);
-    }
-
-    const VALIDATORS = {
-      welcome: (md)=> md.length>50 && !md.includes('|'),
-      analysis:(md)=> md.length>80,
-      allowed: (md)=> md.includes('- '),
-      fasting: (md)=> md.length>30,
-      supps:   (md)=> md.includes('1)') || md.includes('2)') || md.split('\n').some(l=>l.trim().startsWith('-')),
-      progress:(md)=> md.length>60,
-      troubleshoot:(md)=> md.includes('- '),
-      safety:  (md)=> md.length>30,
-      closing: (md)=> md.length>40
+    /***** Theme *****/
+    $('toggle-theme').onclick = ()=>{
+      state.theme = (state.theme==='dark'?'light':'dark');
+      document.body.style.background = (state.theme==='dark')
+        ? 'linear-gradient(180deg,#0a0f1c 0%,#0e1526 100%)'
+        : 'linear-gradient(180deg,#eef2ff 0%,#f7f9ff 100%)';
     };
 
-    /******************* Dynamic Pipeline (with daily generation) *******************/
-    function buildFullPipeline(){
-      const steps = [];
+    /***** Step rendering (خطوة واحدة شاملة) *****/
+    function renderStep(){
+      const titles = T[state.lang].steps;
+      $('step-title').textContent = titles[0]; // خطوة واحدة حالياً
+      // stepper حالة مرئية فقط
+      ['s1','s2','s3','s4'].forEach((id,i)=>$(id).className = (i===0?'on':''));
 
-      // أساسيات
-      steps.push(...BASE_PIPE);
+      const L = (k)=>t(k);
+      const num = (placeholder='')=>`inputmode="numeric" pattern="[0-9]*" class="field" placeholder="${placeholder}"`;
+      const option = (val, lab)=>`<option value="${val}">${lab}</option>`;
+      const ch = (id,lab,checked=false)=>`<label class="flex items-center gap-2"><input type="checkbox" id="${id}" ${checked?'checked':''} class="accent-[var(--brand-2)]"><span>${lab}</span></label>`;
 
-      // عنوان واضح لقسمي الأيام
-      steps.splice(1, 0, { // بعد الترحيب مباشرة نضيف عنوان التغذية والتدريب
-        key:'nutrition_header',
-        label_ar:'٥) تغذية — أيام منفصلة',
-        label_en:'5) Nutrition — Day by Day',
-        prompt:()=>`${baseHeader()}
+      // أهداف (بالمفاتيح الثابتة)
+      const goalChk = (key)=>`<label class="flex items-center gap-2">
+        <input type="checkbox" data-goal="${key}" class="accent-[var(--brand-2)]" ${state.diet.goals.includes(key)?'checked':''}>
+        <span>${goalLabel(key)}</span>
+      </label>`;
 
-### Nutrition Plan — Overview
-The following 7 days will be generated **day-by-day**. Do NOT include greetings. Provide no content here other than a one-line notice: "Daily meal plans follow below."`
+      // body
+      const el = $('step-body');
+      el.innerHTML = `
+        <div class="g">
+          <div class="glass card p-4 c-profile">
+            <div class="section-title mb-2">${L('profile')}</div>
+            <div class="col">
+              <label>${L('name')}<input id="name" class="field" value="${esc(state.profile.name)}" placeholder="${L('name')}"></label>
+              <div class="grid grid-cols-2 gap-2">
+                <label>${L('age')}<input id="age" ${num()} value="${esc(state.profile.age)}"></label>
+                <label>${L('sex')}
+                  <select id="sex" class="field">
+                    ${option('Male',L('male'))}${option('Female',L('female'))}
+                  </select>
+                </label>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <label>${L('height')}<input id="height" ${num()} value="${esc(state.profile.height)}"></label>
+                <label>${L('weight')}<input id="weight" ${num()} value="${esc(state.profile.weight)}"></label>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <label>${L('bodyFat')}<input id="bodyFat" ${num()} value="${esc(state.profile.bodyFat)}"></label>
+                <label>${L('waist')}<input id="waist" ${num()} value="${esc(state.profile.waist)}"></label>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <label>${L('targetWeight')}<input id="targetWeight" ${num()} value="${esc(state.profile.targetWeight)}"></label>
+                <label>${L('targetDate')}<input id="targetDate" type="date" class="field" value="${esc(state.profile.targetDate)}"></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass card p-4 c-diet">
+            <div class="section-title mb-2">${L('dietPrefs')}</div>
+            <div class="col">
+              <div>${L('goals')}</div>
+              <div class="grid grid-cols-2 gap-2">
+                ${goalChk('fatLoss')}${goalChk('build')}${goalChk('strength')}${goalChk('endurance')}${goalChk('health')}
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <label>${L('mealsPerDay')}<input id="meals" ${num()} value="${esc(state.diet.mealsPerDay)}"></label>
+                <label>${L('preferredDiet')}
+                  <select id="prefDiet" class="field">
+                    ${option('Balanced',L('balanced'))}
+                    ${option('LowCarb',L('lowCarb'))}
+                    ${option('Keto',L('keto'))}
+                    ${option('Arabic/Mediter.',L('med'))}
+                    ${option('Plant',L('veg'))}
+                  </select>
+                </label>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <label>${L('fasting')}
+                  <select id="fasting" class="field">
+                    ${option('off',L('fastingOff'))}${option('16:8',L('fasting16'))}${option('18:6',L('fasting18'))}${option('20:4',L('fasting20'))}
+                  </select>
+                </label>
+                <label>${L('cuisine')}<input id="cuisine" class="field" value="${esc(state.diet.cuisine)}"></label>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <label>${L('prepTime')}<input id="prep" ${num()} value="${esc(state.diet.prepTime)}"></label>
+                <label>${L('budget')} <div class="flex gap-2">
+                  <input id="budget" ${num()} value="${esc(state.diet.monthlyBudget)}" class="field flex-1">
+                  <select id="currency" class="field w-28">${currencyOptions(state.currency)}</select>
+                </div></label>
+              </div>
+              <label>${L('foodsAvoid')}<input id="avoid" class="field" value="${esc(state.diet.foodsToAvoid)}" placeholder="مثال: لا أحب السمك، حساسية فستق…"></label>
+              <label>${L('allergies')}<input id="allergies" class="field" value="${esc(state.diet.allergies)}" placeholder="Gluten, Lactose, Nuts …"></label>
+            </div>
+          </div>
+
+          <div class="glass card p-4 c-life">
+            <div class="section-title mb-2">${L('lifestyle')}</div>
+            <div class="col">
+              <div class="grid grid-cols-2 gap-2">
+                <label>${L('workActivity')}
+                  <select id="work" class="field">
+                    ${option('Sedentary',state.lang==='ar'?'مكتبي':'Sedentary')}
+                    ${option('Light',state.lang==='ar'?'نشاط خفيف':'Light')}
+                    ${option('Moderate',state.lang==='ar'?'متوسط':'Moderate')}
+                    ${option('High',state.lang==='ar'?'مرتفع':'High')}
+                  </select>
+                </label>
+                <label>${L('steps')}<input id="steps" ${num()} value="${esc(state.lifestyle.stepsPerDay)}"></label>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <label>${L('sleep')}
+                  <select id="sleep" class="field">
+                    ${option('Low',state.lang==='ar'?'منخفض':'Low')}
+                    ${option('Medium',state.lang==='ar'?'متوسط':'Medium')}
+                    ${option('High',state.lang==='ar'?'مرتفع':'High')}
+                  </select>
+                </label>
+                <label>${L('stress')}
+                  <select id="stress" class="field">
+                    ${option('Low',state.lang==='ar'?'منخفض':'Low')}
+                    ${option('Medium',state.lang==='ar'?'متوسط':'Medium')}
+                    ${option('High',state.lang==='ar'?'مرتفع':'High')}
+                  </select>
+                </label>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <label>${L('place')}<input id="place" class="field" value="${esc(state.lifestyle.trainingPlace)}"></label>
+                <label>${L('session')}<input id="session" ${num()} value="${esc(state.lifestyle.sessionLength)}"></label>
+              </div>
+              <div>
+                <div class="mb-1">${L('days')}</div>
+                <div class="grid grid-cols-7 gap-2 text-xs">
+                  ${weekInputs()}
+                </div>
+              </div>
+              <label>${L('equipment')}<input id="equip" class="field" value="${esc(state.lifestyle.equipment)}" placeholder="Dumbbells, barbell, bands…"></label>
+              <div class="grid grid-cols-2 gap-2">
+                <label>${L('experience')}
+                  <select id="exp" class="field">
+                    <option>Beginner (0-6m)</option>
+                    <option>Intermediate (6-24m)</option>
+                    <option>Advanced (24m+)</option>
+                  </select>
+                </label>
+                <label>${L('rpe')}<input id="rpe" ${num()} value="${esc(state.lifestyle.rpe)}"></label>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <label>${L('caffeine')}<input id="caf" ${num()} value="${esc(state.lifestyle.caffeine)}"></label>
+                <label>${L('injuries')}<input id="inj" class="field" value="${esc(state.lifestyle.injuries)}" placeholder="Shoulder impingement…"></label>
+              </div>
+              <div class="divider my-2"></div>
+              <div class="section-title mb-1">${L('quick')}</div>
+              <div class="grid grid-cols-2 gap-2">
+                <label>${L('restingHR')}<input id="q-hr" ${num()} value="${esc(state.fitness.restingHR)}"></label>
+                <label>${L('pushups')}<input id="q-pu" ${num()} value="${esc(state.fitness.maxPushups)}"></label>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <label>${L('plank')}<input id="q-pl" ${num()} value="${esc(state.fitness.plank)}"></label>
+                <label>${L('kmTime')}<input id="q-km" class="field" value="${esc(state.fitness.kmTime)}" placeholder="5:30"></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass card p-4 c-med">
+            <div class="section-title mb-2">${L('med')}</div>
+            <div class="grid md:grid-cols-2 gap-2">
+              <div class="col">
+                <div class="section-title text-sm opacity-80">${L('musclesFocus')}</div>
+                ${muscleInputs()}
+              </div>
+              <div class="col">
+                <div class="section-title text-sm opacity-80">${L('medicalStatus')}</div>
+                ${medicalInputs()}
+                <label class="mt-2">${L('otherCond')}<input id="otherCond" class="field" value="${esc(state.medical.other)}"></label>
+                <label>${L('currentMeds')}<input id="meds" class="field" value="${esc(state.medical.meds)}"></label>
+                <label>${L('currentSupp')}<input id="supps" class="field" value="${esc(state.medical.supplements)}"></label>
+                <label class="mt-2">${L('pastCh')}<input id="past" class="field" value="${esc(state.challenges.past)}" placeholder="جوع شديد، ملل من الطعام، إصابات…"></label>
+                <label>${L('motiv')}
+                  <select id="motiv" class="field">
+                    ${option('Direct',L('motivDir'))}${option('Warm',L('motivWarm'))}
+                  </select>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // ضبط القيم المختارة
+      $('sex').value = state.profile.sex || 'Male';
+      $('prefDiet').value = state.diet.preferredDiet;
+      $('fasting').value = state.diet.fasting;
+      $('currency').value = state.currency;
+      $('work').value = state.lifestyle.workActivity;
+      $('sleep').value = state.lifestyle.sleep;
+      $('stress').value = state.lifestyle.stress;
+      $('exp').value = state.lifestyle.experience;
+      $('motiv').value = state.challenges.motivation;
+
+      // الأزرار
+      $('prev').disabled = true; // لا يوجد رجوع حالياً
+      $('next').classList.add('hidden');
+      $('generate').classList.remove('hidden');
+    }
+
+    /***** Inputs builders *****/
+    function weekInputs(){
+      const days = (state.lang==='ar')? ['السبت','الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'] : ['Sat','Sun','Mon','Tue','Wed','Thu','Fri'];
+      return days.map((d,i)=>`<label class="flex items-center gap-1 bg-white/5 px-2 py-1 rounded-md border border-white/10">
+        <input type="checkbox" id="day-${i}" class="accent-[var(--brand-2)]" ${state.lifestyle.availableDays.includes(i)?'checked':''}>
+        <span>${d}</span>
+      </label>`).join('');
+    }
+    function muscleInputs(){
+      const map = [
+        ['chest','الصدر','Chest'],['back','الظهر','Back'],['shoulders','الأكتاف','Shoulders'],
+        ['biceps','البايسبس','Biceps'],['triceps','الترايسبس','Triceps'],['quads','الأرجل الأمامية','Quads'],
+        ['hamstrings','الأرجل الخلفية','Hamstrings'],['glutes','المؤخرة','Glutes'],['calves','السمانة','Calves'],['abs','البطن','Abs']
+      ];
+      return map.map(([k,ar,en])=>{
+        const lab = (state.lang==='ar'?ar:en);
+        const v = state.muscles[k]||{on:false,note:''};
+        return `
+          <div class="grid grid-cols-2 gap-2 items-center">
+            <label class="flex items-center gap-2">
+              <input type="checkbox" id="m-${k}" class="accent-[var(--brand-2)]" ${v.on?'checked':''}>
+              <span>${lab}</span>
+            </label>
+            <input id="mnote-${k}" class="field" placeholder="${t('describe')}" value="${esc(v.note)}">
+          </div>
+        `;
+      }).join('');
+    }
+    function medicalInputs(){
+      const items = [
+        ['Hypertension','ضغط الدم'],['Diabetes','السكري'],['Insulin Resistance','مقاومة الأنسولين'],
+        ['Thyroid issues','مشاكل الغدة'],['Hormonal issues','مشاكل هرمونية'],['Fatty Liver','الكبد الدهني'],
+        ['Joint/Knee problems','مشاكل مفاصل/ركب'],['Heart disease','أمراض القلب'],['IBD/Ulcer','IBD/قرحة'],
+        ['GERD/Reflux','GERD/ارتجاع'],['Gluten intolerance','عدم تحمل الجلوتين'],['Lactose intolerance','عدم تحمل اللاكتوز']
+      ];
+      return `<div class="grid md:grid-cols-2 gap-2">
+        ${items.map(([en,ar],idx)=>{
+          const lab = (state.lang==='ar')? ar : en;
+          const id = \`cond-\${idx}\`;
+          const checked = state.medical.conditions.includes(en)||state.medical.conditions.includes(ar);
+          return \`<label class="flex items-center gap-2"><input id="\${id}" type="checkbox" \${checked?'checked':''} class="accent-[var(--brand-2)]"><span>\${lab}</span></label>\`;
+        }).join('')}
+      </div>`;
+    }
+    function currencyOptions(sel){
+      const all = ['USD','EUR','GBP','SAR','AED','KWD','QAR','EGP'];
+      return all.map(c=>`<option ${sel===c?'selected':''}>${c}</option>`).join('');
+    }
+
+    /***** Persist step data *****/
+    function saveStep(){
+      // Profile
+      state.profile.name = val('name');
+      state.profile.age = val('age');
+      state.profile.height = val('height');
+      state.profile.weight = val('weight');
+      state.profile.bodyFat = val('bodyFat');
+      state.profile.waist = val('waist');
+      if($('sex')) state.profile.sex = $('sex').value;
+      state.profile.targetWeight = val('targetWeight');
+      state.profile.targetDate = val('targetDate');
+
+      // Diet
+      const goalInputs = [...document.querySelectorAll('input[data-goal]')];
+      state.diet.goals = goalInputs.filter(i=>i.checked).map(i=>i.getAttribute('data-goal'));
+      if($('meals')) state.diet.mealsPerDay = numVal('meals',3);
+      if($('prefDiet')) state.diet.preferredDiet = $('prefDiet').value;
+      if($('fasting')) state.diet.fasting = $('fasting').value;
+      state.diet.cuisine = val('cuisine');
+      state.diet.prepTime = numVal('prep',20);
+      state.diet.monthlyBudget = numVal('budget',0);
+      if($('currency')) state.currency = $('currency').value;
+      state.diet.foodsToAvoid = val('avoid');
+      state.diet.allergies = val('allergies');
+
+      // Lifestyle
+      if($('work')) state.lifestyle.workActivity = $('work').value;
+      state.lifestyle.stepsPerDay = numVal('steps',6000);
+      if($('sleep')) state.lifestyle.sleep = $('sleep').value;
+      if($('stress')) state.lifestyle.stress = $('stress').value;
+      state.lifestyle.trainingPlace = val('place');
+      state.lifestyle.sessionLength = numVal('session',60);
+      state.lifestyle.availableDays = [];
+      for(let i=0;i<7;i++){ const d=$(`day-${i}`); if(d && d.checked) state.lifestyle.availableDays.push(i); }
+      state.lifestyle.equipment = val('equip');
+      if($('exp')) state.lifestyle.experience = $('exp').value;
+      state.lifestyle.rpe = numVal('rpe',8);
+      state.lifestyle.caffeine = numVal('caf',0);
+      state.lifestyle.injuries = val('inj');
+      // fitness
+      state.fitness.restingHR = val('q-hr');
+      state.fitness.maxPushups = val('q-pu');
+      state.fitness.plank = val('q-pl');
+      state.fitness.kmTime = val('q-km');
+      // muscles
+      const keys = Object.keys(state.muscles);
+      keys.forEach(k=>{
+        const ck = $(`m-${k}`), note = $(`mnote-${k}`);
+        if(ck) state.muscles[k].on = ck.checked;
+        if(note) state.muscles[k].note = note.value;
       });
+      // medical
+      state.medical.conditions = [];
+      for(let i=0;i<12;i++){
+        const id=`cond-${i}`; const el=$(id);
+        if(el && el.checked){
+          const map = ['Hypertension','Diabetes','Insulin Resistance','Thyroid issues','Hormonal issues','Fatty Liver','Joint/Knee problems','Heart disease','IBD/Ulcer','GERD/Reflux','Gluten intolerance','Lactose intolerance'];
+          state.medical.conditions.push(map[i]);
+        }
+      }
+      state.medical.other = val('otherCond');
+      state.medical.meds = val('meds');
+      state.medical.supplements = val('supps');
+      state.challenges.past = val('past');
+      if($('motiv')) state.challenges.motivation = $('motiv').value;
 
-      steps.splice(2, 0, {
-        key:'training_header',
-        label_ar:'٦) تدريب — أيام منفصلة',
-        label_en:'6) Training — Day by Day',
-        prompt:()=>`${baseHeader()}
+      persist();
+    }
 
-### Training Plan — Overview
-The following 7 days will be generated **day-by-day**. Do NOT include greetings. Provide no content here other than a one-line notice: "Daily training sessions follow below."`
-      });
+    /***** Navigation *****/
+    $('next').onclick = ()=>{/* مخفي حالياً */};
+    $('prev').onclick = ()=>{/* معطل حالياً */};
+    $('generate').onclick = startGenerate;
 
-      // 7 أيام تغذية
-      for(let i=1;i<=7;i++){
-        steps.push({
-          key:`nutrition_day_${i}`,
-          label_ar:`تغذية — اليوم ${i}`,
-          label_en:`Nutrition — Day ${i}`,
-          prompt:()=> nutritionDayPrompt(i),
-          validator:(md)=> hasTable(md) && containsDay(md, i)
+    $('lang-ar').onclick = ()=>{ saveStep(); setLang('ar'); };
+    $('lang-en').onclick = ()=>{ saveStep(); setLang('en'); };
+
+    $('btn-print').onclick = ()=>window.print();
+    $('print-bottom').onclick = ()=>window.print();
+    $('scroll-top').onclick = ()=>window.scrollTo({top:0,behavior:'smooth'});
+
+    /***** Toasts *****/
+    function toast(msg, type='info'){
+      const div = document.createElement('div');
+      div.className='toast';
+      div.innerHTML = `<div class="font-bold mb-1">${type==='err'?'⚠️':''} ${msg}</div>`;
+      document.body.appendChild(div);
+      $('live').textContent = msg;
+      setTimeout(()=>div.remove(), 3500);
+    }
+
+    /***** Currency detect (region-first) *****/
+    function detectCurrency(){
+      try{
+        const loc = Intl.DateTimeFormat().resolvedOptions().locale || navigator.language || 'en-US';
+        const upper = loc.toUpperCase();
+        if(upper.includes('AR-AE') || upper.includes('AE')) return 'AED';
+        if(upper.includes('AR-SA') || upper.includes('SA')) return 'SAR';
+        if(upper.includes('AR-EG') || upper.includes('EG')) return 'EGP';
+        if(upper.includes('QA')) return 'QAR';
+        if(upper.includes('KW')) return 'KWD';
+        if(upper.includes('GB')) return 'GBP';
+        if(upper.includes('DE')||upper.includes('FR')||upper.includes('IT')||upper.includes('ES')||upper.includes('EU')) return 'EUR';
+        return 'USD';
+      }catch{ return 'USD'; }
+    }
+
+    /***** Targets calc (محسّن) *****/
+    function computeTargets(){
+      const p = state.profile, L = state.lifestyle, goals = state.diet.goals;
+      const W=+p.weight||0, H=+p.height||0, A=+p.age||0;
+      const male = (p.sex==='Male'||p.sex===t('male'));
+      const BMR = male ? 10*W + 6.25*H - 5*A + 5 : 10*W + 6.25*H - 5*A - 161;
+      const actMap = { 'Sedentary':1.2, 'Light':1.35, 'Moderate':1.5, 'High':1.7 };
+      let TDEE = BMR * (actMap[L.workActivity] || 1.35);
+
+      if(goals.includes('fatLoss')) TDEE *= 0.85;
+      if(goals.includes('build'))   TDEE *= 1.10;
+
+      const bf = +p.bodyFat || null;
+      const LM = bf ? W*(1-bf/100) : (p.targetWeight? +p.targetWeight : W*0.8);
+
+      let protein = Math.round(2.0 * Math.max(LM, 40));      // g
+      let fat     = Math.round(Math.max(0.8*W, 40));         // g
+      let carbs   = Math.round((TDEE - (protein*4 + fat*9))/4);
+
+      const hasIR = state.medical.conditions.some(c=>c==='Diabetes' || c==='Insulin Resistance');
+      if(hasIR) carbs = Math.min(carbs, 120);
+      carbs = Math.max(40, carbs);
+
+      const kcalPF = protein*4 + fat*9;
+      const rest = Math.round(TDEE - (kcalPF + carbs*4));
+      if(rest > 20) carbs += Math.round(rest/4);
+      if(rest < -20) fat = Math.max(40, Math.round((kcalPF + carbs*4 + rest - protein*4)/9));
+
+      return { bmr:Math.round(BMR), tdee:Math.round(TDEE), protein_g:protein, fat_g:fat, carb_g:carbs };
+    }
+
+    /***** AI calls (مهلة + إعادة محاولة) *****/
+    async function callAI(prompt, retries=2){
+      const ctrl = new AbortController();
+      const timer = setTimeout(()=>ctrl.abort(), 45_000);
+      try{
+        const res = await fetch('/.netlify/functions/gemini-proxy', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ prompt }), signal: ctrl.signal
         });
-      }
-
-      // 7 أيام تدريب
-      for(let i=1;i<=7;i++){
-        steps.push({
-          key:`training_day_${i}`,
-          label_ar:`تدريب — اليوم ${i}`,
-          label_en:`Training — Day ${i}`,
-          prompt:()=> trainingDayPrompt(i),
-          validator:(md)=> hasTable(md) && containsDay(md, i)
-        });
-      }
-
-      return steps;
+        if(!res.ok) throw new Error('Bad response: '+res.status);
+        const data = await res.json();
+        return { ok:true, text:data.text };
+      }catch(e){
+        if(retries>0) return await callAI(prompt, retries-1);
+        return { ok:false, error:String(e) };
+      }finally{ clearTimeout(timer); }
     }
 
-    /******************* Generation Loop *******************/
-    async function generate(){
-      const health = await checkBackend();
-      if(!health.ok){
-        alert(t('الخادم غير جاهز — يرجى المحاولة لاحقًا.\n','Backend is not ready — please try later.\n') + (health.error||''));
-        return;
+    /***** Prompt builder (كما هو مع إصلاحات المفاتيح) *****/
+    function buildPrompt(section, extra={}){
+      const lang = state.lang;
+      const L = (k)=>t(k);
+      const P = state.profile, D = state.diet, Ls = state.lifestyle, F = state.fitness;
+      const targets = state.targets;
+      const weak = Object.entries(state.muscles).filter(([k,v])=>v.on).map(([k,v])=>`${k}: ${v.note}`).join(', ') || 'None';
+      const med = state.medical.conditions.join(', ') || 'None';
+      const allergies = (D.allergies || 'None');
+      const avoid = (D.foodsToAvoid || 'None');
+      const days = (state.lang==='ar')? ['السبت','الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'] : ['Sat','Sun','Mon','Tue','Wed','Thu','Fri'];
+      const avail = Ls.availableDays.map(i=>days[i]).join(', ') || (state.lang==='ar'?'غير محدد':'Not specified');
+      const tone = state.challenges.motivation==='Direct' ? (lang==='ar'?'عملي مباشر بلا مبالغة':'Pragmatic, direct, no fluff') : (lang==='ar'?'تشجيعي وداعم':'Supportive & warm');
+
+      const goalLabels = state.diet.goals.map(goalLabel).join(', ') || (state.lang==='ar'?'غير محدد':'Not specified');
+
+      const header = `
+Name: ${P.name} | Sex: ${P.sex} | Age: ${P.age} | H: ${P.height}cm | W: ${P.weight}kg | BodyFat%: ${P.bodyFat||'n/a'} | Waist: ${P.waist||'n/a'}
+Goals: ${goalLabels} | Preferred diet: ${D.preferredDiet} | Meals/day: ${D.mealsPerDay} | Fasting: ${D.fasting}
+Cuisine: ${D.cuisine} | Prep time: ${D.prepTime}min | Budget: ${state.currency} ${D.monthlyBudget}
+Work/Activity: ${Ls.workActivity} | Steps/day: ${Ls.stepsPerDay} | Sleep: ${Ls.sleep} | Stress: ${Ls.stress}
+Training place: ${Ls.trainingPlace} | Session length: ${Ls.sessionLength}min | Available days: ${avail} | RPE: ${Ls.rpe} | Equipment: ${Ls.equipment||'Bodyweight'}
+Fitness test: HR ${F.restingHR||'?'}, Push-ups ${F.maxPushups||'?'}, Plank ${F.plank||'?'}, 1km ${F.kmTime||'?'}
+Weak muscles: ${weak} | Injuries: ${Ls.injuries || 'None'}
+Medical: ${med} | Other: ${state.medical.other||'None'} | Meds: ${state.medical.meds||'None'} | Supplements: ${state.medical.supplements||'None'}
+Allergies: ${allergies} | Dislikes: ${avoid}
+Energy targets: ~${targets.tdee} kcal/day | Macros: P ${targets.protein_g}g / F ${targets.fat_g}g / C ${targets.carb_g}g
+Tone: ${tone}.
+LANGUAGE: ${lang}. ALL FOOD IN ${lang}. EXERCISES NAMES IN ENGLISH ONLY.
+      `.trim();
+
+      if(section==='welcome'){
+        return `${header}
+
+Create a short warm ${lang} welcome for the user by name ONLY ONCE, congratulate the commitment, and preview what the plan includes. Do not repeat welcome later. Keep it crisp and professional.`;
       }
+      if(section==='analysis'){
+        return `${header}
 
-      $('result').classList.remove('hidden');
-      $('ai').innerHTML = '';
-      $('btn-regen').classList.remove('hidden');
-      $('btn-print').classList.remove('hidden');
-      $('btn-pdf').classList.remove('hidden');
-
-      const STEPS = buildFullPipeline();
-      const total = STEPS.length;
-
-      for(let i=0; i<total; i++){
-        const sec = STEPS[i];
-        const label = t(sec.label_ar || '', sec.label_en || '');
-        setProgress(i, total, label || t('قيد التوليد','Generating'));
-        appendSpinner(label || '');
-
-        let ok=false, md='', attempts=0, error='';
-        while(!ok && attempts<2){
-          attempts++;
-          try{
-            md = await callAI(sec.prompt());
-            const v = sec.validator || VALIDATORS[sec.key];
-            ok = v ? v(md) : true;
-            if(!ok){
-              const fix = `${baseHeader()}
-
-The previous attempt FAILED validation for "${label}".
-Regenerate EXACTLY as requested. Ensure strict day labeling and valid table. No greetings.`;
-              md = await callAI(fix);
-              ok = v ? v(md) : true;
-            }
-          }catch(e){ error = String(e); }
-        }
-
-        if(!ok){
-          md = t(
-            '**تعذّر توليد هذا القسم تلقائيًا بعد محاولتين.** الرجاء إعادة المحاولة لاحقًا.',
-            '**Failed to generate this section after two attempts.** Please try again later.'
-          );
-        }
-
-        replaceLastSpinnerWith(md);
+Write a concise ${lang} analysis of the user's situation (goals, health, constraints) and explain the logic behind the plan and energy/macros numbers. Use bullet points.`;
       }
+      if(section==='allowed'){
+        return `${header}
 
-      setProgress(total, total, t('اكتمل التوليد','Generation complete'));
-      $('resultRoot').scrollIntoView({behavior:'smooth',block:'start'});
+List in ${lang} two bullet lists: 
+1) Allowed / Recommended foods (by cuisine), 
+2) Limits / to avoid (honor allergies and dislikes).
+Keep it practical.`;
+      }
+      if(section==='fasting' && D.fasting!=='off'){
+        return `${header}
+
+Explain in ${lang} how to implement Intermittent Fasting (${D.fasting}) safely with tips, hydration, caffeine timing, and training timing.`;
+      }
+      if(section==='nutrition-day'){
+        const day = extra.day;
+        return `${header}
+
+Build the ${lang} nutrition plan for Day ${day} (of 7). 
+- Provide 3–${D.mealsPerDay} meals + 1–2 snacks as needed.
+- For each meal show a table row with: Meal | Ingredients (with grams) | kcal | Protein | Fat | Carbs.
+- Finish with a summary row for total daily kcal and macros; must match the macro targets within ±10%.
+- Mark each main meal with [SWAP:MEAL:<meal-name>] to allow swapping later.`;
+      }
+      if(section==='training-day'){
+        const day = extra.day;
+        return `${header}
+
+Build the ${lang} training plan for Day ${day} (of 7) matching the user's experience and injuries.
+- Provide a Markdown table: Day | Exercise (English) | Sets | Reps | Rest (sec).
+- Include warm-up note if needed.
+- Ensure exercise selection respects injuries and focuses on weak muscles.
+- Mark each exercise with [SWAP:EXERCISE:<exercise>].`;
+      }
+      if(section==='supplements'){
+        return `${header}
+
+Suggest evidence-based supplements in ${lang} with doses and timing:
+- Essential stack, Goal-specific stack (fat loss/strength), Budget option.
+- Consider medical conditions and possible interactions with common meds.
+- Add a short disclaimer to consult a physician if uncertain.`;
+      }
+      if(section==='progression'){
+        return `${header}
+
+Describe in ${lang} a clear progression model for 8–12 weeks: how to adjust weights, reps, rest, deloads, cardio minutes, and how to re-estimate TDEE if weight changes.`;
+      }
+      if(section==='troubleshoot'){
+        return `${header}
+
+Write in ${lang} a troubleshooting section: hunger, plateaus, poor sleep, high stress, cravings, travel, eating out. Provide 2–3 bullet solutions each.`;
+      }
+      if(section==='safety'){
+        return `${header}
+
+Add ${lang} safety notes: technique reminders, injury prevention, hydration, sleep hygiene, and when to stop a session and seek medical advice.`;
+      }
+      if(section==='closing'){
+        return `${header}
+
+End with a short ${lang} motivating closing paragraph (no repeated welcome). Address the user by name.`;
+      }
+      return header;
     }
 
-    /******************* PDF Export & Print *******************/
-    function exportAsPDF(){
-      const node = $('resultRoot');
-      if(!node){ window.print(); return; }
-      if(!window.html2pdf){ window.print(); return; }
+    /***** Generate plan (section-by-section) *****/
+    async function startGenerate(){
+      saveStep();
+      // مدخلات أساسية + نطاقات منطقية
+      const age=+state.profile.age, h=+state.profile.height, w=+state.profile.weight;
+      if(!(state.profile.name && age && h && w)){
+        toast(t('needBasics'),'err'); return;
+      }
+      if(age<10 || age>90){ toast('⚠️ تحقق من العمر', 'err'); return; }
+      if(h<120 || h>230){ toast('⚠️ تحقق من الطول (120-230سم)', 'err'); return; }
+      if(w<35 || w>250){ toast('⚠️ تحقق من الوزن (35-250كغ)', 'err'); return; }
 
-      const fn = (state.lang==='ar'?'خطة-':'plan-') + (collect().name||'client') + '.pdf';
-      const opt = {
-        filename: fn,
-        margin: [10,10,10,10],
-        image: { type:'jpeg', quality:0.98 },
-        html2canvas: { scale: 2, useCORS:true },
-        pagebreak: { mode:['css','legacy'] },
-        jsPDF: { unit:'mm', format:'a4', orientation:'portrait' }
-      };
+      state.targets = computeTargets();
+      state.generating = true;
+      $('overlay').style.display='flex';
+      $('overlay').setAttribute('aria-hidden','false');
+      $('plan-empty').style.display='none';
+      $('plan-content').innerHTML='';
+      const bar = $('ov-bar'), gbar = $('global-progress');
+      const progBars = [bar.parentElement, gbar.parentElement];
 
-      document.documentElement.classList.add('print-ready');
-      setTimeout(()=>{
-        try{
-          html2pdf().from(node).set(opt).save().finally(()=> {
-            document.documentElement.classList.remove('print-ready');
-          });
-        }catch{
-          document.documentElement.classList.remove('print-ready');
-          window.print();
-        }
-      }, 80);
+      const sections = ['welcome','analysis','allowed', ...(state.diet.fasting!=='off'?['fasting']:[]),
+                        ...Array.from({length:7},(_,i)=>`nutrition-day-${i+1}`),
+                        ...Array.from({length:7},(_,i)=>`training-day-${i+1}`),
+                        'supplements','progression','troubleshoot','safety','closing'];
+      let done = 0;
+      for(const s of sections){
+        const pct = Math.round((done/sections.length)*100);
+        bar.style.width = pct+'%'; gbar.style.width = pct+'%';
+        progBars.forEach(pb=>pb.setAttribute('aria-valuenow', String(pct)));
+
+        let section = s, extra={};
+        if(s.startsWith('nutrition-day')){ section='nutrition-day'; extra.day=Number(s.split('-').pop()); }
+        if(s.startsWith('training-day')){ section='training-day'; extra.day=Number(s.split('-').pop()); }
+        const prompt = buildPrompt(section, extra);
+        const {ok, text, error} = await callAI(prompt);
+        if(!ok){ toast(t('failed'),'err'); console.error(error); break; }
+        appendToPlan(text);
+        done++;
+      }
+      bar.style.width='100%'; gbar.style.width='100%';
+      progBars.forEach(pb=>pb.setAttribute('aria-valuenow', '100'));
+      $('overlay').style.display='none';
+      $('overlay').setAttribute('aria-hidden','true');
+      state.generating=false;
+      $('plan').scrollIntoView({behavior:'smooth'});
     }
 
-    /******************* Events *******************/
-    $('btn-ar').onclick = ()=> setLang('ar');
-    $('btn-en').onclick = ()=> setLang('en');
-    $('btn-theme').onclick = toggleTheme;
+    /***** Safe append *****/
+    function appendToPlan(markdown){
+      const unsafe = marked.parse(markdown||'');
+      const safe = DOMPurify.sanitize(unsafe, {USE_PROFILES:{html:true}});
+      const wrap = $('plan-content');
+      const sec = document.createElement('div');
+      sec.className='mb-6';
+      sec.innerHTML = safe;
+      wrap.appendChild(sec);
+    }
 
-    $('btn-start').onclick = async ()=>{
-      const u = collect();
-      if(!u.name || !u.age || !u.height || !u.weight || !u.sleep){
-        alert(t('أكمل الحقول الأساسية: الاسم/العمر/الطول/الوزن/النوم.','Fill required fields: name/age/height/weight/sleep.'));
-        return;
-      }
-      $('ai').innerHTML='';
-      generate();
-    };
-    $('btn-regen').onclick = ()=>{ $('ai').innerHTML=''; generate(); };
-    $('btn-print').onclick = ()=> window.print();
-    $('btn-pdf').onclick = exportAsPDF;
-    $('act-print').onclick = ()=> window.print();
-    $('act-pdf').onclick = exportAsPDF;
+    /***** Persistence (localStorage) *****/
+    const STORAGE_KEY='ihc_state_v1';
+    function persist(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch{} }
+    function restore(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(raw){ 
+          const s = JSON.parse(raw);
+          // اندمج بأمان (مع الحفاظ على البنية)
+          Object.assign(state, s);
+          // تأكد من وجود الحقول المتداخلة
+          state.profile = Object.assign({ name:'', age:'', height:'', weight:'', bodyFat:'', waist:'', sex:'Male', targetWeight:'', targetDate:'' }, state.profile||{});
+          state.diet = Object.assign({ goals:[], mealsPerDay:3, preferredDiet:'Balanced', cuisine:'Arabic/Mediter.', prepTime:20, monthlyBudget:0, foodsToAvoid:'', allergies:'', fasting:'off' }, state.diet||{});
+          state.lifestyle = Object.assign({ workActivity:'Sedentary', stepsPerDay:6000, sleep:'Low', stress:'Low', trainingPlace:'Home/Gym', sessionLength:60, availableDays:[], equipment:'', experience:'Beginner (0-6m)', rpe:8, caffeine:0, injuries:'' }, state.lifestyle||{});
+          state.fitness = Object.assign({ restingHR:'', maxPushups:'', plank:'', kmTime:'' }, state.fitness||{});
+          state.medical = Object.assign({ conditions:[], other:'', meds:'', supplements:'' }, state.medical||{});
+          state.challenges = Object.assign({ past:'', motivation:'Direct' }, state.challenges||{});
+          if(!Array.isArray(state.diet.goals)) state.diet.goals=[];
+          if(!Array.isArray(state.lifestyle.availableDays)) state.lifestyle.availableDays=[];
+        }
+      }catch{}
+    }
+    document.addEventListener('input', ()=>{ persist(); }, {capture:true});
 
-    // defaults
-    setLang('ar');
+    /***** Init *****/
+    window.addEventListener('load', ()=>{
+      restore();
+      setLang(state.lang); // renderStep داخل setLang
+    });
   </script>
 </body>
 </html>
