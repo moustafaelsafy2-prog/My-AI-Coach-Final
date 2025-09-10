@@ -1,101 +1,38 @@
-// netlify/functions/gemini-proxy.js
-const MODEL = process.env.LLM_MODEL || "gemini-1.5-pro";
-const API_KEY = process.env.LLM_API_KEY;
-const API_URL =
-  process.env.LLM_API_URL || "https://generativelanguage.googleapis.com/v1beta/models";
-
-const CORS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
-
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-function extractText(data) {
-  try {
-    const parts = data?.candidates?.[0]?.content?.parts || [];
-    return parts.map((p) => p?.text || "").join("\n");
-  } catch { return ""; }
-}
-
-exports.handler = async (event) => {
-  if (event.httpMethod === "OPTIONS") {
-    return { statusCode: 204, headers: CORS, body: "" };
-  }
+exports.handler = async function(event, context) {
   if (event.httpMethod !== "POST") {
-    return { statusCode: 405, headers: CORS, body: "Method Not Allowed" };
+    return { statusCode: 405, body: "Method Not Allowed" };
   }
 
   try {
-    if (!API_KEY) {
-      return { statusCode: 500, headers: { ...CORS, "content-type": "application/json" },
-        body: JSON.stringify({ error: "Missing env: LLM_API_KEY" }) };
-    }
-
     const { prompt } = JSON.parse(event.body || "{}");
-    if (String(prompt) === "__HEALTH__") {
-      return { statusCode: 200, headers: { ...CORS, "content-type": "application/json" },
-        body: JSON.stringify({ text: "OK" }) };
+    if (!prompt) {
+      return { statusCode: 400, body: JSON.stringify({ error: "Missing prompt" }) };
     }
 
-    const url = `${API_URL}/${MODEL}:generateContent?key=${API_KEY}`;
-    const gen = { temperature: 0.7, topP: 0.9, maxOutputTokens: 1400, candidateCount: 1 };
+    const apiKey = process.env.GEMINI_API_KEY;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
 
-    let lastErr = null;
-    for (let attempt = 0; attempt < 3; attempt++) {
-      try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 22000);
+    const r = await fetch(url, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }]
+      })
+    });
 
-        const res = await fetch(url, {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ role: "user", parts: [{ text: String(prompt || "") }]}],
-            generationConfig: gen,
-            safetySettings: [],
-          }),
-          signal: controller.signal,
-        });
+    const data = await r.json();
+    const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text).join("\n") || "";
 
-        clearTimeout(timeout);
-
-        const raw = await res.text();
-        let data = {}; try { data = JSON.parse(raw); } catch {}
-
-        if (!res.ok) {
-          if (res.status === 401 || res.status === 403) {
-            return { statusCode: res.status, headers: { ...CORS, "content-type": "application/json" },
-              body: JSON.stringify({ error: "Auth error from provider (check LLM_API_KEY)", detail: raw }) };
-          }
-          if (res.status === 429 || res.status >= 500) {
-            lastErr = new Error(`Upstream ${res.status}: ${raw}`);
-            await sleep(800 * (2 ** attempt));
-            continue;
-          }
-          return { statusCode: res.status, headers: { ...CORS, "content-type": "application/json" },
-            body: JSON.stringify({ error: raw }) };
-        }
-
-        const text = typeof data === "string" ? data : extractText(data);
-        if (!text) {
-          // Provider returned empty; surface a clear message
-          return { statusCode: 502, headers: { ...CORS, "content-type": "application/json" },
-            body: JSON.stringify({ error: "Empty response from provider" }) };
-        }
-        return { statusCode: 200, headers: { ...CORS, "content-type": "application/json" },
-          body: JSON.stringify({ text }) };
-      } catch (err) {
-        lastErr = err;
-        await sleep(800 * (2 ** attempt));
-      }
-    }
-
-    return { statusCode: 504, headers: { ...CORS, "content-type": "application/json" },
-      body: JSON.stringify({ error: String(lastErr || "Upstream Timeout") }) };
-  } catch (e) {
-    return { statusCode: 500, headers: { ...CORS, "content-type": "application/json" },
-      body: JSON.stringify({ error: String(e) }) };
+    return {
+      statusCode: 200,
+      headers: { "content-type": "application/json", "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify({ text })
+    };
+  } catch (err) {
+    return {
+      statusCode: 500,
+      headers: { "content-type": "application/json", "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify({ error: String(err) })
+    };
   }
 };
