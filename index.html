@@ -43,7 +43,8 @@
     .light body,.light{background:linear-gradient(180deg,#eef2ff 0%,#f7f9ff 100%);color:#0e1526}
     .light .glass{background:linear-gradient(180deg,rgba(0,0,0,.03),rgba(0,0,0,.02));border-color:rgba(0,0,0,.10)}
     .light .field{background:rgba(0,0,0,.03);color:#0e1526;border-color:rgba(0,0,0,.12)}
-    /* Better Markdown styling */
+
+    /* تحسين عرض Markdown لتنسيق أجمل ومتجاوب */
     .ai-content h1,.ai-content h2,.ai-content h3{margin:1rem 0 .5rem;font-weight:800;color:var(--brand-2)}
     .ai-content h2{font-size:1.25rem}.ai-content h3{font-size:1.1rem}
     .ai-content p{margin:.5rem 0;line-height:1.8}
@@ -53,6 +54,7 @@
     .ai-content th,.ai-content td{border:1px solid rgba(255,255,255,.18);padding:.6rem;text-align:center;white-space:nowrap}
     .ai-content tr:nth-child(even){background:rgba(255,255,255,.03)}
     @media (max-width:640px){.ai-content th,.ai-content td{white-space:normal}}
+
     @media print{body{background:#fff;color:#111}.glass,.btn,.chip,.title-grad{all:unset}
       .ai-content h2,.ai-content h3{color:#111}
       .ai-content table{border-collapse:collapse;width:100%}
@@ -98,7 +100,7 @@
         <div class="flex items-center gap-2">
           <button id="prev" class="btn btn-ghost" disabled>◀ <span id="t-prev">السابق</span></button>
           <button id="next" class="btn btn-primary"><span id="t-next">التالي</span> ▶</button>
-          <!-- يظهر فقط في الخطوة الأخيرة -->
+          <!-- سيظهر فقط في الشريحة الأخيرة -->
           <button id="generate-current" class="btn btn-primary hidden">⚡ <span id="t-generate">ابدأ الخطة</span></button>
         </div>
       </div>
@@ -161,20 +163,21 @@ const state = {
     'supplements','progression','troubleshoot','safety','closing'
   ],
   sectionStatus:{},
-  seenSentences:new Set(), // لمنع التكرار
-  completed:[]            // للحفاظ على سياق الأقسام
+  // لإسناد الانسيابية ومنع التكرار
+  completed:[],
+  seenSentences:new Set()
 };
 
 /* ===================== I18N ===================== */
 const T={
-  ar:{appTitle:'المستشار الصحي الذكي',subtitle:'خطة دقيقة ١٠٠٪ للتغذية والتدريب والمكملات — مخصصة لك',hint:'سيظهر كل قسم فور توليده — يرجى الانتظار.',
+  ar:{appTitle:'المستشار الصحي الذكي',subtitle:'خطة دقيقة ١٠٠٪ للتغذية والتدريب والمكملات — مخصصة لك',hint:'سنُولّد الأقسام بالترتيب ويظهر كل قسم بمجرد جاهزيته.',
     steps:['الملف الشخصي','التغذية والتفضيلات','نمط الحياة','الصحة والتحديات'],
     next:'التالي',prev:'السابق',generate:'ابدأ الخطة',top:'أعلى',print2:'طباعة / PDF',
     profile:'الملف الشخصي',dietPrefs:'التغذية والتفضيلات',lifestyle:'نمط الحياة',med:'الصحة والتحديات',
     name:'الاسم',age:'العمر',height:'الطول (سم)',weight:'الوزن (كغ)',bodyFat:'نسبة الدهون % (اختياري)',waist:'محيط الخصر (سم) (اختياري)',sex:'الجنس',
     male:'ذكر',female:'أنثى',targetWeight:'الوزن المستهدف (كغ)',targetDate:'موعد تحقيق الهدف (تاريخ)',
     goals:'الأهداف',fatLoss:'خسارة الدهون',build:'بناء العضلات',strength:'زيادة القوة',endurance:'التحمل',health:'صحة عامة',
-    mealsPerDay:'الوجبات/اليوم',preferredDiet:'النظام المفضل',balanced:'متوازن',lowCarb:'قليل الكربوهيدرات',keto:'كيتو',medc:'عربي/متوسطي',veg:'نباتي/مرن',
+    mealsPerDay:'الوجبات/اليوم',preferredDiet:'النظام المفضل',balanced:'متوازن',lowCarb:'قليل الكربوهيدرات',keto:'كيتو',medc:'متوسطي/عربي',veg:'نباتي/مرن',
     fasting:'الصيام المتقطع',off:'غير مفعّل',f16:'16:8',f18:'18:6',f20:'20:4',cuisine:'المطبخ',prepTime:'وقت التحضير (د)',budget:'الميزانية الشهرية',
     foodsAvoid:'أطعمة لا ترغب بها/حساسيات',allergies:'حساسيات شائعة',workActivity:'طبيعة العمل',steps:'الخطوات/اليوم',sleep:'النوم',stress:'التوتر',
     place:'مكان التمرين',session:'مدة الجلسة (د)',days:'أيام التمرين',equipment:'المعدات المتاحة',experience:'الخبرة',rpe:'RPE',caffeine:'كافيين/أكواب',injuries:'إصابات/قيود',
@@ -192,7 +195,7 @@ const T={
     name:'Name',age:'Age',height:'Height (cm)',weight:'Weight (kg)',bodyFat:'Body fat % (optional)',waist:'Waist (cm) (optional)',sex:'Sex',
     male:'Male',female:'Female',targetWeight:'Target weight (kg)',targetDate:'Target date',
     goals:'Goals',fatLoss:'Fat loss',build:'Build muscle',strength:'Strength',endurance:'Endurance',health:'General health',
-    mealsPerDay:'Meals/day',preferredDiet:'Preferred diet',balanced:'Balanced',lowCarb:'Low-carb',keto:'Keto',medc:'Arabic/Mediterranean',veg:'Plant-forward',
+    mealsPerDay:'Meals/day',preferredDiet:'Preferred diet',balanced:'Balanced',lowCarb:'Low-carb',keto:'Keto',medc:'Mediterranean/Arabic',veg:'Plant-forward',
     fasting:'Intermittent fasting',off:'Off',f16:'16:8',f18:'18:6',f20:'20:4',cuisine:'Cuisine',prepTime:'Prep time (min)',budget:'Monthly budget',
     foodsAvoid:'Foods to avoid / dislikes',allergies:'Common allergies',workActivity:'Work/Activity',steps:'Steps/day',sleep:'Sleep',stress:'Stress',
     place:'Training place',session:'Session length (min)',days:'Available training days',equipment:'Available equipment',experience:'Experience',rpe:'RPE',caffeine:'Caffeine/day (cups)',injuries:'Injuries/constraints',
@@ -230,6 +233,7 @@ function setLang(lang){
 }
 function setTheme(mode){state.theme=mode; if(mode==='light')document.documentElement.classList.add('light'); else document.documentElement.classList.remove('light')}
 
+/* ===================== FORM RENDER ===================== */
 function renderStep(){
   const titles=T[state.lang].steps; id('step-title').textContent=titles[state.step];
   const el=id('step-body');
@@ -492,7 +496,7 @@ const pretty=(idstr)=>{
   return idstr;
 };
 
-/* ===================== TARGETS & PROMPTS ===================== */
+/* ===================== TARGETS ===================== */
 function computeTargets(){
   const p=state.profile,L=state.lifestyle,D=state.diet;
   const W=+p.weight||0,H=+p.height||0,A=+p.age||0;
@@ -506,6 +510,22 @@ function computeTargets(){
   if(hasIR) carbs=Math.min(carbs,120); carbs=Math.max(40,carbs);
   return {bmr:Math.round(BMR),tdee:Math.round(TDEE),protein_g:protein,fat_g:fat,carb_g:carbs};
 }
+
+/* ===================== PROMPTS ===================== */
+function buildRules(){
+  return [
+    state.lang==='ar'?'اكتب بإسهاب وبنبرة عملية.':'Write in-depth with a practical tone.',
+    state.lang==='ar'?'لا تُكرر بيانات الملف أو الترحيب.':'Do not repeat profile or welcome.',
+    state.lang==='ar'?'ممنوع العبارات العامة مثل: الخطة غير مخصصة/استشر مختص.':'No generic disclaimers.',
+    state.lang==='ar'?'حافظ على تسلسل يعتمد على الأقسام السابقة.':'Maintain continuity with prior sections.',
+    state.lang==='ar'?'استخدم لغة واحدة دون خلط.':'Use only the selected language.'
+  ].join('\n- ');
+}
+function previousContext(maxChars=3000){
+  const joined=state.completed.map(s=>`# ${s.key}\n${s.text}`).join('\n\n');
+  return joined.slice(-maxChars);
+}
+
 function headerBlock(){
   const P=state.profile,D=state.diet,L=state.lifestyle,F=state.fitness,T=state.targets;
   const weak=Object.entries(state.muscles).filter(([k,v])=>v.on).map(([k,v])=>`${k}: ${v.note}`).join(', ')||'None';
@@ -524,21 +544,7 @@ Weak:${weak} | Injuries:${L.injuries||'None'} | Medical:${med}
 Targets: ~${T.tdee} kcal; P ${T.protein_g}g / F ${T.fat_g}g / C ${T.carb_g}g
 Tone:${tone}. LANGUAGE:${state.lang}. FOOD in ${state.lang}. Exercises EN only.`.trim();
 }
-function buildRules(){
-  // قواعد تمنع التكرار والخلط
-  return [
-    state.lang==='ar'?'اكتب بإسهاب وبدون اختصار بنبرة عملية.':'Write in-depth with a practical tone.',
-    state.lang==='ar'?'ابدأ مباشرة بمحتوى هذا القسم بلا ترحيب عام أو إعادة تعريف.':'Start directly with this section content—no re-intros.',
-    state.lang==='ar'?'لا تكرر بيانات الملف الشخصي أو الترحيب.':'Do not repeat profile or welcome.',
-    state.lang==='ar'?'يُمنع الجُمل العامة مثل: الخطة غير مخصصة/استشر مختص.':'Do not add generic disclaimers.',
-    state.lang==='ar'?'حافظ على تسلسل يعتمد على الأقسام السابقة.':'Maintain narrative continuity with prior sections.',
-    state.lang==='ar'?'استخدم لغة واحدة فقط دون خلط.':'Use the selected language only.'
-  ].join('\n- ');
-}
-function previousContext(maxChars=4000){
-  const joined=state.completed.map(s=>`# ${s.key}\n${s.text}`).join('\n\n');
-  return joined.slice(-maxChars);
-}
+
 function promptFor(section){
   const H=headerBlock();
   const rules=buildRules();
@@ -549,91 +555,101 @@ function promptFor(section){
 
   if(section==='welcome') return `${H}
 
-اكتب ترحيبًا دافئًا موجهًا بالاسم: ${state.profile.name}.
-لا تذكر العمر/الوزن إلا عند الحاجة الطبيعية. فقرتان قصيرتان بحد أقصى.${forceLong}`;
+اكتب ترحيبًا موجّهًا باسم: ${state.profile.name}. فقرتان قصيرتان تربطان المقدمة بالأهداف دون تكرار بيانات الملف.${forceLong}`;
 
   if(section==='analysis') return `${H}
 
 ${rules}
-
-قدّم تحليلًا تفصيليًا (سعرات/ماكروز/قيود/نشاط) يربط بما سبق دون إعادة طباعة الملف الشخصي.${forceLong}`;
+حلّل السعرات والماكروز والقيود والنشاط وربطها بالهدف، دون إعادة طباعة الملف الشخصي.${forceLong}
+السياق السابق للاسترشاد:
+${CONT}`;
 
   if(section==='allowed') return `${H}
 
 ${rules}
-قائمتان واضحتان: 
-1) المسموح/الموصى به حسب المطبخ والميزانية. 
-2) المحدود/الممنوع مع مراعاة الحساسيات.${forceLong}`;
+قائمتان واضحتان:
+1) المسموح/الموصى به حسب المطبخ والميزانية.
+2) المحدود/الممنوع مع مراعاة الحساسيات/عدم التفضيل.
+بدون أي حديث عن التدريب أو المكملات.${forceLong}
+السياق السابق للاسترشاد:
+${CONT}`;
 
   if(section==='fasting' && state.diet.fasting!=='off') return `${H}
 
 ${rules}
-اشرح بروتوكول الصيام ${state.diet.fasting} (المواعيد، السوائل، الكافيين، نافذة التدريب، السلامة).${forceLong}`;
+اشرح بروتوكول الصيام ${state.diet.fasting} (المواعيد، السوائل، الكافيين، نافذة التدريب، السلامة) بدون ذكر خطط تدريب أو جداول وجبات.${forceLong}
+${CONT}`;
 
   if(section.startsWith('nutrition-day')){
     const d=+section.split('-').pop();
     return `${H}
 
 ${rules}
-⚠️ IMPORTANT: هذا قسم تغذية فقط — لا تذكر التمرين أو المكملات.
+⚠️ هذا قسم تغذية فقط — لا تذكر أي تمارين أو مكملات.
 
 STRICT OUTPUT: جدول Markdown فقط.
 الأعمدة: | الوجبة | المكونات (غرام) | kcal | Protein | Fat | Carbs |
 الصفوف: 3 وجبات رئيسية + صف إجمالي TOTAL.
 يوم ${d} من 7. يجب أن تكون الماكروز اليومية ضمن ±10% من الأهداف.${forceLong}
-السياق السابق للاسترشاد فقط:
+السياق السابق للاسترشاد:
 ${CONT}`;
   }
-
   if(section.startsWith('training-day')){
     const d=+section.split('-').pop();
     return `${H}
 
 ${rules}
-⚠️ IMPORTANT: هذا قسم تدريب فقط — لا تذكر الطعام أو السعرات.
-⚠️ أنشئ هذا اليوم فقط، دون تضمين بقية الأيام أو أي ملخص.
+⚠️ هذا قسم تدريب فقط — لا تذكر الطعام أو السعرات.
+⚠️ أنشئ برنامج **اليوم ${d} فقط** دون إدراج بقية الأيام.
 
 STRICT OUTPUT: جدول Markdown فقط.
 الأعمدة: | التمرين | Sets | Reps | Rest (sec) |
-أدرج تمهيدًا/إحماءً إن لزم واحترم الإصابات والتركيز العضلي.
-يوم ${d} من 7.${forceLong}
-السياق السابق للاسترشاد فقط:
+أدرج إحماء/تمهيد إن لزم واحترم الإصابات ونقاط الضعف.${forceLong}
+السياق السابق للاسترشاد:
 ${CONT}`;
   }
-
   if(section==='supplements') return `${H}
 
 ${rules}
-مكملات مبنية على الدليل: أساسي/خاص بالأهداف/حسب الميزانية مع الجرعات والتوقيت. بدون أي عبارات إخلاء مسؤولية عامة.${forceLong}`;
-
+مكملات: أساسي/هدف-محدد/حسب الميزانية مع الجرعات والتوقيت — بدون إخلاء مسؤولية عامة.${forceLong}
+${CONT}`;
   if(section==='progression') return `${H}
 
 ${rules}
-خطة تطور 8–12 أسبوع: متى نزيد الأوزان/التكرارات/الراحة، أسابيع تخفيف، كارديو، وكيفية إعادة حساب TDEE مع تغير الوزن.${forceLong}`;
-
+خطة تطور 8–12 أسبوع: زيادات الأوزان/التكرارات/الراحة، أسابيع تخفيف، الكارديو، وإعادة حساب TDEE عند تغيّر الوزن.${forceLong}
+${CONT}`;
   if(section==='troubleshoot') return `${H}
 
 ${rules}
-حلول للمشكلات الشائعة: الجوع، الثبات، النوم، التوتر، الرغبة الشديدة، السفر/الأكل خارج المنزل (٢–٣ نقاط لكل).${forceLong}`;
-
+حلول لمشاكل: الجوع، الثبات، النوم، التوتر، الرغبة الشديدة، السفر/الأكل خارج المنزل (٢–٣ نقاط لكل).${forceLong}
+${CONT}`;
   if(section==='safety') return `${H}
 
 ${rules}
-ملاحظات السلامة: التقنية، الوقاية من الإصابات، الترطيب، النوم، مؤشرات الإيقاف وطلب المساعدة.${forceLong}`;
-
+ملاحظات: التقنية، الوقاية من الإصابات، الترطيب، النوم، إشارات التوقف وطلب المساعدة.${forceLong}
+${CONT}`;
   if(section==='closing') return `${H}
 
 ${rules}
-خاتمة تحفيزية قصيرة موجهة بالاسم ${state.profile.name} تربط ما سبق وتحدد خطوات الأسبوع الأول.${forceLong}`;
+خاتمة تحفيزية قصيرة موجّهة باسم ${state.profile.name} تربط ما سبق وتحدد خطوات الأسبوع الأول.${forceLong}
+${CONT}`;
 
   return H+forceLong;
 }
 
-/* تنظيف الرد ومنع التكرار والإنجليزية داخل العربية والعكس */
+/* ===== تنظيف المخرجات لمنع التكرار/الإنجليزية/الإخلاءات ===== */
 function sanitizeLLM(raw){
   let text=String(raw||'');
   // إزالة HTML شارد
   text=text.replace(/<!DOCTYPE[\s\S]*?<body[^>]*>/gi,'').replace(/<\/body>\s*<\/html>/gi,'');
+  // إزالة عبارات عامة
+  const RE_STRIP=[
+    /هذه الخطة.*?(?:غير|ليست).*?(?:مخصصة|طبية).*$/gim,
+    /استشر\s+(?:طبيب|أخصائي|مدرب)[^\n]*$/gim,
+    /this (?:plan|information).*?(?:not|isn['’]t).*?(?:personalized|medical advice)[^\n]*/gim,
+    /consult (?:a )?(?:physician|doctor|dietitian|coach)[^\n]*/gim
+  ];
+  RE_STRIP.forEach(rx=>text=text.replace(rx,''));
   // فلترة اللغة
   if(state.lang==='ar'){
     text=text.split('\n').filter(line=>{
@@ -648,7 +664,7 @@ function sanitizeLLM(raw){
       return latin>=arabic;
     }).join('\n');
   }
-  // منع الجُمل/السطور المكررة حرفيًا عبر جلسة التوليد
+  // منع الجُمل المكررة حرفيًا
   const out=[]; for(const ln of text.split('\n')){
     const key=ln.trim().replace(/\s+/g,' ').toLowerCase();
     if(!key){ out.push(''); continue; }
@@ -659,7 +675,7 @@ function sanitizeLLM(raw){
   return text;
 }
 
-/* ===================== API (robust) ===================== */
+/* ===================== API ===================== */
 async function callAI(prompt, opt={}, { attempts=4 } = {}){
   return queue = queue.then(() => _call(prompt, opt, {attempts}));
 }
@@ -682,9 +698,9 @@ async function _call(prompt, opt={}, { attempts }){
       const raw = await r.text();
       let data=null; try{ data=JSON.parse(raw); }catch{}
       if(!r.ok) throw new Error((data && (data.error||data.details||data.message))||raw.slice(0,400));
-      const text = (data && data.text) ? String(data.text).trim() : '';
+      const text = (data && data.text) ? sanitizeLLM(String(data.text).trim()) : '';
       if(!text || /^<!doctype/i.test(text)) throw new Error('Invalid body');
-      return {ok:true, text:sanitizeLLM(text)};
+      return {ok:true, text};
     }catch(e){
       await new Promise(res=>setTimeout(res, 800*(i+1)));
     }
@@ -692,19 +708,17 @@ async function _call(prompt, opt={}, { attempts }){
   return {ok:false, error:'Both endpoints failed'};
 }
 
-/* Nutrition fallback: split each meal request separately */
+/* Nutrition fallback: split each meal request */
 async function generateNutritionFallback(sectionId){
   const day=+sectionId.split('-').pop();
   const base=headerBlock();
   const mk=(mealName)=>`${base}
 
-STRICT OUTPUT: صف واحد Markdown لوجبة ${mealName} فقط.
+STRICT OUTPUT: صف Markdown واحد لوجبة ${mealName} فقط.
 الأعمدة: | الوجبة | المكونات (غرام) | kcal | Protein | Fat | Carbs |
 لغة: ${state.lang}. يوم ${day}.
 ⚠️ لا تذكر أي تمارين أو مكملات.`;
-  const [r1,r2,r3]=await Promise.all([
-    callAI(mk('1')),callAI(mk('2')),callAI(mk('3'))
-  ]);
+  const [r1,r2,r3]=await Promise.all([callAI(mk('1')),callAI(mk('2')),callAI(mk('3'))]);
   if(!(r1.ok && r2.ok && r3.ok)) return {ok:false,error:'Both endpoints failed'};
   const total=await callAI(`${base}
 
@@ -713,7 +727,7 @@ Rows:
 ${r1.text}
 ${r2.text}
 ${r3.text}
-⚠️ لا تذكر تمارين أو مكملات.`,{}, {attempts:2});
+⚠️ لا تذكر تمارين أو مكملات.`);
   if(!total.ok) return {ok:false,error:'Both endpoints failed'};
   return {ok:true,text:r1.text.trim()+"\n"+r2.text.trim()+"\n"+r3.text.trim()+"\n"+total.text.trim()};
 }
@@ -758,7 +772,7 @@ async function generateOne(sectionId,startPct,endPct){
   const bodyEl=id('body-'+sectionId), noteEl=id('note-'+sectionId), barEl=id('bar-'+sectionId);
   noteEl.textContent=t('gen');
 
-  let r=await callAI(promptFor(sectionId),{}, {attempts:4});
+  let r=await callAI(promptFor(sectionId));
   if(!r.ok && sectionId.startsWith('nutrition-day')) r=await generateNutritionFallback(sectionId);
 
   if(!r.ok){
@@ -766,9 +780,8 @@ async function generateOne(sectionId,startPct,endPct){
     id('err-'+sectionId).textContent=r.error||'Failed'; id('retry-'+sectionId).style.display='inline-flex';
     barEl.style.width=(startPct+(endPct-startPct)*.2)+'%'; return;
   }
-  // Markdown + حفظ للسياق
-  const html = marked.parse(r.text);
-  bodyEl.innerHTML = html;
+  bodyEl.innerHTML = marked.parse(r.text);
+  // حفظ للسياق لاحقًا لضمان الانسيابية
   state.completed.push({key:pretty(sectionId), text:r.text});
 
   noteEl.textContent=t('done'); barEl.style.width='100%'; setSectionStatus(sectionId,'ok'); updateGlobalProgress(endPct);
@@ -780,7 +793,7 @@ async function regenerateSection(sectionId){
 
 /* ===================== EVENTS ===================== */
 id('next').onclick=()=>{saveStep(); state.step=Math.min(3,state.step+1); renderStep()};
-id('prev').onclick=()=>{saveStep(); state.step=Math.max(0, state.step-1); renderStep()};
+id('prev').onclick=()=>{saveStep(); state.step=Math.max(0,state.step-1); renderStep()};
 id('generate-current').onclick=()=>generateAllSequential();
 id('btn-print').onclick=()=>window.print();
 id('print-bottom').onclick=()=>window.print();
